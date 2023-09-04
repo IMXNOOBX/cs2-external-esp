@@ -17,6 +17,8 @@
 #define m_vecOrigin 0x12AC
 
 int main() {
+	SetConsoleTitle("cs2 external esp");
+
 	std::shared_ptr<pProcess> process = std::make_shared<pProcess>();
 
 	std::cout << "[cs2] Waiting for cs2.exe..." << std::endl;
