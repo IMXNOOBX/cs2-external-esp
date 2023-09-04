@@ -13,6 +13,7 @@ Simple external esp using discord's overlay to render a box on top of cs2 highli
 
 * ❗ You must have discord overlay enabled! Settings > Game Overlay > Enable
 * ❗ Make sure you have enabled the overlay in for that game in Registered Games
+* ❗ Make you have `-insecure` in csgo launch parameters for the overlay to work
 
 ## 📘 Developer Instructions
 
