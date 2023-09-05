@@ -26,10 +26,16 @@
     <ClInclude Include="memory\memory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="classes\OverlayCord.h">
+    <ClInclude Include="classes\vector.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="classes\vector.hpp">
+    <ClInclude Include="hacks\hack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classes\globals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="classes\render.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
