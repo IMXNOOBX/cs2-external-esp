@@ -7,8 +7,7 @@
 #include "classes/vector.hpp"
 #include "hacks/hack.hpp"
 #include "classes/globals.hpp"
-
-// https://www.unknowncheats.me/forum/3846642-post734.html
+#include "classes/render.hpp"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -17,7 +16,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 	{
 		g::hdcBuffer = CreateCompatibleDC(NULL);
-		g::hbmBuffer = CreateCompatibleBitmap(GetDC(hWnd), screen_x, screen_y);
+		g::hbmBuffer = CreateCompatibleBitmap(GetDC(hWnd), g::gameBounds.right, g::gameBounds.bottom);
 		SelectObject(g::hdcBuffer, g::hbmBuffer);
 
 		SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
@@ -39,10 +38,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 		if (GetForegroundWindow() == hack::process->hwnd_) {
+			//render::RenderText(g::hdcBuffer, 10, 10, "cs2 | ESP", RGB(75, 175, 175), 15);
 			hack::loop();
 		}
 
-		BitBlt(hdc, 0, 0, screen_x, screen_y, g::hdcBuffer, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, g::gameBounds.right, g::gameBounds.bottom, g::hdcBuffer, 0, 0, SRCCOPY);
 
 		EndPaint(hWnd, &ps);
 		InvalidateRect(hWnd, NULL, TRUE);
@@ -76,10 +76,16 @@ int main() {
 		hack::base_module = hack::process->GetModule("client.dll");
 		if (hack::base_module.base == 0) {
 			std::this_thread::sleep_for(std::chrono::seconds(1));
-			std::cout << "[cs2] Failed to find module client.dll" << std::endl;
+			std::cout << "[cs2] Failed to find module client.dll, waiting for the game to load it..." << std::endl;
 		}
 	} while (hack::base_module.base == 0);
 
+	std::cout << "[overlay] Waiting to focus game to create the overlay..." << std::endl;
+	while (GetForegroundWindow() != hack::process->hwnd_) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		hack::process->UpdateHWND();
+		ShowWindow(hack::process->hwnd_, TRUE);
+	}
 	std::cout << "[overlay] Creating window overlay..." << std::endl;
 
 	WNDCLASSEXA wc = { 0 };
@@ -93,20 +99,19 @@ int main() {
 
 	RegisterClassExA(&wc);
 
-	RECT gameBounds;
-	GetClientRect(hack::process->hwnd_, &gameBounds);
+	GetClientRect(hack::process->hwnd_, &g::gameBounds);
 
 	// Create the window
 	HINSTANCE hInstance = NULL;
 	HWND hWnd = CreateWindowExA(WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW, " ", "cs2-external-esp", WS_POPUP,
-		gameBounds.left, gameBounds.top, gameBounds.right - gameBounds.left, gameBounds.bottom + gameBounds.left, NULL, NULL, hInstance, NULL); // NULL, NULL);
+		g::gameBounds.left, g::gameBounds.top, g::gameBounds.right - g::gameBounds.left, g::gameBounds.bottom + g::gameBounds.left, NULL, NULL, hInstance, NULL); // NULL, NULL);
 
 	if (hWnd == NULL)
 		return 0;
 
 	SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	ShowWindow(hWnd, TRUE);
-	SetActiveWindow(hack::process->hwnd_);
+	//SetActiveWindow(hack::process->hwnd_);
 
 	// Message loop
 	MSG msg;
@@ -119,6 +124,8 @@ int main() {
 	std::cout << "[overlay] Destroying overlay window." << std::endl;
 	DeleteDC(g::hdcBuffer);
 	DeleteObject(g::hbmBuffer);
+
+	DestroyWindow(hWnd);
 
 	std::cout << "[cs2] Deataching from process" << std::endl;
 	hack::process->Close();
