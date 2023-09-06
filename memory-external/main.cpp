@@ -8,13 +8,16 @@
 
 // https://www.unknowncheats.me/forum/3846642-post734.html
 
-#define dwLocalPlayer 0x1713348
-#define dwEntityList 0x1679C38
+// last offset update 9/5/2023
+#define dwLocalPlayer 0x1675770
+#define dwEntityList 0x167ABA8
+#define dwViewMatrix 0x1714C70
+
 #define dwPawnHealth 0x808
 #define dwPlayerPawn 0x5dc
-#define dwViewMatrix 0x1713CF0
-#define m_iTeamNum 0x3bf
-#define m_vecOrigin 0x12AC
+#define dwSanitizedName 0x720
+#define m_iTeamNum 0x3bf 
+#define m_vecOrigin 0x12AC 
 
 int main() {
 	SetConsoleTitle("cs2 external esp");
