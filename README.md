@@ -2,6 +2,10 @@
 
 Simple external esp using gdi overlay to render esp boxes on top of cs2 highlighting your enemies and teammates including their health, name and health number. If you want to check out discord overlay rendering check [discord-overlay-esp](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay)
 
+## ❗️Notice
+
+cs2 just updated and the offsets are no longer working, you can update them manually and create a pull request or wait until its updated
+
 ## Video Showcase
 
 [![Cs2ESP](https://cdn.discordapp.com/attachments/903283950267564094/1148569148318822461/image.png)](https://youtu.be/SV_lddIxQ5w)
