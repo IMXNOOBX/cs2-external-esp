@@ -2,8 +2,7 @@
 #include <numbers>
 #include <cmath>
 
-int screen_x = GetSystemMetrics(SM_CXSCREEN);
-int screen_y = GetSystemMetrics(SM_CYSCREEN);
+#include "globals.hpp"
 
 struct view_matrix_t {
 	float* operator[ ](int index) {
@@ -91,11 +90,11 @@ struct Vector3
 		_x *= inv_w;
 		_y *= inv_w;
 
-		float x = screen_x * .5f;
-		float y = screen_y * .5f;
+		float x = g::gameBounds.right * .5f;
+		float y = g::gameBounds.bottom * .5f;
 
-		x += 0.5f * _x * screen_x + 0.5f;
-		y -= 0.5f * _y * screen_y + 0.5f;
+		x += 0.5f * _x * g::gameBounds.right + 0.5f;
+		y -= 0.5f * _y * g::gameBounds.bottom + 0.5f;
 
 		return { x, y, w };
 	}
