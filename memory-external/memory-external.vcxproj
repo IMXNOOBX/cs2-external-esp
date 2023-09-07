@@ -138,11 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="classes\config.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="memory\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="classes\config.hpp" />
     <ClInclude Include="classes\globals.hpp" />
+    <ClInclude Include="classes\json.hpp" />
     <ClInclude Include="classes\render.hpp" />
     <ClInclude Include="classes\vector.hpp" />
     <ClInclude Include="hacks\hack.hpp" />

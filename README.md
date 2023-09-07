@@ -2,6 +2,8 @@
 
 Simple external esp using gdi overlay to render esp boxes on top of cs2 highlighting your enemies and teammates including their health, name and health number. If you want to check out discord overlay rendering check [discord-overlay-esp](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay)
 
+### Make sure you 🌟 the project if you like it ❤
+
 ## Video Showcase
 
 [![Cs2ESP](https://cdn.discordapp.com/attachments/903283950267564094/1148569148318822461/image.png)](https://youtu.be/SV_lddIxQ5w)
@@ -12,6 +14,27 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 2. Click on the binary file you want to download and download it.
 3. Open the binary file and cs2 (doesnt matter which one goes first)
 ❗ Make sure your game is in full screen windowed
+
+## ✔ Manually Update
+
+* To manually update the esp offsets ive included an offsets.json file which will be created one opened.
+
+1. Go to this [unknowncheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
+
+2. You will find somethig like this
+
+```cpp
+#define dwLocalPlayer 0x1715418 // This is hexadecimal
+```
+
+3. You will have to translate it to decimal and put it in the offsets file next to the esp executable like so, you can use [**this website**](https://www.rapidtables.com/convert/number/hex-to-decimal.html)
+
+```json
+{
+    "dwLocalPlayer": 24204312, // To decimal
+    ...
+}	
+```
 
 ## 📘 Developer Instructions
 
