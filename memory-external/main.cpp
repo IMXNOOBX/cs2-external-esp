@@ -24,6 +24,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetLayeredWindowAttributes(hWnd, RGB(255, 255, 255), 0, LWA_COLORKEY);
 
 		std::cout << "[overlay] Window created successfully" << std::endl;
+		Beep(500, 100);
 		break;
 	}
 	case WM_ERASEBKGND: // We handle this message to avoid flickering
@@ -72,6 +73,13 @@ int main() {
 
 	std::cout << "[cs2] Attached to cs2.exe" << std::endl;
 
+	std::cout << "[config] Reading offsets from configuration." << std::endl;
+	if (config::read())
+		std::cout << "[config] Sucessfully read offsets file" << std::endl;
+	else
+		std::cout << "[config] Error reading offsets file, reseting to the default state" << std::endl;
+
+
 	do {
 		hack::base_module = hack::process->GetModule("client.dll");
 		if (hack::base_module.base == 0) {
@@ -115,12 +123,25 @@ int main() {
 
 	// Message loop
 	MSG msg;
-	while (!(GetAsyncKeyState(VK_END) & 0x8000) && GetMessage(&msg, NULL, 0, 0))
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
+		if (GetAsyncKeyState(VK_END) & 0x8000) break;
+
+		if (g::outdated_offsets) {
+			std::cout << "[cs2] EntityList was null. this might be because cs2 has been updated" << std::endl;
+			std::cout << "[cs2] Consider updating offsets manually in the file offsets.json" << std::endl;
+			std::cout << "[cs2] You can find the latest offsets by the comunity in: https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html" << std::endl;
+			break;
+		}
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+
+	Beep(700, 100); Beep(700, 100);
+
 	std::cout << "[overlay] Destroying overlay window." << std::endl;
 	DeleteDC(g::hdcBuffer);
 	DeleteObject(g::hbmBuffer);

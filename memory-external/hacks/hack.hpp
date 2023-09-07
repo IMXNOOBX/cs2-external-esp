@@ -2,33 +2,23 @@
 #include "../memory/memory.hpp"
 #include "classes/globals.hpp"
 #include "../classes/render.hpp"
-
-// last offset update 9/5/2023
-#define dwLocalPlayer 0x1675770
-#define dwEntityList 0x167ABA8
-#define dwViewMatrix 0x1714C70
-
-#define dwPawnHealth 0x808
-#define dwPlayerPawn 0x5dc
-#define dwSanitizedName 0x720
-#define m_iTeamNum 0x3bf 
-#define m_vecOrigin 0x12AC 
+#include "../classes/config.hpp"
 
 namespace hack {
 	std::shared_ptr<pProcess> process;
 	ProcessModule base_module;
 
 	void loop() {
-		uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + dwLocalPlayer);
+		uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + config::dwLocalPlayer);
 		if (!localPlayer) return;
 
-		int localTeam = process->read<int>(localPlayer + m_iTeamNum);
+		int localTeam = process->read<int>(localPlayer + config::m_iTeamNum);
 
-		view_matrix_t view_matrix = process->read<view_matrix_t>(base_module.base + dwViewMatrix);
+		view_matrix_t view_matrix = process->read<view_matrix_t>(base_module.base + config::dwViewMatrix);
 
-		Vector3 localOrigin = process->read<Vector3>(localPlayer + m_vecOrigin);
+		Vector3 localOrigin = process->read<Vector3>(localPlayer + config::m_vecOrigin);
 
-		uintptr_t entity_list = process->read<uintptr_t>(base_module.base + dwEntityList);
+		uintptr_t entity_list = process->read<uintptr_t>(base_module.base + config::dwEntityList);
 
 		for (int i = 1; i < 32; i++) {
 			uintptr_t list_entry = process->read<uintptr_t>(entity_list + (8 * (i & 0x7FFF) >> 9) + 16);
@@ -37,11 +27,11 @@ namespace hack {
 
 			if (!player) continue;
 
-			int playerHealth = process->read<int>(player + dwPawnHealth);
+			int playerHealth = process->read<int>(player + config::dwPawnHealth);
 			if (playerHealth <= 0 || playerHealth > 100) continue;
 
 			// https://github.com/UnnamedZ03/CS2-external-base/blob/main/source/CSSPlayer.hpp#L132
-			std::uint32_t playerpawn = process->read<std::uint32_t>(player + dwPlayerPawn);
+			std::uint32_t playerpawn = process->read<std::uint32_t>(player + config::dwPlayerPawn);
 
 			uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerpawn & 0x7FFF) >> 9) + 16);
 			if (!list_entry2) continue;
@@ -49,10 +39,10 @@ namespace hack {
 
 			if (pCSPlayerPawn == localPlayer) continue;
 
-			int playerTeam = process->read<int>(player + m_iTeamNum);
+			int playerTeam = process->read<int>(player + config::m_iTeamNum);
 
 			std::string playerName = "Invalid Name";
-			DWORD64 playerNameAddress = process->read<DWORD64>(player + dwSanitizedName);
+			DWORD64 playerNameAddress = process->read<DWORD64>(player + config::dwSanitizedName);
 			if (playerNameAddress) {
 				char buf[256];
 				process->read_raw(playerNameAddress, buf, sizeof(buf));
@@ -60,7 +50,7 @@ namespace hack {
 			}
 
 			// https://github.com/UnnamedZ03/CS2-external-base/blob/main/source/CSSPlayer.hpp#L132
-			Vector3 origin = process->read<Vector3>(pCSPlayerPawn + m_vecOrigin);
+			Vector3 origin = process->read<Vector3>(pCSPlayerPawn + config::m_vecOrigin);
 
 			//if ((localOrigin - origin).length2d() > 1000) return;
 
