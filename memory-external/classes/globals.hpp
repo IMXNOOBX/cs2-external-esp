@@ -5,7 +5,5 @@ namespace g {
 	inline HDC hdcBuffer = NULL;
 	inline HBITMAP hbmBuffer = NULL;
 
-	bool outdated_offsets = false;
-
 	RECT gameBounds;
 }

@@ -73,12 +73,14 @@ int main() {
 
 	std::cout << "[cs2] Attached to cs2.exe" << std::endl;
 
+	std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
+	std::cout << "[warn] You can find the latest offsets by the comunity in: https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html" << std::endl;
+
 	std::cout << "[config] Reading offsets from configuration." << std::endl;
 	if (config::read())
 		std::cout << "[config] Sucessfully read offsets file" << std::endl;
 	else
 		std::cout << "[config] Error reading offsets file, reseting to the default state" << std::endl;
-
 
 	do {
 		hack::base_module = hack::process->GetModule("client.dll");
@@ -125,17 +127,10 @@ int main() {
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+		if (GetAsyncKeyState(VK_END) & 0x8000) break;
+		
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-
-		if (GetAsyncKeyState(VK_END) & 0x8000) break;
-
-		if (g::outdated_offsets) {
-			std::cout << "[cs2] EntityList was null. this might be because cs2 has been updated" << std::endl;
-			std::cout << "[cs2] Consider updating offsets manually in the file offsets.json" << std::endl;
-			std::cout << "[cs2] You can find the latest offsets by the comunity in: https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html" << std::endl;
-			break;
-		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
