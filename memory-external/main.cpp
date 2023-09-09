@@ -104,8 +104,8 @@ int main() {
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hbrBackground = WHITE_BRUSH;
 	wc.hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongA(hack::process->hwnd_, (-6))); // GWL_HINSTANCE));
-	wc.lpszMenuName = "96nasftas8f";
-	wc.lpszClassName = "96nasftas8f";
+	wc.lpszMenuName = " ";
+	wc.lpszClassName = " ";
 
 	RegisterClassExA(&wc);
 
@@ -113,7 +113,7 @@ int main() {
 
 	// Create the window
 	HINSTANCE hInstance = NULL;
-	HWND hWnd = CreateWindowExA(WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW, "96nasftas8f", "96nasftas8f-esp", WS_POPUP,
+	HWND hWnd = CreateWindowExA(WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TOOLWINDOW, " ", "96nasftas8f-esp", WS_POPUP,
 		g::gameBounds.left, g::gameBounds.top, g::gameBounds.right - g::gameBounds.left, g::gameBounds.bottom + g::gameBounds.left, NULL, NULL, hInstance, NULL); // NULL, NULL);
 
 	if (hWnd == NULL)
