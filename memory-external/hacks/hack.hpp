@@ -20,6 +20,16 @@ namespace hack {
 
 		uintptr_t entity_list = process->read<uintptr_t>(base_module.base + config::dwEntityList);
 
+		static auto lastFrameTime = std::chrono::high_resolution_clock::now();
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		auto deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastFrameTime).count();
+
+		lastFrameTime = currentTime;
+
+		const int desiredFrameRate = 60;
+		const int frameDelay = 1000 / desiredFrameRate;
+
+
 		for (int i = 1; i < 32; i++) {
 			uintptr_t list_entry = process->read<uintptr_t>(entity_list + (8 * (i & 0x7FFF) >> 9) + 16);
 			if (!list_entry) continue;
@@ -111,6 +121,9 @@ namespace hack {
 			}
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		if (deltaTime < frameDelay) {
+			int sleepTime = frameDelay - deltaTime;
+			std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+		}
 	}
 }
