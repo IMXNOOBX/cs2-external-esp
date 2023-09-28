@@ -8,6 +8,7 @@
 #include "hacks/hack.hpp"
 #include "classes/globals.hpp"
 #include "classes/render.hpp"
+#include "classes/auto_updater.hpp"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -63,24 +64,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 int main() {
 	SetConsoleTitle("cs2-external-esp");
+	std::cout << "[info] Github Repository: https://github.com/IMXNOOBX/cs2-external-esp" << std::endl;
+	std::cout << "[info] Unknowncheats thread: https://www.unknowncheats.me/forum/counter-strike-2-releases/600259-cs2-external-esp.html\n" << std::endl;
 
 	hack::process = std::make_shared<pProcess>();
+
+	updater::check_and_update(true);
 
 	std::cout << "[cs2] Waiting for cs2.exe..." << std::endl;
 
 	while (!hack::process->AttachProcess("cs2.exe"))
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-	std::cout << "[cs2] Attached to cs2.exe" << std::endl;
-
-	std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
-	std::cout << "[warn] You can find the latest offsets by the comunity in: https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html" << std::endl;
+	std::cout << "[cs2] Attached to cs2.exe\n" << std::endl;
 
 	std::cout << "[config] Reading offsets from configuration." << std::endl;
 	if (config::read())
-		std::cout << "[config] Sucessfully read offsets file" << std::endl;
+		std::cout << "[config] Sucessfully read offsets file\n" << std::endl;
 	else
-		std::cout << "[config] Error reading offsets file, reseting to the default state" << std::endl;
+		std::cout << "[config] Error reading offsets file, reseting to the default state\n" << std::endl;
+
+	std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
 
 	do {
 		hack::base_module = hack::process->GetModule("client.dll");
@@ -128,7 +132,7 @@ int main() {
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		if (GetAsyncKeyState(VK_END) & 0x8000) break;
-		
+
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 

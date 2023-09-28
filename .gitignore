@@ -3,7 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Ignore all the offsets.json files but the one in the folder offsets for the auto updater
 offsets.json
+!offsets/offsets.json 
 
 # User-specific files
 *.rsuser
