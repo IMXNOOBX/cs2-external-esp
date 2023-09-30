@@ -11,6 +11,7 @@
 #include "json.hpp"
 
 using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 
 namespace updater {

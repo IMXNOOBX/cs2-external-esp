@@ -95,6 +95,7 @@ int main() {
 	} while (hack::base_module.base == 0);
 
 	std::cout << "[overlay] Waiting to focus game to create the overlay..." << std::endl;
+	std::cout << "[overlay] Make sure your game is in \"Full Screen Windowed\"" << std::endl;
 	while (GetForegroundWindow() != hack::process->hwnd_) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		hack::process->UpdateHWND();
