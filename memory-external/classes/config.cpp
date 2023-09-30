@@ -4,13 +4,8 @@ namespace config {
 	using json = nlohmann::json;
 	const std::string file_path = "offsets.json";
 
-	bool file_exsits(const std::string& name) {
-		std::ifstream f(name.c_str());
-		return f.good();
-	}
-
 	bool read() {
-		if (!file_exsits(file_path)) {
+		if (!updater::file_good(file_path)) {
 			save();
 			return false;
 		}

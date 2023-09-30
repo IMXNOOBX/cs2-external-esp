@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include "json.hpp"
+#include "auto_updater.hpp"
 
 namespace config {
 	extern bool read();
