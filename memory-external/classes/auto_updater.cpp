@@ -20,37 +20,57 @@ namespace updater {
 
 		auto currentTime = std::chrono::system_clock::now();
 
-		fs::file_time_type lastModifiedTime = fs::last_write_time("offsets.json");
-		auto lastModifiedClockTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-			lastModifiedTime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
-
 		std::chrono::system_clock::time_point commitTimePoint = std::chrono::system_clock::from_time_t(std::mktime(&commit_date));
 
-		// Check if the local file is older than the last GitHub commit
-		if (lastModifiedClockTime < commitTimePoint) {
-			std::cout << "[updater] Local file is older than the last GitHub commit." << std::endl;
-			if (prompt_update) {
-				std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
-				char response;
-				std::cin >> response;
-				if (response == 'Y' || response == 'y') {
-					if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
-						std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
-						return true;
-					}
-					else {
-						std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
+		if (file_good("offsets.json")) {
+			fs::file_time_type lastModifiedTime = fs::last_write_time("offsets.json");
+			auto lastModifiedClockTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+				lastModifiedTime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+
+			// Check if the local file is older than the last GitHub commit
+			if (lastModifiedClockTime < commitTimePoint) {
+				std::cout << "[updater] Local file is older than the last GitHub commit." << std::endl;
+				if (prompt_update) {
+					std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
+					char response;
+					std::cin >> response;
+					if (response == 'Y' || response == 'y') {
+						if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
+							std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
+							return true;
+						}
+						else {
+							std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
+						}
 					}
 				}
 			}
+			else {
+				std::cout << "[updater] Local file is up to date.\n" << std::endl;
+			}
 		}
 		else {
-			std::cout << "[updater] Local file is up to date.\n" << std::endl;
+			std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
+			char response;
+			std::cin >> response;
+			if (response == 'Y' || response == 'y') {
+				if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
+					std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
+					return true;
+				}
+				else {
+					std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
+				}
+			}
 		}
 
 		return false;
 	}
 
+	bool file_good(const std::string& name) {
+		std::ifstream f(name.c_str());
+		return f.good();
+	}
 
 	bool get_last_commit_date(json& commit) {
 		HINTERNET hInternet, hConnect;
