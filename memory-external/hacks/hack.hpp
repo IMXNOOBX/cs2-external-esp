@@ -24,7 +24,7 @@ namespace hack {
         /**
         * Loop through all the players in the entity list
         * 
-        * (This could have been done by getting a enity list count from the engine, but i'm too lazy to do that)
+        * (This could have been done by getting a entity list count from the engine, but I'm too lazy to do that)
         **/
         while (true) {
             list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
