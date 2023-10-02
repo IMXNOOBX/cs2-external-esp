@@ -8,109 +8,96 @@ namespace hack {
 	std::shared_ptr<pProcess> process;
 	ProcessModule base_module;
 
-	void loop() {
-		uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + config::dwLocalPlayer);
-		if (!localPlayer) return;
+    void loop() {
+        const uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + config::dwLocalPlayer);
+        if (!localPlayer)
+            return;
 
-		int localTeam = process->read<int>(localPlayer + config::m_iTeamNum);
+        const int localTeam = process->read<int>(localPlayer + config::m_iTeamNum);
+        const view_matrix_t view_matrix = process->read<view_matrix_t>(base_module.base + config::dwViewMatrix);
+        const Vector3 localOrigin = process->read<Vector3>(localPlayer + config::m_vecOrigin);
+        const uintptr_t entity_list = process->read<uintptr_t>(base_module.base + config::dwEntityList);
 
-		view_matrix_t view_matrix = process->read<view_matrix_t>(base_module.base + config::dwViewMatrix);
+        int playerIndex = 1;
+        uintptr_t list_entry;
 
-		Vector3 localOrigin = process->read<Vector3>(localPlayer + config::m_vecOrigin);
+        /**
+        * Loop through all the players in the entity list
+        * 
+        * (This could have been done by getting a enity list count from the engine, but i'm too lazy to do that)
+        **/
+        while (true) {
+            list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
+            if (!list_entry)
+                break;
 
-		uintptr_t entity_list = process->read<uintptr_t>(base_module.base + config::dwEntityList);
+            const uintptr_t player = process->read<uintptr_t>(list_entry + 120 * (playerIndex & 0x1FF));
+            if (!player) {
+                playerIndex++;
+                continue;
+            }
 
-		for (int i = 1; i < 32; i++) {
-			uintptr_t list_entry = process->read<uintptr_t>(entity_list + (8 * (i & 0x7FFF) >> 9) + 16);
-			if (!list_entry) continue;
-			uintptr_t player = process->read<uintptr_t>(list_entry + 120 * (i & 0x1FF));
+            const int playerHealth = process->read<int>(player + config::dwPawnHealth);
+            if (playerHealth <= 0 || playerHealth > 100) {
+                playerIndex++;
+                continue;
+            }
 
-			if (!player) continue;
+            /**
+            * Skip rendering your own character and teammates
+            * 
+            * If you really want you can exclude your own character from the check but
+            * since you are in the same team as yourself it will be excluded anyway
+            **/
+            const int playerTeam = process->read<int>(player + config::m_iTeamNum);
+            if (playerTeam == localTeam) {
+                playerIndex++;
+                continue;
+            }
 
-			int playerHealth = process->read<int>(player + config::dwPawnHealth);
-			if (playerHealth <= 0 || playerHealth > 100) continue;
+            const std::uint32_t playerPawn = process->read<std::uint32_t>(player + config::dwPlayerPawn);
 
-			// https://github.com/UnnamedZ03/CS2-external-base/blob/main/source/CSSPlayer.hpp#L132
-			std::uint32_t playerpawn = process->read<std::uint32_t>(player + config::dwPlayerPawn);
+            const uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
+            if (!list_entry2) {
+                playerIndex++;
+                continue;
+            }
 
-			uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerpawn & 0x7FFF) >> 9) + 16);
-			if (!list_entry2) continue;
-			uintptr_t pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerpawn & 0x1FF));
+            const uintptr_t pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerPawn & 0x1FF));
+            if (!pCSPlayerPawn) {
+                playerIndex++;
+                continue;
+            }
 
-			if (pCSPlayerPawn == localPlayer) continue;
+            std::string playerName = "Invalid Name";
+            const DWORD64 playerNameAddress = process->read<DWORD64>(player + config::dwSanitizedName);
 
-			int playerTeam = process->read<int>(player + config::m_iTeamNum);
+            if (playerNameAddress) {
+                char buf[256];
+                process->read_raw(playerNameAddress, buf, sizeof(buf));
+                playerName = std::string(buf);
+            }
 
-			std::string playerName = "Invalid Name";
-			DWORD64 playerNameAddress = process->read<DWORD64>(player + config::dwSanitizedName);
-			if (playerNameAddress) {
-				char buf[256];
-				process->read_raw(playerNameAddress, buf, sizeof(buf));
-				playerName = std::string(buf);
-			}
+            const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + config::m_vecOrigin);
+            const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
 
-			// https://github.com/UnnamedZ03/CS2-external-base/blob/main/source/CSSPlayer.hpp#L132
-			Vector3 origin = process->read<Vector3>(pCSPlayerPawn + config::m_vecOrigin);
+            const Vector3 screenPos = origin.world_to_screen(view_matrix);
+            const Vector3 screenHead = head.world_to_screen(view_matrix);
 
-			//if ((localOrigin - origin).length2d() > 1000) return;
+            const float height = screenPos.y - screenHead.y;
+            const float width = height / 2.4f;
 
-			Vector3 head;
-			head.x = origin.x;
-			head.y = origin.y;
-			head.z = origin.z + 75.f;
+            if (screenPos.z >= 0.01f) {
+                const COLORREF boxColor = RGB(175, 75, 75);
+                const COLORREF healthBarColor = RGB(255 - playerHealth, 55 + playerHealth * 2, 75);
 
-			Vector3 screenpos = origin.world_to_screen(view_matrix);
-			Vector3 screenhead = head.world_to_screen(view_matrix);
-
-			float height = screenpos.y - screenhead.y;
-			float width = height / 2.4f;
-			if (screenpos.z >= 0.01f) {
-				render::DrawBorderBox(
-					g::hdcBuffer,
-					screenhead.x - width / 2,
-					screenhead.y,
-					width,
-					height,
-					(localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
-				);
-
-				render::DrawBorderBox(
-					g::hdcBuffer,
-					screenhead.x - (width / 2 + 5),
-					screenhead.y + (height * (100 - playerHealth) / 100),
-					2,
-					height - (height * (100 - playerHealth) / 100),
-					RGB(
-						(255 - playerHealth),
-						(55 + playerHealth * 2),
-						75
-					)
-				);
-
-				render::RenderText(
-					g::hdcBuffer,
-					screenhead.x + (width / 2 + 5),
-					screenhead.y,
-					playerName.c_str(),
-					RGB(75, 75, 175),
-					10
-				);
-
-				render::RenderText(
-					g::hdcBuffer,
-					screenhead.x + (width / 2 + 5),
-					screenhead.y + 10,
-					(std::to_string(playerHealth) + "hp").c_str(),
-					RGB(
-						(255 - playerHealth),
-						(55 + playerHealth * 2),
-						75
-					),
-					10
-				);
-			}
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
+                render::DrawBorderBox(g::hdcBuffer, screenHead.x - width / 2, screenHead.y, width, height, boxColor);
+                render::DrawBorderBox(g::hdcBuffer, screenHead.x - (width / 2 + 5), screenHead.y + (height * (100 - playerHealth) / 100), 2, height - (height * (100 - playerHealth) / 100), healthBarColor);
+                render::RenderText(g::hdcBuffer, screenHead.x + (width / 2 + 5), screenHead.y, playerName.c_str(), RGB(75, 75, 175), 10);
+                render::RenderText(g::hdcBuffer, screenHead.x + (width / 2 + 5), screenHead.y + 10, (std::to_string(playerHealth) + "hp").c_str(), healthBarColor, 10);
+            }
+            playerIndex++;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
