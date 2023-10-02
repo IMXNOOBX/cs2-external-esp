@@ -14,6 +14,13 @@ namespace render {
 		DeleteObject(hBorderBrush);   // Delete the temporary brush
 	}
 
+	void DrawFilledBox(HDC hdc, int x, int y, int width, int height, COLORREF color) {
+		HBRUSH hBrush = CreateSolidBrush(color);
+		RECT rect = { x, y, x + width, y + height };
+		FillRect(hdc, &rect, hBrush);
+		DeleteObject(hBrush);
+	}
+
 	void SetTextSize(HDC hdc, int textSize)
 	{
 		LOGFONT lf;
