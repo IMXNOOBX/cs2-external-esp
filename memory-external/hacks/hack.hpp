@@ -69,6 +69,18 @@ namespace hack {
                 continue;
             }
 
+            /**
+            * Skip rendering players that are too far away (1000 units)
+            * (Hopefully in the future this will be a setting inside the config, for now uncomment the code below)
+            * 
+            * Implemented from the old code, now it works
+            **/
+            const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + config::m_vecOrigin);
+            /*if ((localOrigin - origin).length2d() > 1000.f) {
+				playerIndex++;
+				continue;
+			}*/
+
             std::string playerName = "Invalid Name";
             const DWORD64 playerNameAddress = process->read<DWORD64>(player + config::dwSanitizedName);
 
@@ -78,7 +90,6 @@ namespace hack {
                 playerName = std::string(buf);
             }
 
-            const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + config::m_vecOrigin);
             const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
 
             const Vector3 screenPos = origin.world_to_screen(view_matrix);
