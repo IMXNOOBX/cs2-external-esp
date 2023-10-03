@@ -24,6 +24,7 @@ public:
 
 public:
 	bool AttachProcess(const char* process_name);
+	bool AttachProcessHj(const char* process_name);
 	bool AttachWindow(const char* window_name);
 	bool UpdateHWND();
 	void Close();

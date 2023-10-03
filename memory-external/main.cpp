@@ -69,20 +69,26 @@ int main() {
 
 	hack::process = std::make_shared<pProcess>();
 
-	updater::check_and_update(true);
+	std::cout << "[config] Reading configuration." << std::endl;
+	if (config::read())
+		std::cout << "[updater] Sucessfully read configuration file\n" << std::endl;
+	else
+		std::cout << "[updater] Error reading config file, reseting to the default state\n" << std::endl;
+
+	updater::check_and_update(config::automatic_update);
 
 	std::cout << "[cs2] Waiting for cs2.exe..." << std::endl;
 
-	while (!hack::process->AttachProcess("cs2.exe"))
+	while (!hack::process->AttachProcessHj("cs2.exe"))
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	std::cout << "[cs2] Attached to cs2.exe\n" << std::endl;
 
-	std::cout << "[config] Reading offsets from configuration." << std::endl;
-	if (config::read())
-		std::cout << "[config] Sucessfully read offsets file\n" << std::endl;
+	std::cout << "[updater] Reading offsets from file offsets.json." << std::endl;
+	if (updater::read())
+		std::cout << "[updater] Sucessfully read offsets file\n" << std::endl;
 	else
-		std::cout << "[config] Error reading offsets file, reseting to the default state\n" << std::endl;
+		std::cout << "[updater] Error reading offsets file, reseting to the default state\n" << std::endl;
 
 	std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
 
@@ -128,11 +134,16 @@ int main() {
 	ShowWindow(hWnd, TRUE);
 	//SetActiveWindow(hack::process->hwnd_);
 
+	std::cout << "\n[settings] In Game keybinds:\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[fin] Unload esp.\n" << std::endl;
+
 	// Message loop
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		if (GetAsyncKeyState(VK_END) & 0x8000) break;
+
+		if (GetAsyncKeyState(VK_F5) & 0x8000) { config::team_esp = !config::team_esp; config::save(); Beep(700, 100); };
+		if (GetAsyncKeyState(VK_F6) & 0x8000) { config::automatic_update = !config::automatic_update; config::save(); Beep(700, 100); }
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
