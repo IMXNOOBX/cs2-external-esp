@@ -1,10 +1,10 @@
 {
-    "dwEntityList": 24697032,
-    "dwLocalPlayer": 25018696,
-    "dwPawnHealth": 2056,
-    "dwPlayerPawn": 2044,
-    "dwSanitizedName": 1824,
-    "dwViewMatrix": 25671440,
-    "m_iTeamNum": 959,
-    "m_vecOrigin": 4628
+    "dwEntityList": 24697032,   // client_dll::entityList
+    "dwLocalPlayer": 25668648,  // client_dll::dwLocalPlayerPawn
+    "dwPawnHealth": 2056,       // CCSPlayerController::m_iPawnHealth
+    "dwPlayerPawn": 2044,       // CCSPlayerController::m_hPlayerPawn
+    "dwSanitizedName": 1824,    // CCSPlayerController::m_sSanitizedPlayerName
+    "dwViewMatrix": 25671440,   // client_dll::viewMatrix
+    "m_iTeamNum": 959,          // C_BaseEntity::m_iTeamNum
+    "m_vecOrigin": 4628         // C_BasePlayerPawn::m_vOldOrigin
 }
