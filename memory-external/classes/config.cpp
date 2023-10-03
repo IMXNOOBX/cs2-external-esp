@@ -1,9 +1,6 @@
 #include "config.hpp"
 
 namespace config {
-	using json = nlohmann::json;
-	const std::string file_path = "offsets.json";
-
 	bool read() {
 		if (!updater::file_good(file_path)) {
 			save();
@@ -23,23 +20,12 @@ namespace config {
 		if (data.empty())
 			return false;
 
-		if (data["dwLocalPlayer"].is_number())
-			dwLocalPlayer = data["dwLocalPlayer"];
-		if (data["dwEntityList"].is_number())
-			dwEntityList = data["dwEntityList"];
-		if (data["dwViewMatrix"].is_number())
-			dwViewMatrix = data["dwViewMatrix"];
-
-		if (data["dwPawnHealth"].is_number())
-			dwPawnHealth = data["dwPawnHealth"];
-		if (data["dwPlayerPawn"].is_number())
-			dwPlayerPawn = data["dwPlayerPawn"];
-		if (data["dwSanitizedName"].is_number())
-			dwSanitizedName = data["dwSanitizedName"];
-		if (data["m_iTeamNum"].is_number())
-			m_iTeamNum = data["m_iTeamNum"];
-		if (data["m_vecOrigin"].is_number())
-			m_vecOrigin = data["m_vecOrigin"];
+		if (data["team_esp"].is_boolean())
+			team_esp = data["team_esp"];
+		if (data["automatic_update"].is_boolean())
+			automatic_update = data["automatic_update"];
+		if (data["render_distance"].is_number())
+			render_distance = data["render_distance"];
 
 		return true;
 	}
@@ -47,16 +33,11 @@ namespace config {
 	void save() {
 		json data;
 
-		data["dwLocalPlayer"] = dwLocalPlayer;
-		data["dwEntityList"] = dwEntityList;
-		data["dwViewMatrix"] = dwViewMatrix;
+		data["team_esp"] = team_esp;
+		data["automatic_update"] = automatic_update;
+		data["render_distance"] = render_distance;
 
-		data["dwPawnHealth"] = dwPawnHealth;
-		data["dwPlayerPawn"] = dwPlayerPawn;
-		data["dwSanitizedName"] = dwSanitizedName;
-		data["m_iTeamNum"] = m_iTeamNum;
-		data["m_vecOrigin"] = m_vecOrigin;
-
+		
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;
 		output.close();

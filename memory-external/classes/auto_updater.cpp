@@ -2,7 +2,7 @@
 
 
 namespace updater {
-	bool check_and_update(bool prompt_update) {
+	bool check_and_update(bool automatic_update) {
 		json commit;
 		if (!get_last_commit_date(commit)) {
 			std::cout << "[updater] error getting last commit information from GitHub" << std::endl;
@@ -30,30 +30,38 @@ namespace updater {
 			// Check if the local file is older than the last GitHub commit
 			if (lastModifiedClockTime < commitTimePoint) {
 				std::cout << "[updater] Local file is older than the last GitHub commit." << std::endl;
-				if (prompt_update) {
+				
+				char response;
+				if (!automatic_update) {
 					std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
-					char response;
 					std::cin >> response;
-					if (response == 'Y' || response == 'y') {
-						if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
-							std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
-							return true;
-						}
-						else {
-							std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
-						}
+				}
+
+				if (automatic_update || (response == 'Y' || response == 'y')) {
+					if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
+						std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
+						return true;
+					}
+					else {
+						std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
 					}
 				}
+				
 			}
 			else {
 				std::cout << "[updater] Local file is up to date.\n" << std::endl;
 			}
 		}
 		else {
-			std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
+
+
 			char response;
-			std::cin >> response;
-			if (response == 'Y' || response == 'y') {
+			if (!automatic_update) {
+				std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
+				std::cin >> response;
+			}
+
+			if (automatic_update || (response == 'Y' || response == 'y')) {
 				if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
 					std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
 					return true;
@@ -155,5 +163,63 @@ namespace updater {
 		InternetCloseHandle(hInternet);
 
 		return true;
+	}
+
+	bool read() {
+		if (!updater::file_good(file_path)) {
+			save();
+			return false;
+		}
+
+		std::ifstream f(file_path);
+
+		json data;
+		try {
+			data = json::parse(f);
+		}
+		catch (const std::exception& e) {
+			save();
+		}
+
+		if (data.empty())
+			return false;
+
+		if (data["dwLocalPlayer"].is_number())
+			offsets::dwLocalPlayer = data["dwLocalPlayer"];
+		if (data["dwEntityList"].is_number())
+			offsets::dwEntityList = data["dwEntityList"];
+		if (data["dwViewMatrix"].is_number())
+			offsets::dwViewMatrix = data["dwViewMatrix"];
+
+		if (data["dwPawnHealth"].is_number())
+			offsets::dwPawnHealth = data["dwPawnHealth"];
+		if (data["dwPlayerPawn"].is_number())
+			offsets::dwPlayerPawn = data["dwPlayerPawn"];
+		if (data["dwSanitizedName"].is_number())
+			offsets::dwSanitizedName = data["dwSanitizedName"];
+		if (data["m_iTeamNum"].is_number())
+			offsets::m_iTeamNum = data["m_iTeamNum"];
+		if (data["m_vecOrigin"].is_number())
+			offsets::m_vecOrigin = data["m_vecOrigin"];
+
+		return true;
+	}
+
+	void save() {
+		json data;
+
+		data["dwLocalPlayer"] = offsets::dwLocalPlayer;
+		data["dwEntityList"] = offsets::dwEntityList;
+		data["dwViewMatrix"] = offsets::dwViewMatrix;
+
+		data["dwPawnHealth"] = offsets::dwPawnHealth;
+		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
+		data["dwSanitizedName"] = offsets::dwSanitizedName;
+		data["m_iTeamNum"] = offsets::m_iTeamNum;
+		data["m_vecOrigin"] = offsets::m_vecOrigin;
+
+		std::ofstream output(file_path);
+		output << std::setw(4) << data << std::endl;
+		output.close();
 	}
 }

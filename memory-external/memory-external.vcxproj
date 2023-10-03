@@ -151,6 +151,7 @@
     <ClInclude Include="classes\render.hpp" />
     <ClInclude Include="classes\vector.hpp" />
     <ClInclude Include="hacks\hack.hpp" />
+    <ClInclude Include="memory\handle_hijack.hpp" />
     <ClInclude Include="memory\memory.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

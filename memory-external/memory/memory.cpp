@@ -1,5 +1,6 @@
 #include "memory.hpp"
 #include <tlhelp32.h>
+#include "handle_hijack.hpp"
 
 uint32_t pProcess::FindProcessIdByProcessName(const char* ProcessName)
 {
@@ -82,6 +83,41 @@ bool pProcess::AttachProcess(const char* ProcessName)
 
 	return false;
 }
+
+bool pProcess::AttachProcessHj(const char* ProcessName)
+{
+	this->pid_ = this->FindProcessIdByProcessName(ProcessName);
+
+	if (pid_)
+	{
+		HMODULE modules[0xFF];
+		MODULEINFO module_info;
+		DWORD _;
+
+
+		// Using Apxaey's handle hijack function to safely open a handle
+		handle_ = hj::HijackExistingHandle(pid_);
+
+		if (!hj::IsHandleValid(handle_))
+		{
+			std::cout << "[cheat] Handle Hijack failed, falling back to OpenProcess method." << std::endl;
+			return pProcess::AttachProcess(ProcessName); // Handle hijacking failed, so we fall back to the normal OpenProcess method
+		}
+
+		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
+		base_module_.base = (uintptr_t)modules[0];
+
+		GetModuleInformation(this->handle_, modules[0], &module_info, sizeof(module_info));
+		base_module_.size = module_info.SizeOfImage;
+
+		hwnd_ = this->GetWindowHandleFromProcessId(pid_);
+
+		return true;
+	}
+
+	return false;
+}
+
 
 bool pProcess::AttachWindow(const char* WindowName)
 {
