@@ -2,6 +2,7 @@
 
 
 namespace updater {
+#ifndef _UC
 	bool check_and_update(bool automatic_update) {
 		json commit;
 		if (!get_last_commit_date(commit)) {
@@ -73,11 +74,6 @@ namespace updater {
 		}
 
 		return false;
-	}
-
-	bool file_good(const std::string& name) {
-		std::ifstream f(name.c_str());
-		return f.good();
 	}
 
 	bool get_last_commit_date(json& commit) {
@@ -163,6 +159,12 @@ namespace updater {
 		InternetCloseHandle(hInternet);
 
 		return true;
+	}
+#endif
+
+	bool file_good(const std::string& name) {
+		std::ifstream f(name.c_str());
+		return f.good();
 	}
 
 	bool read() {
