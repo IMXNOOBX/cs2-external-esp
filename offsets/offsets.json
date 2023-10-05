@@ -1,10 +1,10 @@
 {
-    "dwEntityList": 24697048,
-    "dwLocalPlayer": 25668664,
-    "dwPawnHealth": 2056,
-    "dwPlayerPawn": 2044,
-    "dwSanitizedName": 1824,
-    "dwViewMatrix": 25671456,
-    "m_iTeamNum": 959,
-    "m_vecOrigin": 4628
+"dwEntityList": 24697064,
+"dwLocalPlayer": 25668680,
+"dwPawnHealth": 2056,
+"dwPlayerPawn": 2044,
+"dwSanitizedName": 1824,
+"dwViewMatrix": 25671472,
+"m_iTeamNum": 959,
+"m_vecOrigin": 4628
 }
