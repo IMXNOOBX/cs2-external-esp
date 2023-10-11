@@ -9,6 +9,14 @@ namespace hack {
 	std::shared_ptr<pProcess> process;
 	ProcessModule base_module;
 
+    float CalculateDistance(const Vector3& point1, const Vector3& point2) {
+        float dx = point2.x - point1.x;
+        float dy = point2.y - point1.y;
+        float dz = point2.z - point1.z;
+
+        return std::sqrt(dx * dx + dy * dy + dz * dz);
+    }
+
     void loop() {
         const uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + updater::offsets::dwLocalPlayer);
         if (!localPlayer)
@@ -87,6 +95,7 @@ namespace hack {
 
             const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
             const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
+            const Vector3 localOrigin = process->read<Vector3>(localPlayer + updater::offsets::m_vecOrigin);
 
             if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance) {
                 playerIndex++;
@@ -187,18 +196,51 @@ namespace hack {
                     10
                 );
 
-                render::RenderText(
-                    g::hdcBuffer,
-                    screenHead.x + (width / 2 + 5),
-                    screenHead.y + 22,
-                    (std::to_string(playerArmor) + "armor").c_str(),
-                    RGB(
-                        (255 - playerArmor),
-                        (55 + playerArmor * 2),
-                        75
-                    ),
-                    10
-                );
+                if (config::show_armor)
+                {
+                    render::RenderText(
+                        g::hdcBuffer,
+                        screenHead.x + (width / 2 + 5),
+                        screenHead.y + 21,
+                        (std::to_string(playerArmor) + "armor").c_str(),
+                        RGB(
+                            (255 - playerArmor),
+                            (55 + playerArmor * 2),
+                            75
+                        ),
+                        10
+                    );
+                }
+
+                if (config::show_distance)
+                {
+                    float distance = CalculateDistance(localOrigin, origin);
+                    // Round the distance to the nearest integer
+                    int roundedDistance = std::round(distance / 10);
+
+                    if (config::rainbow)
+                    {
+                        render::RenderText(
+                            g::hdcBuffer,
+                            screenHead.x + (width / 2 + 5),
+                            screenHead.y + 32,
+                            (std::to_string(roundedDistance) + "m away").c_str(),
+                            rainbowColor,
+                            10
+                        );
+                    }
+                    else
+                    {
+                        render::RenderText(
+                            g::hdcBuffer,
+                            screenHead.x + (width / 2 + 5),
+                            screenHead.y + 32,
+                            (std::to_string(roundedDistance) + "m away").c_str(),
+                            RGB(75, 75, 175),
+                            10
+                        );
+                    }
+                }
             }
             playerIndex++;
         }
