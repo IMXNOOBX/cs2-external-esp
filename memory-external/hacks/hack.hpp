@@ -1,4 +1,5 @@
 #include <thread>
+#include <cmath>
 #include "../memory/memory.hpp"
 #include "../classes/globals.hpp"
 #include "../classes/render.hpp"
@@ -101,14 +102,40 @@ namespace hack {
                 const COLORREF boxColor = RGB(175, 75, 75);
                 const COLORREF healthBarColor = RGB(255 - playerHealth, 55 + playerHealth * 2, 75);
 
-                render::DrawBorderBox(
-                    g::hdcBuffer,
-                    screenHead.x - width / 2,
-                    screenHead.y,
-                    width,
-                    height,
-                    (localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
-                );
+                const float pi = 3.14159265358979323846f;
+
+                // Get the current time
+                DWORD currentTime = GetTickCount();
+
+                // Calculate the sinusoidal values for RGB colors
+                float red = (sin(config::rainbow_speed * currentTime + 0) * 127.5f + 127.5f);  // 0 phase shift
+                float green = (sin(config::rainbow_speed * currentTime + 2 * pi / 3) * 127.5f + 127.5f);  // 2*pi/3 phase shift
+                float blue = (sin(config::rainbow_speed * currentTime + 4 * pi / 3) * 127.5f + 127.5f);  // 4*pi/3 phase shift
+
+                // Convert the floating point values to integers for RGB color creation
+                COLORREF rainbowColor = RGB(static_cast<int>(red), static_cast<int>(green), static_cast<int>(blue));
+
+                if (config::rainbow) {
+                    render::DrawBorderBox(
+                        g::hdcBuffer,
+                        screenHead.x - width / 2,
+                        screenHead.y,
+                        width,
+                        height,
+                        (localTeam == playerTeam ? rainbowColor : rainbowColor)
+                    );
+                }
+                else
+                {
+                    render::DrawBorderBox(
+                        g::hdcBuffer,
+                        screenHead.x - width / 2,
+                        screenHead.y,
+                        width,
+                        height,
+                        (localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
+                    );
+                }
 
                 render::DrawBorderBox(
                     g::hdcBuffer,
@@ -123,14 +150,28 @@ namespace hack {
                     )
                 );
 
-                render::RenderText(
-                    g::hdcBuffer,
-                    screenHead.x + (width / 2 + 5),
-                    screenHead.y,
-                    playerName.c_str(),
-                    RGB(75, 75, 175),
-                    10
-                );
+                if (config::rainbow)
+                {
+                    render::RenderText(
+                        g::hdcBuffer,
+                        screenHead.x + (width / 2 + 5),
+                        screenHead.y,
+                        playerName.c_str(),
+                        rainbowColor,
+                        10
+                    );
+                }
+                else
+                {
+                    render::RenderText(
+                        g::hdcBuffer,
+                        screenHead.x + (width / 2 + 5),
+                        screenHead.y,
+                        playerName.c_str(),
+                        RGB(75, 75, 175),
+                        10
+                    );
+                }
 
                 render::RenderText(
                     g::hdcBuffer,
