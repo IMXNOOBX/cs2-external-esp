@@ -26,6 +26,10 @@ namespace config {
 			automatic_update = data["automatic_update"];
 		if (data["render_distance"].is_number())
 			render_distance = data["render_distance"];
+		if (data["rainbow"].is_boolean())
+			rainbow = data["rainbow"];
+		if (data["rainbow_speed"].is_number())
+			rainbow_speed = data["rainbow_speed"];
 
 		return true;
 	}
@@ -36,6 +40,8 @@ namespace config {
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
 		data["render_distance"] = render_distance;
+		data["rainbow"] = rainbow;
+		data["rainbow_speed"] = rainbow_speed;
 
 		
 		std::ofstream output(file_path);
