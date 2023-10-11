@@ -14,4 +14,6 @@ namespace config {
 	inline bool automatic_update = false;
 	inline bool team_esp = false;
 	inline float render_distance = -1.f; 
+	inline bool rainbow = false;
+	inline float rainbow_speed = 0.001f;
 }
