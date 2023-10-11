@@ -137,7 +137,7 @@ int main() {
 	//SetActiveWindow(hack::process->hwnd_);
 
 #ifndef _UC
-	std::cout << "\n[settings] In Game keybinds:\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[F7] enable/disable rainbow boxes & names\n\t[fin] Unload esp.\n" << std::endl;
+	std::cout << "\n[settings] In Game keybinds:\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[F7] enable/disable rainbow boxes & names\n\t[F8] enable/disable player distances\n\t[F8] enable/disable player armor\n\t[fin] Unload esp.\n" << std::endl;
 #else
 	std::cout << "\n[settings] In Game keybinds:\n\t[F5] enable/disable Team ESP\n\t[fin] Unload esp\n" << std::endl;
 #endif
@@ -153,6 +153,10 @@ int main() {
 		if (GetAsyncKeyState(VK_F6) & 0x8000) { config::automatic_update = !config::automatic_update; config::save(); Beep(700, 100); }
 #endif
 		if (GetAsyncKeyState(VK_F7) & 0x8000) { config::rainbow = !config::rainbow; config::save(); Beep(700, 100); };
+
+		if (GetAsyncKeyState(VK_F8) & 0x8000) { config::show_distance = !config::show_distance; config::save(); Beep(700, 100); };
+
+		if (GetAsyncKeyState(VK_F9) & 0x8000) { config::show_armor = !config::show_armor; config::save(); Beep(700, 100); };
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
