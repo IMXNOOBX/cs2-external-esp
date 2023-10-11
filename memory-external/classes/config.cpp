@@ -26,6 +26,10 @@ namespace config {
 			automatic_update = data["automatic_update"];
 		if (data["render_distance"].is_number())
 			render_distance = data["render_distance"];
+		if (data["show_distance"].is_boolean())
+			show_distance = data["show_distance"];
+		if (data["show_armor"].is_boolean())
+			show_armor = data["show_armor"];
 		if (data["rainbow"].is_boolean())
 			rainbow = data["rainbow"];
 		if (data["rainbow_speed"].is_number())
@@ -40,6 +44,8 @@ namespace config {
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
 		data["render_distance"] = render_distance;
+		data["show_distance"] = show_distance;
+		data["show_armor"] = show_armor;
 		data["rainbow"] = rainbow;
 		data["rainbow_speed"] = rainbow_speed;
 
