@@ -34,6 +34,8 @@ namespace config {
 			rainbow = data["rainbow"];
 		if (data["rainbow_speed"].is_number())
 			rainbow_speed = data["rainbow_speed"];
+		if (data["head_tracker"].is_boolean())
+			head_tracker = data["head_tracker"];
 
 		return true;
 	}
@@ -48,7 +50,7 @@ namespace config {
 		data["show_armor"] = show_armor;
 		data["rainbow"] = rainbow;
 		data["rainbow_speed"] = rainbow_speed;
-
+		data["head_tracker"] = head_tracker;
 		
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;
