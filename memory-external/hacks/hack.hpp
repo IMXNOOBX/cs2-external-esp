@@ -95,6 +95,7 @@ namespace hack {
 
             const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
             const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
+            const Vector3 head2 = { origin.x + 10, origin.y + 10, origin.z + 75.f };
             const Vector3 localOrigin = process->read<Vector3>(localPlayer + updater::offsets::m_vecOrigin);
 
             if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance) {
@@ -107,6 +108,9 @@ namespace hack {
 
             const float height = screenPos.y - screenHead.y;
             const float width = height / 2.4f;
+
+            const float height2 = (screenPos.y - screenHead.y) / 8;
+            const float width2 = (height / 2.4f) / 4;
 
             if (screenPos.z >= 0.01f) {
                 const COLORREF boxColor = RGB(175, 75, 75);
@@ -124,6 +128,10 @@ namespace hack {
 
                 // Convert the floating point values to integers for RGB color creation
                 COLORREF rainbowColor = RGB(static_cast<int>(red), static_cast<int>(green), static_cast<int>(blue));
+
+                float distance = CalculateDistance(localOrigin, origin);
+                // Round the distance to the nearest integer
+                int roundedDistance = std::round(distance / 10);
 
                 if (config::rainbow) {
                     render::DrawBorderBox(
@@ -159,6 +167,21 @@ namespace hack {
                         75
                     )
                 );
+
+                if (config::head_tracker)
+                {
+                    if (roundedDistance > 25)
+                    {
+                        render::DrawFilledBox(
+                            g::hdcBuffer,
+                            screenHead.x - (width2 / 2),
+                            (screenHead.y + 10 - (roundedDistance / 80)) - (height2 / 2),
+                            width2,
+                            height2,
+                            rainbowColor
+                        );
+                    }
+                }
 
                 if (config::rainbow)
                 {
@@ -214,10 +237,6 @@ namespace hack {
 
                 if (config::show_distance)
                 {
-                    float distance = CalculateDistance(localOrigin, origin);
-                    // Round the distance to the nearest integer
-                    int roundedDistance = std::round(distance / 10);
-
                     if (config::rainbow)
                     {
                         render::RenderText(
@@ -240,7 +259,7 @@ namespace hack {
                             10
                         );
                     }
-                }
+                } 
             }
             playerIndex++;
         }
