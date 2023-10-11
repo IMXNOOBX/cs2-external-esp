@@ -39,6 +39,7 @@ namespace hack {
             }
 
             const int playerHealth = process->read<int>(player + updater::offsets::dwPawnHealth);
+            const int playerArmor = process->read<int>(player + updater::offsets::m_iPawnArmor);
             if (playerHealth <= 0 || playerHealth > 100) {
                 playerIndex++;
                 continue;
@@ -181,6 +182,19 @@ namespace hack {
                     RGB(
                         (255 - playerHealth),
                         (55 + playerHealth * 2),
+                        75
+                    ),
+                    10
+                );
+
+                render::RenderText(
+                    g::hdcBuffer,
+                    screenHead.x + (width / 2 + 5),
+                    screenHead.y + 22,
+                    (std::to_string(playerArmor) + "armor").c_str(),
+                    RGB(
+                        (255 - playerArmor),
+                        (55 + playerArmor * 2),
                         75
                     ),
                     10
