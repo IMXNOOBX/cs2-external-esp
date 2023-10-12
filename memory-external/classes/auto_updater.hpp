@@ -35,6 +35,7 @@ namespace updater {
 		inline std::ptrdiff_t dwEntityList = 0x178D8E8;
 		inline std::ptrdiff_t dwViewMatrix = 0x187B730;
 
+		inline std::ptrdiff_t m_iPawnArmor = 0x80c;
 		inline std::ptrdiff_t dwPawnHealth = 0x808;
 		inline std::ptrdiff_t dwPlayerPawn = 0x7FC;
 		inline std::ptrdiff_t dwSanitizedName = 0x720;
