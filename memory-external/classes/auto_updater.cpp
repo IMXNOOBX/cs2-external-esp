@@ -193,6 +193,8 @@ namespace updater {
 		if (data["dwViewMatrix"].is_number())
 			offsets::dwViewMatrix = data["dwViewMatrix"];
 
+		if (data["m_iPawnArmor"].is_number())
+			offsets::m_iPawnArmor = data["m_iPawnArmor"];
 		if (data["dwPawnHealth"].is_number())
 			offsets::dwPawnHealth = data["dwPawnHealth"];
 		if (data["dwPlayerPawn"].is_number())
@@ -214,6 +216,7 @@ namespace updater {
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 
+		data["m_iPawnArmor"] = offsets::m_iPawnArmor;
 		data["dwPawnHealth"] = offsets::dwPawnHealth;
 		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
 		data["dwSanitizedName"] = offsets::dwSanitizedName;
