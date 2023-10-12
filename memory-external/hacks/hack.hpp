@@ -170,12 +170,23 @@ namespace hack {
 
                 if (config::head_tracker)
                 {
-                    if (roundedDistance > 25)
+                    if (roundedDistance > 35)
                     {
                         render::DrawFilledBox(
                             g::hdcBuffer,
                             screenHead.x - (width2 / 2),
                             (screenHead.y + 10 - (roundedDistance / 80)) - (height2 / 2),
+                            width2,
+                            height2,
+                            rainbowColor
+                        );
+                    }
+                    else if (roundedDistance > 5)
+                    {
+                        render::DrawFilledBox(
+                            g::hdcBuffer,
+                            screenHead.x - (width2 / 2),
+                            screenHead.y + 25 - (height2 / 2),
                             width2,
                             height2,
                             rainbowColor
