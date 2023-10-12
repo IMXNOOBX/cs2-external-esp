@@ -19,8 +19,6 @@ namespace updater {
 		std::tm commit_date = {};
 		std::istringstream(last_commit_date) >> std::get_time(&commit_date, "%Y-%m-%dT%H:%M:%SZ");
 
-		auto currentTime = std::chrono::system_clock::now();
-
 		std::chrono::system_clock::time_point commitTimePoint = std::chrono::system_clock::from_time_t(std::mktime(&commit_date));
 
 		if (file_good("offsets.json")) {
@@ -31,7 +29,7 @@ namespace updater {
 			// Check if the local file is older than the last GitHub commit
 			if (lastModifiedClockTime < commitTimePoint) {
 				std::cout << "[updater] Local file is older than the last GitHub commit." << std::endl;
-				
+
 				char response;
 				if (!automatic_update) {
 					std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
@@ -47,7 +45,7 @@ namespace updater {
 						std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
 					}
 				}
-				
+
 			}
 			else {
 				std::cout << "[updater] Local file is up to date.\n" << std::endl;

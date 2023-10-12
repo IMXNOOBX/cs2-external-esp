@@ -27,13 +27,13 @@ namespace updater {
 	extern bool read();
 	extern void save();
 
-	inline std::string github_repo_api = "https://api.github.com/repos/IMXNOOBX/cs2-external-esp/commits";
-	inline std::string raw_updated_offets = "https://github.com/IMXNOOBX/cs2-external-esp/raw/main/offsets/offsets.json";
+	const inline std::string github_repo_api = "https://api.github.com/repos/IMXNOOBX/cs2-external-esp/commits";
+	const inline std::string raw_updated_offets = "https://github.com/IMXNOOBX/cs2-external-esp/raw/main/offsets/offsets.json";
 
 	namespace offsets {
-		inline std::ptrdiff_t dwLocalPlayer = 0x187AC48;
-		inline std::ptrdiff_t dwEntityList = 0x178D8E8;
-		inline std::ptrdiff_t dwViewMatrix = 0x187B730;
+		inline std::ptrdiff_t dwLocalPlayer = 0x1877CF8;
+		inline std::ptrdiff_t dwEntityList = 0x178A808;
+		inline std::ptrdiff_t dwViewMatrix = 0x18787E0;
 
 		inline std::ptrdiff_t m_iPawnArmor = 0x80c;
 		inline std::ptrdiff_t dwPawnHealth = 0x808;

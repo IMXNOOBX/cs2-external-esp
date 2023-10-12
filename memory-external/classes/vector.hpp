@@ -99,6 +99,14 @@ struct Vector3
 		return { x, y, w };
 	}
 
+	float calculate_distance(const Vector3& point) const {
+		float dx = point.x - x;
+		float dy = point.y - y;
+		float dz = point.z - z;
+
+		return std::sqrt(dx * dx + dy * dy + dz * dz);
+	}
+
 	// struct data
 	float x, y, z;
 };

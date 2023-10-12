@@ -5,6 +5,18 @@
 
 using json = nlohmann::json;
 
+struct RGB {
+	int r;
+	int g;
+	int b;
+
+	// Conversion function from RGB to COLORREF
+	operator COLORREF() const {
+		return RGB(r, g, b);
+	}
+};
+
+
 namespace config {
 	const std::string file_path = "config.json";
 
@@ -13,10 +25,18 @@ namespace config {
 
 	inline bool automatic_update = false;
 	inline bool team_esp = false;
-	inline float render_distance = -1.f; 
-	inline bool show_distance = false;
-	inline bool show_armor = false;
-	inline bool head_tracker = false;
-	inline bool rainbow = false;
-	inline float rainbow_speed = 0.001f;
+	inline float render_distance = -1.f;
+	inline int flag_render_distance = 200;
+	inline bool show_extra_flags = false;
+
+	//inline bool show_distance = false;
+	//inline bool show_armor = false;
+	//inline bool head_tracker = false;
+	//inline bool rainbow = false;
+	//inline float rainbow_speed = 0.001f;
+
+	inline RGB esp_box_color_team = { 75, 175, 75 };
+	inline RGB esp_box_color_enemy = { 175, 75, 75 };
+	inline RGB esp_name_color = { 75, 75, 175 };
+	inline RGB esp_distance_color = { 75, 75, 175 };
 }
