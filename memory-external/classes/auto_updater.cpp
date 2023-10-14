@@ -191,10 +191,11 @@ namespace updater {
 		if (data["dwViewMatrix"].is_number())
 			offsets::dwViewMatrix = data["dwViewMatrix"];
 
-		if (data["m_iPawnArmor"].is_number())
-			offsets::m_iPawnArmor = data["m_iPawnArmor"];
-		if (data["dwPawnHealth"].is_number())
-			offsets::dwPawnHealth = data["dwPawnHealth"];
+		// Disabled for now, as this is exclusive to spectator
+		// if (data["m_iPawnArmor"].is_number())
+			// offsets::m_iPawnArmor = data["m_iPawnArmor"];
+		if (data["m_iHealth"].is_number())
+			offsets::m_iHealth = data["m_iHealth"];
 		if (data["dwPlayerPawn"].is_number())
 			offsets::dwPlayerPawn = data["dwPlayerPawn"];
 		if (data["dwSanitizedName"].is_number())
@@ -214,8 +215,9 @@ namespace updater {
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 
-		data["m_iPawnArmor"] = offsets::m_iPawnArmor;
-		data["dwPawnHealth"] = offsets::dwPawnHealth;
+		// Disabled for now, as this is exclusive to spectator
+		// data["m_iPawnArmor"] = offsets::m_iPawnArmor;
+		data["m_iHealth"] = offsets::m_iHealth;
 		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
 		data["dwSanitizedName"] = offsets::dwSanitizedName;
 		data["m_iTeamNum"] = offsets::m_iTeamNum;
