@@ -166,7 +166,7 @@ namespace hack {
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 32,
+						screenHead.y + 22,
 						(std::to_string(roundedDistance) + "m away").c_str(),
 						config::esp_distance_color,
 						10
