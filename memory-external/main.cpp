@@ -92,15 +92,25 @@ int main() {
 	else
 		std::cout << "[updater] Error reading offsets file, reseting to the default state\n" << std::endl;
 
-	std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
-
 	do {
-		hack::base_module = hack::process->GetModule("client.dll");
-		if (hack::base_module.base == 0) {
+		hack::base_client = hack::process->GetModule("client.dll");
+		hack::base_engine = hack::process->GetModule("engine2.dll");
+		if (hack::base_client.base == 0 || hack::base_engine.base == 0) {
 			std::this_thread::sleep_for(std::chrono::seconds(1));
-			std::cout << "[cs2] Failed to find module client.dll, waiting for the game to load it..." << std::endl;
+			std::cout << "[cs2] Failed to find module client.dll/engine2.dll, waiting for the game to load it..." << std::endl;
 		}
-	} while (hack::base_module.base == 0);
+	} while (hack::base_client.base == 0 || hack::base_engine.base == 0);
+
+	const uintptr_t buildNumber = hack::process->read<uintptr_t>(hack::base_engine.base + updater::offsets::dwBuildNumber);
+	if (buildNumber != updater::build_number) {
+		std::cout << "[cs2] Build number doesnt match, the game has been updated and this esp most likely wont work." << std::endl;
+		std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
+		std::cout << "[cs2] Press any key to continue" << std::endl;
+		std::cin.get();
+	}
+	else {
+		std::cout << "[cs2] Offsets seem to be up to date! have fun!" << std::endl;
+	}
 
 	std::cout << "[overlay] Waiting to focus game to create the overlay..." << std::endl;
 	std::cout << "[overlay] Make sure your game is in \"Full Screen Windowed\"" << std::endl;
