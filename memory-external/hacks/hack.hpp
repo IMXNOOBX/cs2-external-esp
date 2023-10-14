@@ -41,13 +41,6 @@ namespace hack {
 			if (!player)
 				continue;
 
-
-			const int playerHealth = process->read<int>(player + updater::offsets::dwPawnHealth);
-			const int playerArmor = process->read<int>(player + updater::offsets::m_iPawnArmor);
-			if (playerHealth <= 0 || playerHealth > 100)
-				continue;
-
-
 			/**
 			* Skip rendering your own character and teammates
 			*
@@ -68,6 +61,10 @@ namespace hack {
 
 			const uintptr_t pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerPawn & 0x1FF));
 			if (!pCSPlayerPawn)
+				continue;
+
+			const int playerHealth = process->read<int>(pCSPlayerPawn + updater::offsets::m_iHealth);
+			if (playerHealth <= 0 || playerHealth > 100)
 				continue;
 
 			if (config::team_esp && (pCSPlayerPawn == localPlayer))
