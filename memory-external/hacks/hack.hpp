@@ -161,19 +161,6 @@ namespace hack {
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 21,
-						(std::to_string(playerArmor) + "armor").c_str(),
-						RGB(
-							(255 - playerArmor),
-							(55 + playerArmor * 2),
-							75
-						),
-						10
-					);
-
-					render::RenderText(
-						g::hdcBuffer,
-						screenHead.x + (width / 2 + 5),
 						screenHead.y + 32,
 						(std::to_string(roundedDistance) + "m away").c_str(),
 						config::esp_distance_color,
