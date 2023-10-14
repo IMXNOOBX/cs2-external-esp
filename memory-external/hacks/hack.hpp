@@ -5,23 +5,20 @@
 #include "../classes/render.hpp"
 #include "../classes/config.hpp"
 
-
-
 namespace hack {
 	std::shared_ptr<pProcess> process;
-	ProcessModule base_module;
-
-	//const float pi = 3.14159265358979323846f;
+	ProcessModule base_client;
+	ProcessModule base_engine;
 
 	void loop() {
-		const uintptr_t localPlayer = process->read<uintptr_t>(base_module.base + updater::offsets::dwLocalPlayer);
+		const uintptr_t localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayer);
 		if (!localPlayer)
 			return;
 
 		const int localTeam = process->read<int>(localPlayer + updater::offsets::m_iTeamNum);
-		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_module.base + updater::offsets::dwViewMatrix);
+		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
 		const Vector3 localOrigin = process->read<Vector3>(localPlayer + updater::offsets::m_vecOrigin);
-		const uintptr_t entity_list = process->read<uintptr_t>(base_module.base + updater::offsets::dwEntityList);
+		const uintptr_t entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
 
 		int playerIndex = 0;
 		uintptr_t list_entry;
@@ -58,7 +55,6 @@ namespace hack {
 			if (!list_entry2)
 				continue;
 
-
 			const uintptr_t pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerPawn & 0x1FF));
 			if (!pCSPlayerPawn)
 				continue;
@@ -69,7 +65,6 @@ namespace hack {
 
 			if (config::team_esp && (pCSPlayerPawn == localPlayer))
 				continue;
-
 
 			std::string playerName = "Invalid Name";
 			const DWORD64 playerNameAddress = process->read<DWORD64>(player + updater::offsets::dwSanitizedName);
@@ -83,15 +78,12 @@ namespace hack {
 			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
 			const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
 			const Vector3 head2 = { origin.x + 10, origin.y + 10, origin.z + 75.f };
-			const Vector3 localOrigin = process->read<Vector3>(localPlayer + updater::offsets::m_vecOrigin);
 
 			if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance)
 				continue;
 
-
-			if ((localOrigin - origin).length2d() < 5)
+			if ((localOrigin - origin).length2d() < 10)
 				continue;
-
 
 			const Vector3 screenPos = origin.world_to_screen(view_matrix);
 			const Vector3 screenHead = head.world_to_screen(view_matrix);
@@ -104,16 +96,7 @@ namespace hack {
 
 			if (screenPos.z >= 0.01f) {
 				float distance = localOrigin.calculate_distance(origin);
-				int roundedDistance = std::round(distance / 10);
-
-				/**
-				* I know is not the best way but a simple way to not saturate the screen with a ton of information
-				* From IfBars - I decided to move this up here so that it will not render anything unless the player is within the flag_render_distance
-				* I did this so people aren't confused on why only half the players hp values are showing, however feel free to change this however you see fit
-				* Personally I prefer to see everyone no matter the difference, but everyone has their preferences
-				*/
-				if (roundedDistance > config::flag_render_distance)
-					continue;
+				int roundedDistance = std::round(distance / 10.f);
 
 				render::DrawBorderBox(
 					g::hdcBuffer,
@@ -146,7 +129,11 @@ namespace hack {
 					10
 				);
 
-				
+				/**
+				* I know is not the best way but a simple way to not saturate the screen with a ton of information
+				*/
+				if (roundedDistance > config::flag_render_distance)
+					continue;
 
 				render::RenderText(
 					g::hdcBuffer,
@@ -166,7 +153,7 @@ namespace hack {
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 32,
+						screenHead.y + 20,
 						(std::to_string(roundedDistance) + "m away").c_str(),
 						config::esp_distance_color,
 						10
