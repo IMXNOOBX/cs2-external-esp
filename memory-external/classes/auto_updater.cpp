@@ -184,17 +184,20 @@ namespace updater {
 		if (data.empty())
 			return false;
 
+		if (data["build_number"].is_number())
+			build_number = data["build_number"];
+
 		if (data["dwLocalPlayer"].is_number())
 			offsets::dwLocalPlayer = data["dwLocalPlayer"];
 		if (data["dwEntityList"].is_number())
 			offsets::dwEntityList = data["dwEntityList"];
 		if (data["dwViewMatrix"].is_number())
 			offsets::dwViewMatrix = data["dwViewMatrix"];
+		if (data["dwBuildNumber"].is_number())
+			offsets::dwBuildNumber = data["dwBuildNumber"];
 
-		if (data["m_iPawnArmor"].is_number())
-			offsets::m_iPawnArmor = data["m_iPawnArmor"];
-		if (data["dwPawnHealth"].is_number())
-			offsets::dwPawnHealth = data["dwPawnHealth"];
+		if (data["m_iHealth"].is_number())
+			offsets::m_iHealth = data["m_iHealth"];
 		if (data["dwPlayerPawn"].is_number())
 			offsets::dwPlayerPawn = data["dwPlayerPawn"];
 		if (data["dwSanitizedName"].is_number())
@@ -210,12 +213,14 @@ namespace updater {
 	void save() {
 		json data;
 
+		data["build_number"] = build_number;
+
 		data["dwLocalPlayer"] = offsets::dwLocalPlayer;
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
+		data["dwBuildNumber"] = offsets::dwBuildNumber;
 
-		data["m_iPawnArmor"] = offsets::m_iPawnArmor;
-		data["dwPawnHealth"] = offsets::dwPawnHealth;
+		data["m_iHealth"] = offsets::m_iHealth;
 		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
 		data["dwSanitizedName"] = offsets::dwSanitizedName;
 		data["m_iTeamNum"] = offsets::m_iTeamNum;

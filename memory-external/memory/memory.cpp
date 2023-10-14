@@ -71,10 +71,10 @@ bool pProcess::AttachProcess(const char* ProcessName)
 		handle_ = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid_);
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
-		base_module_.base = (uintptr_t)modules[0];
+		base_client_.base = (uintptr_t)modules[0];
 
 		GetModuleInformation(this->handle_, modules[0], &module_info, sizeof(module_info));
-		base_module_.size = module_info.SizeOfImage;
+		base_client_.size = module_info.SizeOfImage;
 
 		hwnd_ = this->GetWindowHandleFromProcessId(pid_);
 
@@ -105,10 +105,10 @@ bool pProcess::AttachProcessHj(const char* ProcessName)
 		}
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
-		base_module_.base = (uintptr_t)modules[0];
+		base_client_.base = (uintptr_t)modules[0];
 
 		GetModuleInformation(this->handle_, modules[0], &module_info, sizeof(module_info));
-		base_module_.size = module_info.SizeOfImage;
+		base_client_.size = module_info.SizeOfImage;
 
 		hwnd_ = this->GetWindowHandleFromProcessId(pid_);
 
@@ -132,10 +132,10 @@ bool pProcess::AttachWindow(const char* WindowName)
 		handle_ = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid_);
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
-		base_module_.base = (uintptr_t)modules[0];
+		base_client_.base = (uintptr_t)modules[0];
 
 		GetModuleInformation(this->handle_, modules[0], &module_info, sizeof(module_info));
-		base_module_.size = module_info.SizeOfImage;
+		base_client_.size = module_info.SizeOfImage;
 
 		hwnd_ = this->GetWindowHandleFromProcessId(pid_);
 
@@ -185,13 +185,13 @@ LPVOID pProcess::Allocate(size_t size_in_bytes)
 uintptr_t pProcess::FindSignature(std::vector<uint8_t> signature)
 {
 	std::unique_ptr<uint8_t[]> data;
-	data = std::make_unique<uint8_t[]>(this->base_module_.size);
+	data = std::make_unique<uint8_t[]>(this->base_client_.size);
 
-	if (!ReadProcessMemory(this->handle_, (void*)(this->base_module_.base), data.get(), this->base_module_.size, NULL)) {
+	if (!ReadProcessMemory(this->handle_, (void*)(this->base_client_.base), data.get(), this->base_client_.size, NULL)) {
 		return 0x0;
 	}
 
-	for (uintptr_t i = 0; i < this->base_module_.size; i++)
+	for (uintptr_t i = 0; i < this->base_client_.size; i++)
 	{
 		for (uintptr_t j = 0; j < signature.size(); j++)
 		{
@@ -201,7 +201,7 @@ uintptr_t pProcess::FindSignature(std::vector<uint8_t> signature)
 			if (*reinterpret_cast<uint8_t*>(reinterpret_cast<uintptr_t>(&data[i + j])) == signature.at(j))
 			{
 				if (j == signature.size() - 1)
-					return this->base_module_.base + i;
+					return this->base_client_.base + i;
 				continue;
 			}
 			break;
@@ -229,7 +229,7 @@ uintptr_t pProcess::FindSignature(ProcessModule target_module, std::vector<uint8
 			if (*reinterpret_cast<uint8_t*>(reinterpret_cast<uintptr_t>(&data[i + j])) == signature.at(j))
 			{
 				if (j == signature.size() - 1)
-					return this->base_module_.base + i;
+					return this->base_client_.base + i;
 				continue;
 			}
 			break;

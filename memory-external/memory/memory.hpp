@@ -20,7 +20,7 @@ public:
 	DWORD		  pid_; // process id
 	HANDLE		  handle_; // handle to process
 	HWND		  hwnd_; // window handle
-	ProcessModule base_module_;
+	ProcessModule base_client_;
 
 public:
 	bool AttachProcess(const char* process_name);
