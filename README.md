@@ -59,6 +59,7 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 
 * [UnnamedZ03](https://github.com/UnnamedZ03) for providing [offsets](https://www.unknowncheats.me/forum/3846642-post734.html) and guide with his [CS2-external-base](https://github.com/UnnamedZ03/CS2-external-base)
 * [a2x](https://github.com/a2x) for his [offset dumper](https://github.com/a2x/cs2-dumper) and constant updates to it
+* [ifBars](https://github.com/ifBars) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/37) to the project and ideas
 * [Bekston](https://github.com/Bekston) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/20) to the project and ideas
 * [Apxaey](https://github.com/Apxaey) for releasing an easy way to implement [handle hijacking](https://github.com/Apxaey/Handle-Hijacking-Anti-Cheat-Bypass) 
 * Unknowncheats comunity for their reseach!
