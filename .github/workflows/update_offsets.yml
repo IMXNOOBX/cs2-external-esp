@@ -1,0 +1,47 @@
+name: Update Offsets
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+
+jobs:
+  update_offsets:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install Dependencies
+      run: |
+         python -m pip install --upgrade pip
+         pip install requests
+      shell: bash
+    
+    - name: Run Python Script
+      id: run-python-script
+      run: |
+        python ./offsets/update_offsets.py
+      continue-on-error: true
+
+    - name: Check Python Script Exit Code
+      if: steps.run-python-script.outcome == 'failure'
+      run: |
+        echo "Repository has no updates"
+        exit 0
+
+    - name: Commit and push changes
+      if: steps.run-python-script.outcome == 'success'
+      run: |
+        git config --global user.email ${{ secrets.GIT_USER_EMAIL }}
+        git config --global user.name ${{ secrets.GIT_USER_NAME }}
+        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git add offsets/offsets.json
+        git commit -m "Automatically updated offsets from https://github.com/a2x/cs2-dumper"
+        git push
+      shell: bash
