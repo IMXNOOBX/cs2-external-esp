@@ -106,6 +106,15 @@ namespace hack {
 				float distance = localOrigin.calculate_distance(origin);
 				int roundedDistance = std::round(distance / 10);
 
+				/**
+				* I know is not the best way but a simple way to not saturate the screen with a ton of information
+				* From IfBars - I decided to move this up here so that it will not render anything unless the player is within the flag_render_distance
+				* I did this so people aren't confused on why only half the players hp values are showing, however feel free to change this however you see fit
+				* Personally I prefer to see everyone no matter the difference, but everyone has their preferences
+				*/
+				if (roundedDistance > config::flag_render_distance)
+					continue;
+
 				render::DrawBorderBox(
 					g::hdcBuffer,
 					screenHead.x - width / 2,
@@ -137,11 +146,7 @@ namespace hack {
 					10
 				);
 
-				/**
-				* I know is not the best way but a simple way to not saturate the screen with a ton of information
-				*/
-				if (roundedDistance > config::flag_render_distance)
-					continue;
+				
 
 				render::RenderText(
 					g::hdcBuffer,
