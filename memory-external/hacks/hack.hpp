@@ -139,7 +139,7 @@ namespace hack {
 					height - (height * (100 - playerHealth) / 100),
 					RGB(
 						(255 - playerHealth),
-						(55 + playerArmor * 2),
+						(55 + playerHealth * 2),
 						75
 					)
 				);
