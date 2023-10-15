@@ -86,9 +86,9 @@ namespace hack {
 				playerName = std::string(buf);
 			}
 
-			const auto clipping_weapon = process->read<std::uint64_t>(pCSPlayerPawn + 0x1290);
+			const auto clipping_weapon = process->read<std::uint64_t>(pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
 			const auto weapon_data = process->read<std::uint64_t>(clipping_weapon + 0x360);
-			const auto weaponName_ptr = process->read<std::uint64_t>(weapon_data + 0xc18);
+			const auto weaponName_ptr = process->read<std::uint64_t>(weapon_data + updater::offsets::m_szName);
 			std::string weaponName = "Invalid Weapon Name";
 
 			if (!weaponName_ptr) {
@@ -132,13 +132,22 @@ namespace hack {
 
 				render::DrawBorderBox(
 					g::hdcBuffer,
-					screenHead.x - (width / 2 + 5),
+					screenHead.x - (width / 2 + 10),
 					screenHead.y + (height * (100 - playerHealth) / 100),
 					2,
 					height - (height * (100 - playerHealth) / 100),
+					RGB(0, 185, 255)
+				);
+
+				render::DrawBorderBox(
+					g::hdcBuffer,
+					screenHead.x - (width / 2 + 5),
+					screenHead.y + (height * (100 - playerArmor) / 100),
+					2,
+					height - (height * (100 - playerArmor) / 100),
 					RGB(
-						(255 - playerHealth),
-						(55 + playerHealth * 2),
+						(255 - playerArmor),
+						(55 + playerArmor * 2),
 						75
 					)
 				);
