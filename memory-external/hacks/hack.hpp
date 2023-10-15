@@ -133,20 +133,20 @@ namespace hack {
 				render::DrawBorderBox(
 					g::hdcBuffer,
 					screenHead.x - (width / 2 + 10),
-					screenHead.y + (height * (100 - playerHealth) / 100),
+					screenHead.y + (height * (100 - playerArmor) / 100),
 					2,
-					height - (height * (100 - playerHealth) / 100),
+					height - (height * (100 - playerArmor) / 100),
 					RGB(0, 185, 255)
 				);
 
 				render::DrawBorderBox(
 					g::hdcBuffer,
 					screenHead.x - (width / 2 + 5),
-					screenHead.y + (height * (100 - playerArmor) / 100),
+					screenHead.y + (height * (100 - playerHealth) / 100),
 					2,
-					height - (height * (100 - playerArmor) / 100),
+					height - (height * (100 - playerHealth) / 100),
 					RGB(
-						(255 - playerArmor),
+						(255 - playerHealth),
 						(55 + playerArmor * 2),
 						75
 					)
