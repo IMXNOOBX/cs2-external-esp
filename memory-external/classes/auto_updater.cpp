@@ -196,6 +196,8 @@ namespace updater {
 		if (data["dwBuildNumber"].is_number())
 			offsets::dwBuildNumber = data["dwBuildNumber"];
 
+		if (data["m_ArmorValue "].is_number())
+			offsets::m_ArmorValue = data["m_ArmorValue "];
 		if (data["m_iHealth"].is_number())
 			offsets::m_iHealth = data["m_iHealth"];
 		if (data["dwPlayerPawn"].is_number())
@@ -220,6 +222,7 @@ namespace updater {
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;
 
+		data["m_ArmorValue"] = offsets::m_ArmorValue;
 		data["m_iHealth"] = offsets::m_iHealth;
 		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
 		data["dwSanitizedName"] = offsets::dwSanitizedName;
