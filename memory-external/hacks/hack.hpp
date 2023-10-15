@@ -187,6 +187,8 @@ namespace hack {
 
 				if (config::show_extra_flags)
 				{
+					const bool isDefusing = process->read<bool>(pCSPlayerPawn + updater::offsets::m_bIsDefusing);
+
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
@@ -204,6 +206,20 @@ namespace hack {
 						config::esp_distance_color,
 						10
 					);
+
+					std::string defuText = "Player is defusing";
+
+					if (isDefusing)
+					{
+						render::RenderText(
+							g::hdcBuffer,
+							screenHead.x + (width / 2 + 5),
+							screenHead.y + 50,
+							defuText.c_str(),
+							config::esp_distance_color,
+							10
+						);
+					}
 				}
 
 				/**
