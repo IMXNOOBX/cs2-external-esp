@@ -10,6 +10,16 @@ namespace hack {
 	ProcessModule base_client;
 	ProcessModule base_engine;
 
+	std::string ReadString(HANDLE proc, uintptr_t memoryAddress, size_t maxLength = 512)
+	{
+		char buffer[512] = { 0 };
+		SIZE_T bytesRead = 0;
+
+		ReadProcessMemory(proc, (LPCVOID)memoryAddress, buffer, maxLength, &bytesRead);
+
+		return std::string(buffer);
+	}
+
 	void loop() {
 		const uintptr_t localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayer);
 		if (!localPlayer)
@@ -60,6 +70,7 @@ namespace hack {
 				continue;
 
 			const int playerHealth = process->read<int>(pCSPlayerPawn + updater::offsets::m_iHealth);
+			const int playerArmor = process->read<int>(pCSPlayerPawn + updater::offsets::m_ArmorValue);
 			if (playerHealth <= 0 || playerHealth > 100)
 				continue;
 
@@ -73,6 +84,18 @@ namespace hack {
 				char buf[256];
 				process->read_raw(playerNameAddress, buf, sizeof(buf));
 				playerName = std::string(buf);
+			}
+
+			const auto clipping_weapon = process->read<std::uint64_t>(pCSPlayerPawn + 0x1290);
+			const auto weapon_data = process->read<std::uint64_t>(clipping_weapon + 0x360);
+			const auto weaponName_ptr = process->read<std::uint64_t>(weapon_data + 0xc18);
+			std::string weaponName = "Invalid Weapon Name";
+
+			if (!weaponName_ptr) {
+				weaponName = "Invalid Weapon Name";
+			}
+			else {
+				weaponName = ReadString(process->handle_, weaponName_ptr, 32);
 			}
 
 			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
@@ -148,12 +171,34 @@ namespace hack {
 					10
 				);
 
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					screenHead.y + 20,
+					(std::to_string(playerArmor) + "armor").c_str(),
+					RGB(
+						(255 - playerArmor),
+						(55 + playerArmor * 2),
+						75
+					),
+					10
+				);
+
 				if (config::show_extra_flags)
 				{
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 20,
+						screenHead.y + 30,
+						weaponName.c_str(),
+						config::esp_distance_color,
+						10
+					);
+
+					render::RenderText(
+						g::hdcBuffer,
+						screenHead.x + (width / 2 + 5),
+						screenHead.y + 40,
 						(std::to_string(roundedDistance) + "m away").c_str(),
 						config::esp_distance_color,
 						10
