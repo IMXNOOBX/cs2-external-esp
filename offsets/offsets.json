@@ -1,9 +1,10 @@
 {
     "dwEntityList": 24706184,
     "dwLocalPlayer": 25027848,
-	"m_szName": 3096,
-	"m_pClippingWeapon": 4752,
-	"m_ArmorValue": 5368,
+    "m_bIsDefusing": 5008,
+    "m_szName": 3096,
+    "m_pClippingWeapon": 4752,
+    "m_ArmorValue": 5368,
     "m_iHealth": 812,
     "dwPlayerPawn": 1980,
     "dwSanitizedName": 1824,
