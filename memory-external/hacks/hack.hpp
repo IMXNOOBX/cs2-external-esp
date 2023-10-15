@@ -10,16 +10,6 @@ namespace hack {
 	ProcessModule base_client;
 	ProcessModule base_engine;
 
-	std::string ReadString(HANDLE proc, uintptr_t memoryAddress, size_t maxLength = 512)
-	{
-		char buffer[512] = { 0 };
-		SIZE_T bytesRead = 0;
-
-		ReadProcessMemory(proc, (LPCVOID)memoryAddress, buffer, maxLength, &bytesRead);
-
-		return std::string(buffer);
-	}
-
 	void loop() {
 		const uintptr_t localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayer);
 		if (!localPlayer)
@@ -86,16 +76,18 @@ namespace hack {
 				playerName = std::string(buf);
 			}
 
-			const auto clipping_weapon = process->read<std::uint64_t>(pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
-			const auto weapon_data = process->read<std::uint64_t>(clipping_weapon + 0x360);
-			const auto weaponName_ptr = process->read<std::uint64_t>(weapon_data + updater::offsets::m_szName);
+			const auto clippingWeapon = process->read<std::uint64_t>(pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
+			const auto weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
+			const auto weaponNameAddress = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
 			std::string weaponName = "Invalid Weapon Name";
 
-			if (!weaponName_ptr) {
+			if (!weaponNameAddress) {
 				weaponName = "Invalid Weapon Name";
 			}
 			else {
-				weaponName = ReadString(process->handle_, weaponName_ptr, 32);
+				char buf[32];
+				process->read_raw(weaponNameAddress, buf, sizeof(buf));
+				weaponName = std::string(buf);
 			}
 
 			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
