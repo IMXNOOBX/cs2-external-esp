@@ -196,8 +196,10 @@ namespace updater {
 		if (data["dwBuildNumber"].is_number())
 			offsets::dwBuildNumber = data["dwBuildNumber"];
 
-		if (data["m_szName "].is_number())
-			offsets::m_szName = data["m_szName "];
+		if (data["m_bIsDefusing"].is_number())
+			offsets::m_bIsDefusing = data["m_bIsDefusing"];
+		if (data["m_szName"].is_number())
+			offsets::m_szName = data["m_szName"];
 		if (data["m_pClippingWeapon "].is_number())
 			offsets::m_pClippingWeapon = data["m_pClippingWeapon "];
 		if (data["m_ArmorValue "].is_number())
@@ -226,6 +228,7 @@ namespace updater {
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;
 
+		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
 		data["m_szName"] = offsets::m_szName;
 		data["m_pClippingWeapon"] = offsets::m_pClippingWeapon;
 		data["m_ArmorValue"] = offsets::m_ArmorValue;
