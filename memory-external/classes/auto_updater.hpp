@@ -38,6 +38,7 @@ namespace updater {
 		inline std::ptrdiff_t dwViewMatrix = 0x187DAB0;
 		inline std::ptrdiff_t dwBuildNumber = 0x487514;
 
+		inline std::ptrdiff_t m_ArmorValue = 0x14F8;
 		inline std::ptrdiff_t m_iHealth = 0x32C;
 		inline std::ptrdiff_t dwPlayerPawn = 0x7BC;
 		inline std::ptrdiff_t dwSanitizedName = 0x720;
