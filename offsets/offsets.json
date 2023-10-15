@@ -1,12 +1,13 @@
 {
-    "build_number": 13962,
-    "dwBuildNumber": 4748564,
     "dwEntityList": 24706184,
     "dwLocalPlayer": 25027848,
+	"m_szName": 3096,
+	"m_pClippingWeapon": 4752,
+	"m_ArmorValue": 5368,
+    "m_iHealth": 812,
     "dwPlayerPawn": 1980,
     "dwSanitizedName": 1824,
     "dwViewMatrix": 25680560,
-    "m_iHealth": 812,
     "m_iTeamNum": 959,
     "m_vecOrigin": 4628
 }
