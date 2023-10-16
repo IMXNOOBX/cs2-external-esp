@@ -156,7 +156,7 @@ namespace hack {
 				/**
 				* I know is not the best way but a simple way to not saturate the screen with a ton of information
 				*/
-				if (roundedDistance > config::flag_render_distance)
+				if (roundedDistance < config::flag_render_distance)
 					continue;
 
 				render::RenderText(
