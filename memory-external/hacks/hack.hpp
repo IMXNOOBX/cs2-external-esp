@@ -17,8 +17,17 @@ namespace hack {
 
 		const int localTeam = process->read<int>(localPlayer + updater::offsets::m_iTeamNum);
 		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
-		const Vector3 localOrigin = process->read<Vector3>(localPlayer + updater::offsets::m_vecOrigin);
 		const uintptr_t entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
+
+		const std::uint32_t localPlayerPawn = process->read<std::uint32_t>(localPlayer + updater::offsets::dwPlayerPawn);
+		if (!localPlayerPawn)
+			return;
+		const uintptr_t localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
+		const uintptr_t localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 120 * (localPlayerPawn & 0x1FF));
+		if (!localpCSPlayerPawn)
+			return;
+
+		const Vector3 localOrigin = process->read<Vector3>(localpCSPlayerPawn + updater::offsets::m_vecOrigin);
 
 		int playerIndex = 0;
 		uintptr_t list_entry;
@@ -156,7 +165,7 @@ namespace hack {
 				/**
 				* I know is not the best way but a simple way to not saturate the screen with a ton of information
 				*/
-				if (roundedDistance < config::flag_render_distance)
+				if (roundedDistance > config::flag_render_distance)
 					continue;
 
 				render::RenderText(
