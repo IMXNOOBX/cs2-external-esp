@@ -28,10 +28,10 @@ if dest_data["build_number"] == int(build_number):
 
 dest_data["build_number"] = int(build_number)
 
-dest_data["dwBuildNumber"] = source_data["engine2_dll"]["dwBuildNumber"]
-dest_data["dwLocalPlayer"] = source_data["client_dll"]["dwLocalPlayerPawn"]
-dest_data["dwEntityList"] = source_data["client_dll"]["dwEntityList"]
-dest_data["dwViewMatrix"] = source_data["client_dll"]["dwViewMatrix"]
+dest_data["dwBuildNumber"] = source_data["Engine2Dll"]["dwBuildNumber"]
+dest_data["dwLocalPlayer"] = source_data["ClientDll"]["dwLocalPlayerPawn"]
+dest_data["dwEntityList"] = source_data["ClientDll"]["dwEntityList"]
+dest_data["dwViewMatrix"] = source_data["ClientDll"]["dwViewMatrix"]
 
 with open(dest_path, 'w') as dest_file:
     json.dump(dest_data, dest_file, indent=4)
