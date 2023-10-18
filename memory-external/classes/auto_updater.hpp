@@ -30,18 +30,18 @@ namespace updater {
 	const inline std::string github_repo_api = "https://api.github.com/repos/IMXNOOBX/cs2-external-esp/commits";
 	const inline std::string raw_updated_offets = "https://github.com/IMXNOOBX/cs2-external-esp/raw/main/offsets/offsets.json";
 
-	inline int build_number = 13962;
+	inline int build_number = 13963;
 
 	namespace offsets {
-		inline std::ptrdiff_t dwLocalPlayer = 0x17DE508;
-		inline std::ptrdiff_t dwEntityList = 0x178FC88;
-		inline std::ptrdiff_t dwViewMatrix = 0x187DAB0;
+		inline std::ptrdiff_t dwLocalPlayer = 0x17E27C8;
+		inline std::ptrdiff_t dwEntityList = 0x1793DC8;
+		inline std::ptrdiff_t dwViewMatrix = 0x1881D70;
 		inline std::ptrdiff_t dwBuildNumber = 0x487514;
 
 		inline std::ptrdiff_t m_bIsDefusing = 0x1390;
 		inline std::ptrdiff_t m_szName = 0xC18;
 		inline std::ptrdiff_t m_pClippingWeapon = 0x1290;
-		inline std::ptrdiff_t m_ArmorValue = 0x14F8;
+		inline std::ptrdiff_t m_ArmorValue = 0x14F0;
 		inline std::ptrdiff_t m_iHealth = 0x32C;
 		inline std::ptrdiff_t dwPlayerPawn = 0x7BC;
 		inline std::ptrdiff_t dwSanitizedName = 0x720;
