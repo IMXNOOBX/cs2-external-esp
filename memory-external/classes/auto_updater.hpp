@@ -39,6 +39,10 @@ namespace updater {
 		inline std::ptrdiff_t dwBuildNumber = 0x487514;
 		inline std::ptrdiff_t dwPlantedC4 = 0x1887FC0;
 
+		inline std::ptrdiff_t m_flC4Blow = 0xEB0;
+		inline std::ptrdiff_t m_flNextBeep = 0xEAC;
+		inline std::ptrdiff_t m_flTimerLength = 0xEB8;
+
 		inline std::ptrdiff_t m_vecAbsOrigin = 0xC8;
 		inline std::ptrdiff_t m_pGameSceneNode = 0x310;
 		inline std::ptrdiff_t m_bIsDefusing = 0x1390;
