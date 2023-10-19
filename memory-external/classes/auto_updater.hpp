@@ -43,6 +43,8 @@ namespace updater {
 		inline std::ptrdiff_t m_flNextBeep = 0xEAC;
 		inline std::ptrdiff_t m_flTimerLength = 0xEB8;
 
+		inline std::ptrdiff_t m_pInGameMoneyServices = 0x6D0;
+		inline std::ptrdiff_t m_iAccount = 0x40;
 		inline std::ptrdiff_t m_vecAbsOrigin = 0xC8;
 		inline std::ptrdiff_t m_pGameSceneNode = 0x310;
 		inline std::ptrdiff_t m_bIsDefusing = 0x1390;
