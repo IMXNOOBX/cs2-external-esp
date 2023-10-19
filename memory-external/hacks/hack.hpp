@@ -93,6 +93,9 @@ namespace hack {
 			if (!player)
 				continue;
 
+			const uintptr_t playerMoneyServices = process->read<uintptr_t>(player + updater::offsets::m_pInGameMoneyServices);
+			const int32_t money = process->read<int32_t>(playerMoneyServices + updater::offsets::m_iAccount);
+
 			/**
 			* Skip rendering your own character and teammates
 			*
@@ -262,6 +265,15 @@ namespace hack {
 						10
 					);
 
+					render::RenderText(
+						g::hdcBuffer,
+						screenHead.x + (width / 2 + 5),
+						screenHead.y + 50,
+						("$" + std::to_string(money)).c_str(),
+						RGB(0, 125, 0),
+						10
+					);
+
 					std::string defuText = "Player is defusing";
 
 					if (isDefusing)
@@ -269,7 +281,7 @@ namespace hack {
 						render::RenderText(
 							g::hdcBuffer,
 							screenHead.x + (width / 2 + 5),
-							screenHead.y + 50,
+							screenHead.y + 60,
 							defuText.c_str(),
 							config::esp_distance_color,
 							10
