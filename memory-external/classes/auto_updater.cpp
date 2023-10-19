@@ -205,6 +205,10 @@ namespace updater {
 		if (data["m_flTimerLength"].is_number())
 			offsets::m_flTimerLength = data["m_flTimerLength"];
 
+		if (data["m_pInGameMoneyServices"].is_number())
+			offsets::m_pInGameMoneyServices = data["m_pInGameMoneyServices"];
+		if (data["m_iAccount"].is_number())
+			offsets::m_iAccount = data["m_iAccount"];
 		if (data["m_vecAbsOrigin"].is_number())
 			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
 		if (data["m_pGameSceneNode"].is_number())
@@ -246,6 +250,8 @@ namespace updater {
 		data["m_flC4Blow"] = offsets::m_flC4Blow;
 		data["m_flTimerLength"] = offsets::m_flTimerLength;
 
+		data["m_pInGameMoneyServices"] = offsets::m_pInGameMoneyServices;
+		data["m_iAccount"] = offsets::m_iAccount;
 		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
 		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
 		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
