@@ -195,7 +195,13 @@ namespace updater {
 			offsets::dwViewMatrix = data["dwViewMatrix"];
 		if (data["dwBuildNumber"].is_number())
 			offsets::dwBuildNumber = data["dwBuildNumber"];
+		if (data["dwPlantedC4"].is_number())
+			offsets::dwPlantedC4 = data["dwPlantedC4"];
 
+		if (data["m_vecAbsOrigin"].is_number())
+			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
+		if (data["m_pGameSceneNode"].is_number())
+			offsets::m_pGameSceneNode = data["m_pGameSceneNode"];
 		if (data["m_bIsDefusing"].is_number())
 			offsets::m_bIsDefusing = data["m_bIsDefusing"];
 		if (data["m_szName"].is_number())
@@ -227,7 +233,10 @@ namespace updater {
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;
+		data["dwPlantedC4"] = offsets::dwPlantedC4;
 
+		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
+		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
 		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
 		data["m_szName"] = offsets::m_szName;
 		data["m_pClippingWeapon"] = offsets::m_pClippingWeapon;
