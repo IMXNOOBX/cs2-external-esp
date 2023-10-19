@@ -198,6 +198,13 @@ namespace updater {
 		if (data["dwPlantedC4"].is_number())
 			offsets::dwPlantedC4 = data["dwPlantedC4"];
 
+		if (data["m_flC4Blow"].is_number())
+			offsets::m_flC4Blow = data["m_flC4Blow"];
+		if (data["m_flNextBeep"].is_number())
+			offsets::m_flNextBeep = data["m_flNextBeep"];
+		if (data["m_flTimerLength"].is_number())
+			offsets::m_flTimerLength = data["m_flTimerLength"];
+
 		if (data["m_vecAbsOrigin"].is_number())
 			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
 		if (data["m_pGameSceneNode"].is_number())
@@ -234,6 +241,10 @@ namespace updater {
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;
 		data["dwPlantedC4"] = offsets::dwPlantedC4;
+
+		data["m_flNextBeep"] = offsets::m_flNextBeep;
+		data["m_flC4Blow"] = offsets::m_flC4Blow;
+		data["m_flTimerLength"] = offsets::m_flTimerLength;
 
 		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
 		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
