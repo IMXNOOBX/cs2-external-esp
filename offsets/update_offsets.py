@@ -1,6 +1,7 @@
 import sys
 import requests
 import json
+import re
 
 source_url = "https://github.com/a2x/cs2-dumper/raw/main/generated/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
