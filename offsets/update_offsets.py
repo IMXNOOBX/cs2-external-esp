@@ -16,8 +16,12 @@ build_number = 0
 if response.status_code == 200:
     commit_data = response.json()
     if commit_data:
-        last_commit_message = commit_data[0]['commit']['message']
-        build_number = last_commit_message.split()[-1]
+        for commit in commit_data:
+            commit_message = commit['commit']['message']
+            build_match = re.search(r'\bGame Update (\d+)(?: \(\d+\))?\b', commit_message)
+            if build_match:
+                build_number = int(build_match.group(1))
+                break
 
 with open(dest_path, 'r') as dest_file:
     dest_data = json.load(dest_file)
