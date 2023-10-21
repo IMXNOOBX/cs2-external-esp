@@ -1,6 +1,7 @@
 import sys
 import requests
 import json
+import re
 
 source_url = "https://github.com/a2x/cs2-dumper/raw/main/generated/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
@@ -16,8 +17,12 @@ build_number = 0
 if response.status_code == 200:
     commit_data = response.json()
     if commit_data:
-        last_commit_message = commit_data[0]['commit']['message']
-        build_number = last_commit_message.split()[-1]
+        for commit in commit_data:
+            commit_message = commit['commit']['message']
+            build_match = re.search(r'\bGame Update (\d+)(?: \(\d+\))?\b', commit_message)
+            if build_match:
+                build_number = int(build_match.group(1))
+                break
 
 with open(dest_path, 'r') as dest_file:
     dest_data = json.load(dest_file)
@@ -28,11 +33,10 @@ if dest_data["build_number"] == int(build_number):
 
 dest_data["build_number"] = int(build_number)
 
-dest_data["dwBuildNumber"] = source_data["Engine2Dll"]["dwBuildNumber"]
-dest_data["dwLocalPlayer"] = source_data["ClientDll"]["dwLocalPlayerPawn"]
-dest_data["dwEntityList"] = source_data["ClientDll"]["dwEntityList"]
-dest_data["dwViewMatrix"] = source_data["ClientDll"]["dwViewMatrix"]
-dest_data["dwPlantedC4"] = source_data["ClientDll"]["dwPlantedC4"]
+dest_data["dwBuildNumber"] = source_data["Engine2Dll"]["dwBuildNumber"]["value"]
+dest_data["dwLocalPlayer"] = source_data["ClientDll"]["dwLocalPlayerPawn"]["value"]
+dest_data["dwEntityList"] = source_data["ClientDll"]["dwEntityList"]["value"]
+dest_data["dwViewMatrix"] = source_data["ClientDll"]["dwViewMatrix"]["value"]
 
 with open(dest_path, 'w') as dest_file:
     json.dump(dest_data, dest_file, indent=4)
