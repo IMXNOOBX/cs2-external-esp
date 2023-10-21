@@ -43,10 +43,6 @@ namespace hack {
 			{
 				const uintptr_t planted_c4 = process->read<uintptr_t>(process->read<uintptr_t>(base_client.base + updater::offsets::dwPlantedC4));
 
-				static auto plantTime = std::chrono::high_resolution_clock::now();
-				auto currentTime = std::chrono::high_resolution_clock::now();
-				auto elapsedTime = std::chrono::duration<float>(currentTime - plantTime).count();
-
 				const float c4Timer = process->read<float>(planted_c4 + updater::offsets::m_flTimerLength);
 				const float c4Beep = process->read<float>(planted_c4 + updater::offsets::m_flNextBeep);
 				const float c4Blow = process->read<float>(planted_c4 + updater::offsets::m_flC4Blow);
