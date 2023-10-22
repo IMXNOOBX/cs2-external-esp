@@ -29,7 +29,9 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 
 * To manually update the esp offsets i have included an offsets.json file which will be created once opened.
 
-1. Go to this [unknowncheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
+1. Two ways to get the latest offsets.
+1.1 Go to this [unknowncheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
+1.2 Or go to this repository [cs2-dumper](https://github.com/a2x/cs2-dumper) and find the latest offstes
 
 2. You will find somethig like this
 
