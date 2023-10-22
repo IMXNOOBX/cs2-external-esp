@@ -68,7 +68,7 @@ namespace hack {
 					g::hdcBuffer,
 					c4ScreenPos.x + (width / 2 + 5),
 					c4ScreenPos.y,
-					("C4",
+					"C4",
 					config::esp_name_color,
 					10
 				);
