@@ -195,7 +195,32 @@ namespace updater {
 			offsets::dwViewMatrix = data["dwViewMatrix"];
 		if (data["dwBuildNumber"].is_number())
 			offsets::dwBuildNumber = data["dwBuildNumber"];
+		if (data["dwPlantedC4"].is_number())
+			offsets::dwPlantedC4 = data["dwPlantedC4"];
 
+		if (data["m_flC4Blow"].is_number())
+			offsets::m_flC4Blow = data["m_flC4Blow"];
+		if (data["m_flNextBeep"].is_number())
+			offsets::m_flNextBeep = data["m_flNextBeep"];
+		if (data["m_flTimerLength"].is_number())
+			offsets::m_flTimerLength = data["m_flTimerLength"];
+
+		if (data["m_pInGameMoneyServices"].is_number())
+			offsets::m_pInGameMoneyServices = data["m_pInGameMoneyServices"];
+		if (data["m_iAccount"].is_number())
+			offsets::m_iAccount = data["m_iAccount"];
+		if (data["m_vecAbsOrigin"].is_number())
+			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
+		if (data["m_pGameSceneNode"].is_number())
+			offsets::m_pGameSceneNode = data["m_pGameSceneNode"];
+		if (data["m_bIsDefusing"].is_number())
+			offsets::m_bIsDefusing = data["m_bIsDefusing"];
+		if (data["m_szName"].is_number())
+			offsets::m_szName = data["m_szName"];
+		if (data["m_pClippingWeapon "].is_number())
+			offsets::m_pClippingWeapon = data["m_pClippingWeapon "];
+		if (data["m_ArmorValue "].is_number())
+			offsets::m_ArmorValue = data["m_ArmorValue "];
 		if (data["m_iHealth"].is_number())
 			offsets::m_iHealth = data["m_iHealth"];
 		if (data["dwPlayerPawn"].is_number())
@@ -219,7 +244,20 @@ namespace updater {
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;
+		data["dwPlantedC4"] = offsets::dwPlantedC4;
 
+		data["m_flNextBeep"] = offsets::m_flNextBeep;
+		data["m_flC4Blow"] = offsets::m_flC4Blow;
+		data["m_flTimerLength"] = offsets::m_flTimerLength;
+
+		data["m_pInGameMoneyServices"] = offsets::m_pInGameMoneyServices;
+		data["m_iAccount"] = offsets::m_iAccount;
+		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
+		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
+		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
+		data["m_szName"] = offsets::m_szName;
+		data["m_pClippingWeapon"] = offsets::m_pClippingWeapon;
+		data["m_ArmorValue"] = offsets::m_ArmorValue;
 		data["m_iHealth"] = offsets::m_iHealth;
 		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
 		data["dwSanitizedName"] = offsets::dwSanitizedName;
