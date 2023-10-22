@@ -43,12 +43,6 @@ namespace hack {
 			{
 				const uintptr_t planted_c4 = process->read<uintptr_t>(process->read<uintptr_t>(base_client.base + updater::offsets::dwPlantedC4));
 
-				const float c4Timer = process->read<float>(planted_c4 + updater::offsets::m_flTimerLength);
-				const float c4Beep = process->read<float>(planted_c4 + updater::offsets::m_flNextBeep);
-				const float c4Blow = process->read<float>(planted_c4 + updater::offsets::m_flC4Blow);
-				float remainingTime = (c4Blow - c4Beep) / c4Timer; // Constrained to 0.0-1.0 (0.0 being explosion imminent)
-				remainingTime = remainingTime * 100; // Multiply by 100 to constrain to 0.0-100.00
-
 				const uintptr_t c4Node = process->read<uintptr_t>(planted_c4 + updater::offsets::m_pGameSceneNode);
 
 				const Vector3 c4Origin = process->read<Vector3>(c4Node + updater::offsets::m_vecAbsOrigin);
@@ -67,14 +61,14 @@ namespace hack {
 					c4ScreenPos.y - (height / 2),
 					width,
 					height,
-					RGB((255 - remainingTime), (55 + remainingTime * 2), 75)
+					config::esp_box_color_enemy
 				);
 
 				render::RenderText(
 					g::hdcBuffer,
 					c4ScreenPos.x + (width / 2 + 5),
 					c4ScreenPos.y,
-					("C4 " + std::to_string(remainingTime)).c_str(),
+					("C4",
 					config::esp_name_color,
 					10
 				);
