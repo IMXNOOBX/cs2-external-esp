@@ -55,7 +55,7 @@ namespace hack {
 				float height = 10 - roundedDistance;
 				float width = height * 1.2f;
 
-				render::DrawBorderBox(
+				render::DrawFilledBox(
 					g::hdcBuffer,
 					c4ScreenPos.x - (width / 2),
 					c4ScreenPos.y - (height / 2),
