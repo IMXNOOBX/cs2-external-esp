@@ -53,7 +53,7 @@ namespace hack {
 				float roundedDistance = std::round(distance / 500.f);
 
 				float height = 10 - roundedDistance;
-				float width = height * 1.2f;
+				float width = height * 1.4f;
 
 				render::DrawFilledBox(
 					g::hdcBuffer,
@@ -136,6 +136,7 @@ namespace hack {
 				char buf[32];
 				process->read_raw(weaponNameAddress, buf, sizeof(buf));
 				weaponName = std::string(buf);
+				weaponName = weaponName.substr(7, weaponName.length()); // Remove weapon_ prefix
 			}
 
 			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
@@ -278,39 +279,10 @@ namespace hack {
 						);
 					}
 				}
-
-				/**
-				* Great idea by @ifBars that will be implemented later on
-				*/
-				/*
-					if (config::head_tracker)
-					{
-						if (roundedDistance > 35)
-						{
-							render::DrawFilledBox(
-								g::hdcBuffer,
-								screenHead.x - (head_width / 2),
-								(screenHead.y + 10 - (roundedDistance / 80)) - (head_height / 2),
-								head_width,
-								head_height,
-								(localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
-							);
-						}
-						else if (roundedDistance > 5)
-						{
-							render::DrawFilledBox(
-								g::hdcBuffer,
-								screenHead.x - (head_width / 2),
-								screenHead.y + 25 - (head_height / 2),
-								head_width,
-								head_height,
-								(localTeam == playerTeam ? RGB(75, 175, 75) : RGB(175, 75, 75))
-							);
-						}
-					}
-				*/
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
+
+
