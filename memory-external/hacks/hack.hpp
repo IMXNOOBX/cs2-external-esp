@@ -19,7 +19,7 @@ namespace hack {
 		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
 		const uintptr_t entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
 
-		const std::uint32_t localPlayerPawn = process->read<std::uint32_t>(localPlayer + updater::offsets::dwPlayerPawn);
+		const std::uint32_t localPlayerPawn = process->read<std::uint32_t>(localPlayer + updater::offsets::m_hPlayerPawn);
 		if (!localPlayerPawn)
 			return;
 		const uintptr_t localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
@@ -97,7 +97,7 @@ namespace hack {
 				continue;
 
 
-			const std::uint32_t playerPawn = process->read<std::uint32_t>(player + updater::offsets::dwPlayerPawn);
+			const std::uint32_t playerPawn = process->read<std::uint32_t>(player + updater::offsets::m_hPlayerPawn);
 
 			const uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
 			if (!list_entry2)
@@ -116,7 +116,7 @@ namespace hack {
 				continue;
 
 			std::string playerName = "Invalid Name";
-			const DWORD64 playerNameAddress = process->read<DWORD64>(player + updater::offsets::dwSanitizedName);
+			const DWORD64 playerNameAddress = process->read<DWORD64>(player + updater::offsets::m_sSanitizedPlayerName);
 
 			if (playerNameAddress) {
 				char buf[256];

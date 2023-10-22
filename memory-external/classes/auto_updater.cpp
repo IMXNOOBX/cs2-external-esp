@@ -223,10 +223,10 @@ namespace updater {
 			offsets::m_ArmorValue = data["m_ArmorValue "];
 		if (data["m_iHealth"].is_number())
 			offsets::m_iHealth = data["m_iHealth"];
-		if (data["dwPlayerPawn"].is_number())
-			offsets::dwPlayerPawn = data["dwPlayerPawn"];
+		if (data["m_hPlayerPawn"].is_number())
+			offsets::m_hPlayerPawn = data["m_hPlayerPawn"];
 		if (data["dwSanitizedName"].is_number())
-			offsets::dwSanitizedName = data["dwSanitizedName"];
+			offsets::m_sSanitizedPlayerName = data["m_sSanitizedPlayerName"];
 		if (data["m_iTeamNum"].is_number())
 			offsets::m_iTeamNum = data["m_iTeamNum"];
 		if (data["m_vecOrigin"].is_number())
@@ -259,8 +259,8 @@ namespace updater {
 		data["m_pClippingWeapon"] = offsets::m_pClippingWeapon;
 		data["m_ArmorValue"] = offsets::m_ArmorValue;
 		data["m_iHealth"] = offsets::m_iHealth;
-		data["dwPlayerPawn"] = offsets::dwPlayerPawn;
-		data["dwSanitizedName"] = offsets::dwSanitizedName;
+		data["m_hPlayerPawn"] = offsets::m_hPlayerPawn;
+		data["m_sSanitizedPlayerName"] = offsets::m_sSanitizedPlayerName;
 		data["m_iTeamNum"] = offsets::m_iTeamNum;
 		data["m_vecOrigin"] = offsets::m_vecOrigin;
 

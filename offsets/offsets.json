@@ -17,8 +17,8 @@
     "m_pClippingWeapon": 4752,
     "m_ArmorValue": 5360,
     "m_iHealth": 812,
-    "dwPlayerPawn": 1980,
-    "dwSanitizedName": 1824,
+    "m_hPlayerPawn": 1980,
+    "m_sSanitizedPlayerName": 1824,
     "m_iTeamNum": 959,
     "m_vecOrigin": 4628
 }
