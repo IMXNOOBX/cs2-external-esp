@@ -267,11 +267,9 @@ namespace hack {
 					);
 
 					float flashDuration = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashDuration);
-					bool isFlashed;
-					if (flashDuration > 0.0)
-						isFlashed = true;
-					if (isFlashed)
+					if (flashDuration > 0.1)
 					{
+						std::cout << std::to_string(flashDuration) << std::endl;
 						render::RenderText(
 							g::hdcBuffer,
 							screenHead.x + (width / 2 + 5),
