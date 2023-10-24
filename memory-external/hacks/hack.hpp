@@ -42,10 +42,7 @@ namespace hack {
 
 			/**
 			* Sometimes C4 Position bugged if you look behind the C4, or C4 Screen Pos not in Screen Area
-			* 
-			* Tested in my side
 			*/
-
 			if (c4ScreenPos.z >= 0.01f) {
 				float distance = localOrigin.calculate_distance(c4Origin);
 				float roundedDistance = std::round(distance / 500.f);
