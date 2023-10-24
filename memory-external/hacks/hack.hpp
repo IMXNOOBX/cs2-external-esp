@@ -29,6 +29,42 @@ namespace hack {
 
 		const Vector3 localOrigin = process->read<Vector3>(localpCSPlayerPawn + updater::offsets::m_vecOrigin);
 
+		bool c4IsPlanted = process->read<bool>(base_client.base + updater::offsets::dwPlantedC4 - 0x8);
+		if (c4IsPlanted)
+		{
+			const uintptr_t planted_c4 = process->read<uintptr_t>(process->read<uintptr_t>(base_client.base + updater::offsets::dwPlantedC4));
+
+			const uintptr_t c4Node = process->read<uintptr_t>(planted_c4 + updater::offsets::m_pGameSceneNode);
+
+			const Vector3 c4Origin = process->read<Vector3>(c4Node + updater::offsets::m_vecAbsOrigin);
+
+			const Vector3 c4ScreenPos = c4Origin.world_to_screen(view_matrix);
+
+			float distance = localOrigin.calculate_distance(c4Origin);
+			float roundedDistance = std::round(distance / 500.f);
+
+			float height = 10 - roundedDistance;
+			float width = height * 1.4f;
+
+			render::DrawFilledBox(
+				g::hdcBuffer,
+				c4ScreenPos.x - (width / 2),
+				c4ScreenPos.y - (height / 2),
+				width,
+				height,
+				config::esp_box_color_enemy
+			);
+
+			render::RenderText(
+				g::hdcBuffer,
+				c4ScreenPos.x + (width / 2 + 5),
+				c4ScreenPos.y,
+				"C4",
+				config::esp_name_color,
+				10
+			);
+		}
+
 		int playerIndex = 0;
 		uintptr_t list_entry;
 
@@ -38,41 +74,7 @@ namespace hack {
 		* (This could have been done by getting a entity list count from the engine, but I'm too lazy to do that)
 		**/
 		while (true) {
-			bool c4IsPlanted = process->read<bool>(base_client.base + updater::offsets::dwPlantedC4 - 0x8);
-			if (c4IsPlanted)
-			{
-				const uintptr_t planted_c4 = process->read<uintptr_t>(process->read<uintptr_t>(base_client.base + updater::offsets::dwPlantedC4));
-
-				const uintptr_t c4Node = process->read<uintptr_t>(planted_c4 + updater::offsets::m_pGameSceneNode);
-
-				const Vector3 c4Origin = process->read<Vector3>(c4Node + updater::offsets::m_vecAbsOrigin);
-
-				const Vector3 c4ScreenPos = c4Origin.world_to_screen(view_matrix);
-
-				float distance = localOrigin.calculate_distance(c4Origin);
-				float roundedDistance = std::round(distance / 500.f);
-
-				float height = 10 - roundedDistance;
-				float width = height * 1.4f;
-
-				render::DrawFilledBox(
-					g::hdcBuffer,
-					c4ScreenPos.x - (width / 2),
-					c4ScreenPos.y - (height / 2),
-					width,
-					height,
-					config::esp_box_color_enemy
-				);
-
-				render::RenderText(
-					g::hdcBuffer,
-					c4ScreenPos.x + (width / 2 + 5),
-					c4ScreenPos.y,
-					"C4",
-					config::esp_name_color,
-					10
-				);
-			}
+			
 			
 			playerIndex++;
 			list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
@@ -136,6 +138,7 @@ namespace hack {
 				char buf[32];
 				process->read_raw(weaponNameAddress, buf, sizeof(buf));
 				weaponName = std::string(buf);
+				if (weaponName.compare(0, 7, "weapon_") == 0)
 				weaponName = weaponName.substr(7, weaponName.length()); // Remove weapon_ prefix
 			}
 
