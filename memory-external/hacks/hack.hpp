@@ -40,29 +40,34 @@ namespace hack {
 
 			const Vector3 c4ScreenPos = c4Origin.world_to_screen(view_matrix);
 
-			float distance = localOrigin.calculate_distance(c4Origin);
-			float roundedDistance = std::round(distance / 500.f);
+			/**
+			* Sometimes C4 Position bugged if you look behind the C4, or C4 Screen Pos not in Screen Area
+			*/
+			if (c4ScreenPos.z >= 0.01f) {
+				float distance = localOrigin.calculate_distance(c4Origin);
+				float roundedDistance = std::round(distance / 500.f);
 
-			float height = 10 - roundedDistance;
-			float width = height * 1.4f;
+				float height = 10 - roundedDistance;
+				float width = height * 1.4f;
 
-			render::DrawFilledBox(
-				g::hdcBuffer,
-				c4ScreenPos.x - (width / 2),
-				c4ScreenPos.y - (height / 2),
-				width,
-				height,
-				config::esp_box_color_enemy
-			);
+				render::DrawFilledBox(
+					g::hdcBuffer,
+					c4ScreenPos.x - (width / 2),
+					c4ScreenPos.y - (height / 2),
+					width,
+					height,
+					config::esp_box_color_enemy
+				);
 
-			render::RenderText(
-				g::hdcBuffer,
-				c4ScreenPos.x + (width / 2 + 5),
-				c4ScreenPos.y,
-				"C4",
-				config::esp_name_color,
-				10
-			);
+				render::RenderText(
+					g::hdcBuffer,
+					c4ScreenPos.x + (width / 2 + 5),
+					c4ScreenPos.y,
+					"C4",
+					config::esp_name_color,
+					10
+				);
+			}
 		}
 
 		int playerIndex = 0;
