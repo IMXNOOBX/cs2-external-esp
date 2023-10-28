@@ -213,8 +213,8 @@ namespace updater {
 			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
 		if (data["m_pGameSceneNode"].is_number())
 			offsets::m_pGameSceneNode = data["m_pGameSceneNode"];
-		if (data["m_flFlashDuration"].is_number())
-			offsets::m_flFlashDuration = data["m_flFlashDuration"];
+		if (data["m_flFlashOverlayAlpha"].is_number())
+			offsets::m_flFlashOverlayAlpha = data["m_flFlashOverlayAlpha"];
 		if (data["m_bIsDefusing"].is_number())
 			offsets::m_bIsDefusing = data["m_bIsDefusing"];
 		if (data["m_szName"].is_number())
@@ -256,7 +256,7 @@ namespace updater {
 		data["m_iAccount"] = offsets::m_iAccount;
 		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
 		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
-		data["m_flFlashDuration"] = offsets::m_flFlashDuration;
+		data["m_flFlashOverlayAlpha"] = offsets::m_flFlashOverlayAlpha;
 		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
 		data["m_szName"] = offsets::m_szName;
 		data["m_pClippingWeapon"] = offsets::m_pClippingWeapon;

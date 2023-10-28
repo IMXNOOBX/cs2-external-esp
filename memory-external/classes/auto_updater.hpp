@@ -47,7 +47,7 @@ namespace updater {
 		inline std::ptrdiff_t m_iAccount = 0x40;
 		inline std::ptrdiff_t m_vecAbsOrigin = 0xC8;
 		inline std::ptrdiff_t m_pGameSceneNode = 0x310;
-		inline std::ptrdiff_t m_flFlashDuration = 0x1450;
+		inline std::ptrdiff_t m_flFlashOverlayAlpha = 0x1444;
 		inline std::ptrdiff_t m_bIsDefusing = 0x1390;
 		inline std::ptrdiff_t m_szName = 0xC18;
 		inline std::ptrdiff_t m_pClippingWeapon = 0x1290;

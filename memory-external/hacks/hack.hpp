@@ -271,8 +271,8 @@ namespace hack {
 						10
 					);
 
-					float flashDuration = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashDuration);
-					if (flashDuration > 0.1)
+					float flashAlpha = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
+					if (flashAlpha > 100)
 					{
 						render::RenderText(
 							g::hdcBuffer,
