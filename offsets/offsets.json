@@ -12,7 +12,7 @@
     "m_iAccount": 64,
     "m_vecAbsOrigin": 200,
     "m_pGameSceneNode": 784,
-    "m_flFlashDuration": 5200,
+    "m_flFlashOverlayAlpha": 5188,
     "m_bIsDefusing": 5008,
     "m_szName": 3096,
     "m_pClippingWeapon": 4752,
