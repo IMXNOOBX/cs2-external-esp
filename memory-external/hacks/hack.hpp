@@ -79,8 +79,6 @@ namespace hack {
 		* (This could have been done by getting a entity list count from the engine, but I'm too lazy to do that)
 		**/
 		while (true) {
-			
-			
 			playerIndex++;
 			list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
 			if (!list_entry)
@@ -272,6 +270,19 @@ namespace hack {
 						RGB(0, 125, 0),
 						10
 					);
+
+					float flashDuration = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashDuration);
+					if (flashDuration > 0.1)
+					{
+						render::RenderText(
+							g::hdcBuffer,
+							screenHead.x + (width / 2 + 5),
+							screenHead.y + 60,
+							"Player is flashed",
+							config::esp_distance_color,
+							10
+						);
+					}
 
 					std::string defuText = "Player is defusing";
 
