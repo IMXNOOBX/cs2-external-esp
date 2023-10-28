@@ -11,17 +11,18 @@ namespace hack {
 	ProcessModule base_engine;
 
 	void loop() {
+		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
+		const uintptr_t entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
+
 		const uintptr_t localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayer);
 		if (!localPlayer)
 			return;
 
 		const int localTeam = process->read<int>(localPlayer + updater::offsets::m_iTeamNum);
-		const view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
-		const uintptr_t entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
-
 		const std::uint32_t localPlayerPawn = process->read<std::uint32_t>(localPlayer + updater::offsets::m_hPlayerPawn);
 		if (!localPlayerPawn)
 			return;
+
 		const uintptr_t localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
 		const uintptr_t localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 120 * (localPlayerPawn & 0x1FF));
 		if (!localpCSPlayerPawn)
@@ -40,14 +41,11 @@ namespace hack {
 
 			const Vector3 c4ScreenPos = c4Origin.world_to_screen(view_matrix);
 
-			/**
-			* Sometimes C4 Position bugged if you look behind the C4, or C4 Screen Pos not in Screen Area
-			*/
 			if (c4ScreenPos.z >= 0.01f) {
-				float distance = localOrigin.calculate_distance(c4Origin);
-				float roundedDistance = std::round(distance / 500.f);
+				float c4Distance = localOrigin.calculate_distance(c4Origin);
+				float c4RoundedDistance = std::round(c4Distance / 500.f);
 
-				float height = 10 - roundedDistance;
+				float height = 10 - c4RoundedDistance;
 				float width = height * 1.4f;
 
 				render::DrawFilledBox(
@@ -88,9 +86,6 @@ namespace hack {
 			if (!player)
 				continue;
 
-			const uintptr_t playerMoneyServices = process->read<uintptr_t>(player + updater::offsets::m_pInGameMoneyServices);
-			const int32_t money = process->read<int32_t>(playerMoneyServices + updater::offsets::m_iAccount);
-
 			/**
 			* Skip rendering your own character and teammates
 			*
@@ -100,7 +95,6 @@ namespace hack {
 			const int playerTeam = process->read<int>(player + updater::offsets::m_iTeamNum);
 			if (config::team_esp && (playerTeam == localTeam))
 				continue;
-
 
 			const std::uint32_t playerPawn = process->read<std::uint32_t>(player + updater::offsets::m_hPlayerPawn);
 
@@ -122,49 +116,27 @@ namespace hack {
 
 			std::string playerName = "Invalid Name";
 			const DWORD64 playerNameAddress = process->read<DWORD64>(player + updater::offsets::m_sSanitizedPlayerName);
-
 			if (playerNameAddress) {
 				char buf[256];
 				process->read_raw(playerNameAddress, buf, sizeof(buf));
 				playerName = std::string(buf);
 			}
 
-			const auto clippingWeapon = process->read<std::uint64_t>(pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
-			const auto weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
-			const auto weaponNameAddress = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
-			std::string weaponName = "Invalid Weapon Name";
-
-			if (!weaponNameAddress) {
-				weaponName = "Invalid Weapon Name";
-			}
-			else {
-				char buf[32];
-				process->read_raw(weaponNameAddress, buf, sizeof(buf));
-				weaponName = std::string(buf);
-				if (weaponName.compare(0, 7, "weapon_") == 0)
-				weaponName = weaponName.substr(7, weaponName.length()); // Remove weapon_ prefix
-			}
-
 			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
 			const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
-			const Vector3 head2 = { origin.x + 10, origin.y + 10, origin.z + 75.f };
 
 			if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance)
-				continue;
-
-			if ((localOrigin - origin).length2d() < 10)
 				continue;
 
 			const Vector3 screenPos = origin.world_to_screen(view_matrix);
 			const Vector3 screenHead = head.world_to_screen(view_matrix);
 
-			const float height = screenPos.y - screenHead.y;
-			const float width = height / 2.4f;
-
-			const float head_height = (screenPos.y - screenHead.y) / 8;
-			const float head_width = (height / 2.4f) / 4;
-
 			if (screenPos.z >= 0.01f) {
+				const float height = screenPos.y - screenHead.y;
+				const float width = height / 2.4f;
+				const float head_height = (screenPos.y - screenHead.y) / 8;
+				const float head_width = (height / 2.4f) / 4;
+
 				float distance = localOrigin.calculate_distance(origin);
 				int roundedDistance = std::round(distance / 10.f);
 
@@ -242,7 +214,30 @@ namespace hack {
 
 				if (config::show_extra_flags)
 				{
+					/*
+					* Reading values for extra flags is now seperated from the other reads
+					* This removes unnecessary memory reads, improving performance when not showing extra flags
+					*/
 					const bool isDefusing = process->read<bool>(pCSPlayerPawn + updater::offsets::m_bIsDefusing);
+					const uintptr_t playerMoneyServices = process->read<uintptr_t>(player + updater::offsets::m_pInGameMoneyServices);
+					const int32_t money = process->read<int32_t>(playerMoneyServices + updater::offsets::m_iAccount);
+					const float flashAlpha = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
+
+					const auto clippingWeapon = process->read<std::uint64_t>(pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
+					const auto weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
+					const auto weaponNameAddress = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
+					std::string weaponName = "Invalid Weapon Name";
+
+					if (!weaponNameAddress) {
+						weaponName = "Invalid Weapon Name";
+					}
+					else {
+						char buf[32];
+						process->read_raw(weaponNameAddress, buf, sizeof(buf));
+						weaponName = std::string(buf);
+						if (weaponName.compare(0, 7, "weapon_") == 0)
+							weaponName = weaponName.substr(7, weaponName.length()); // Remove weapon_ prefix
+					}
 
 					render::RenderText(
 						g::hdcBuffer,
@@ -270,9 +265,8 @@ namespace hack {
 						RGB(0, 125, 0),
 						10
 					);
-
-					float flashDuration = process->read<float>(pCSPlayerPawn + updater::offsets::m_flFlashDuration);
-					if (flashDuration > 0.1)
+					
+					if (flashAlpha > 100)
 					{
 						render::RenderText(
 							g::hdcBuffer,
@@ -284,10 +278,9 @@ namespace hack {
 						);
 					}
 
-					std::string defuText = "Player is defusing";
-
 					if (isDefusing)
 					{
+						const std::string defuText = "Player is defusing";
 						render::RenderText(
 							g::hdcBuffer,
 							screenHead.x + (width / 2 + 5),
