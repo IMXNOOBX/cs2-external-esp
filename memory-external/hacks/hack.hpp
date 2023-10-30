@@ -128,6 +128,9 @@ namespace hack {
 			if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance)
 				continue;
 
+			if (origin.x == 0 && origin.y == 0 && origin.z == 0)
+				continue;
+
 			const Vector3 screenPos = origin.world_to_screen(view_matrix);
 			const Vector3 screenHead = head.world_to_screen(view_matrix);
 
