@@ -3,6 +3,17 @@
 
 namespace render
 {
+	void DrawCircle(HDC hdc, int x, int y, int radius, COLORREF color)
+	{
+		HBRUSH hBrush = CreateSolidBrush(color);
+		HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+
+		Ellipse(hdc, x - radius, y - radius, x + radius, y + radius);
+
+		SelectObject(hdc, hOldBrush);
+		DeleteObject(hBrush);
+	}
+
 	void DrawBorderBox(HDC hdc, int x, int y, int w, int h, COLORREF borderColor)
 	{
 		HBRUSH hBorderBrush = CreateSolidBrush(borderColor);
