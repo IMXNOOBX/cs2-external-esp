@@ -9,6 +9,21 @@
 #include <iostream>
 #include <Psapi.h> 
 
+typedef NTSTATUS(WINAPI* pNtReadVirtualMemory)(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead);
+typedef NTSTATUS(WINAPI* pNtWriteVirtualMemory)(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToWrite, PULONG NumberOfBytesWritten);
+
+class pMemory {
+
+public:
+	pMemory() {
+		pfnNtReadVirtualMemory = (pNtReadVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtReadVirtualMemory");
+		pfnNtWriteVirtualMemory = (pNtWriteVirtualMemory)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtWriteVirtualMemory");
+	}
+
+	pNtReadVirtualMemory pfnNtReadVirtualMemory;
+	pNtWriteVirtualMemory pfnNtWriteVirtualMemory;
+};
+
 struct ProcessModule
 {
 	uintptr_t base, size;
@@ -50,7 +65,9 @@ public:
 	bool read_raw(uintptr_t address, void* buffer, size_t size)
 	{
 		SIZE_T bytesRead;
-		if (ReadProcessMemory(this->handle_, reinterpret_cast<LPCVOID>(address), buffer, size, &bytesRead))
+		pMemory cMemory;
+
+		if (cMemory.pfnNtReadVirtualMemory(this->handle_, (PVOID)(address), buffer, static_cast<ULONG>(size), (PULONG)&bytesRead))
 		{
 			return bytesRead == size;
 		}
@@ -60,20 +77,24 @@ public:
 	template<class T>
 	void write(uintptr_t address, T value)
 	{
-		WriteProcessMemory(handle_, (void*)address, &value, sizeof(T), 0);
+		pMemory cMemory;
+		cMemory.pfnNtWriteVirtualMemory(handle_, (void*)address, &value, sizeof(T), 0);
 	}
 
 	template<class T>
 	T read(uintptr_t address)
 	{
 		T buffer{};
-		ReadProcessMemory(handle_, (void*)address, &buffer, sizeof(T), 0);
+		pMemory cMemory;
+
+		cMemory.pfnNtReadVirtualMemory(handle_, (void*)address, &buffer, sizeof(T), 0);
 		return buffer;
 	}
 
 	void write_bytes(uintptr_t addr, std::vector<uint8_t> patch)
 	{
-		WriteProcessMemory(handle_, (void*)addr, &patch[0], patch.size(), 0);
+		pMemory cMemory;
+		cMemory.pfnNtWriteVirtualMemory(handle_, (void*)addr, &patch[0], patch.size(), 0);
 	}
 
 	uintptr_t read_multi_address(uintptr_t ptr, std::vector<uintptr_t> offsets)
