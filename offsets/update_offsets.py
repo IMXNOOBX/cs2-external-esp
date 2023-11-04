@@ -5,7 +5,7 @@ import re
 
 source_url = "https://github.com/a2x/cs2-dumper/raw/main/generated/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
-dest_path = "./offsets.json"
+dest_path = "./offsets/offsets.json"
 
 # Fetch the source JSON
 source_response = requests.get(source_url)
