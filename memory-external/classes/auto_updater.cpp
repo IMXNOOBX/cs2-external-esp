@@ -219,10 +219,10 @@ namespace updater {
 			offsets::m_bIsDefusing = data["m_bIsDefusing"];
 		if (data["m_szName"].is_number())
 			offsets::m_szName = data["m_szName"];
-		if (data["m_pClippingWeapon "].is_number())
-			offsets::m_pClippingWeapon = data["m_pClippingWeapon "];
-		if (data["m_ArmorValue "].is_number())
-			offsets::m_ArmorValue = data["m_ArmorValue "];
+		if (data["m_pClippingWeapon"].is_number())
+			offsets::m_pClippingWeapon = data["m_pClippingWeapon"];
+		if (data["m_ArmorValue"].is_number())
+			offsets::m_ArmorValue = data["m_ArmorValue"];
 		if (data["m_iHealth"].is_number())
 			offsets::m_iHealth = data["m_iHealth"];
 		if (data["m_hPlayerPawn"].is_number())
