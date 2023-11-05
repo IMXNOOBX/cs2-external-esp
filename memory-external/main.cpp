@@ -177,8 +177,7 @@ int main() {
 
 	DestroyWindow(hWnd);
 
-	std::cout << "[cs2] Deataching from process" << std::endl;
-	g_game.process->Close();
+	g_game.close();
 
 #ifdef NDEBUG
 	std::cout << "[cs2] Press any key to close" << std::endl;

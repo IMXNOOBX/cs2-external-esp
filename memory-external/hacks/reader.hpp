@@ -50,6 +50,7 @@ public:
 	std::vector<CPlayer> players = {};
 	void init();
 	void loop();
+	void close();
 	Vector3 world_to_screen(Vector3* v);
 private:
 	view_matrix_t view_matrix;

@@ -35,9 +35,14 @@ void CGame::init() {
 		}
 	} while (base_client.base == 0 || base_engine.base == 0);
 
-	GetClientRect(g_game.process->hwnd_, &game_bounds);
+	GetClientRect(process->hwnd_, &game_bounds);
 
 	buildNumber = process->read<uintptr_t>(base_engine.base + updater::offsets::dwBuildNumber);
+}
+
+void CGame::close() {
+	std::cout << "[cs2] Deatachig from process" << std::endl;
+	process->Close();
 }
 
 void CGame::loop() {
@@ -60,7 +65,7 @@ void CGame::loop() {
 
 	localTeam = process->read<int>(localPlayer + updater::offsets::m_iTeamNum);
 	localOrigin = process->read<Vector3>(localpCSPlayerPawn + updater::offsets::m_vecOrigin);
-	isC4Planted = process->read<bool>(g_game.base_client.base + updater::offsets::dwPlantedC4 - 0x8);
+	isC4Planted = process->read<bool>(base_client.base + updater::offsets::dwPlantedC4 - 0x8);
 
 	inGame = true;
 	int playerIndex = 0;
@@ -143,7 +148,7 @@ void CGame::loop() {
 }
 
 std::string CGame::read_string(uintptr_t addr) {
-	const DWORD64 address = g_game.process->read<DWORD64>(addr);
+	const DWORD64 address = process->read<DWORD64>(addr);
 	if (address) {
 		char buffer[256];
 		process->read_raw(address, buffer, sizeof(buffer));
