@@ -28,6 +28,7 @@ namespace config {
 	inline float render_distance = -1.f;
 	inline int flag_render_distance = 200;
 	inline bool show_extra_flags = false;
+	inline bool show_head_tracker = false;
 
 	inline RGB esp_box_color_team = { 75, 175, 75 };
 	inline RGB esp_box_color_enemy = { 175, 75, 75 };
