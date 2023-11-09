@@ -115,9 +115,12 @@ void CGame::loop() {
 		if (config::render_distance != -1 && (localOrigin - player.origin).length2d() > config::render_distance) continue;
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
-		const uintptr_t gamescene = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
-		const uintptr_t bonearray = process->read<uint64_t>(gamescene + 0x160 + 0x80);
-		player.skull = process->read<Vector3>(bonearray + 6 * 32);
+		if (config::show_head_tracker) {
+			const uintptr_t gamescene = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
+			const uintptr_t bonearray = process->read<uint64_t>(gamescene + 0x160 + 0x80);
+			player.skull = process->read<Vector3>(bonearray + 6 * 32);
+		}
+
 
 		if (config::show_extra_flags) {
 			/*

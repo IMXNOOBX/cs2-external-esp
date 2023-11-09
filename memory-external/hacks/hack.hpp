@@ -51,25 +51,6 @@ namespace hack {
 		for (auto player = g_game.players.begin(); player < g_game.players.end(); player++) {
 			const Vector3 screenPos = g_game.world_to_screen(&player->origin);
 			const Vector3 screenHead = g_game.world_to_screen(&player->head);
-			const Vector3 screenHeadPos = g_game.world_to_screen(&player->skull);
-
-			const Vector3 origin = process->read<Vector3>(pCSPlayerPawn + updater::offsets::m_vecOrigin);
-			const Vector3 head = { origin.x, origin.y, origin.z + 75.f };
-
-			if (origin.x == localOrigin.x && origin.y == localOrigin.y && origin.z == localOrigin.z)
-				continue;
-
-			
-
-			if (config::render_distance != -1 && (localOrigin - origin).length2d() > config::render_distance)
-				continue;
-
-			if (origin.x == 0 && origin.y == 0)
-				continue;
-
-			const Vector3 screenPos = origin.world_to_screen(view_matrix);
-			const Vector3 screenHead = head.world_to_screen(view_matrix);
-			
 
 			if (screenPos.z >= 0.01f) {
 				const float height = screenPos.y - screenHead.y;
@@ -78,18 +59,16 @@ namespace hack {
 				float distance = g_game.localOrigin.calculate_distance(player->origin);
 				int roundedDistance = std::round(distance / 10.f);
 
-				if (config::show_head_tracker)
-				{
-					const uintptr_t gamescene = process->read<uint64_t>(pCSPlayerPawn + 0x310);
-					const uintptr_t bonearray = process->read<uint64_t>(gamescene + 0x160 + 0x80);
-					const Vector3 headPos = process->read<Vector3>(bonearray + 6 * 32);
-					const Vector3 screenHeadPos = headPos.world_to_screen(view_matrix);
+				if (config::show_head_tracker) {
+					const Vector3 screenHeadPos = g_game.world_to_screen(&player->skull);
+					const float head_height = (screenHeadPos.y - screenHeadPos.y) / 8;
+					const float head_width = (head_height / 2.4f) / 4;
 
 					render::DrawCircle(
 						g::hdcBuffer,
 						screenHeadPos.x,
 						screenHeadPos.y,
-						width / 5,
+						5,
 						config::esp_box_color_enemy
 					);
 				}
@@ -194,7 +173,7 @@ namespace hack {
 						RGB(0, 125, 0),
 						10
 					);
-					
+
 					if (player->flashAlpha > 100)
 					{
 						render::RenderText(
@@ -225,5 +204,4 @@ namespace hack {
 		// std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
-
 
