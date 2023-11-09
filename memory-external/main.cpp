@@ -5,10 +5,13 @@
 
 #include "memory/memory.hpp"
 #include "classes/vector.hpp"
+#include "hacks/reader.hpp"
 #include "hacks/hack.hpp"
 #include "classes/globals.hpp"
 #include "classes/render.hpp"
 #include "classes/auto_updater.hpp"
+
+bool finish = false;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -39,7 +42,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		FillRect(g::hdcBuffer, &ps.rcPaint, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
 
-		if (GetForegroundWindow() == hack::process->hwnd_) {
+		if (GetForegroundWindow() == g_game.process->hwnd_) {
 			//render::RenderText(g::hdcBuffer, 10, 10, "cs2 | ESP", RGB(75, 175, 175), 15);
 			hack::loop();
 		}
@@ -62,12 +65,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+void read_thread() {
+	while (!finish) {
+		g_game.loop();
+		std::this_thread::sleep_for(std::chrono::milliseconds(2));
+	}
+}
+
 int main() {
 	SetConsoleTitle("cs2-external-esp");
 	std::cout << "[info] Github Repository: https://github.com/IMXNOOBX/cs2-external-esp" << std::endl;
 	std::cout << "[info] Unknowncheats thread: https://www.unknowncheats.me/forum/counter-strike-2-releases/600259-cs2-external-esp.html\n" << std::endl;
-
-	hack::process = std::make_shared<pProcess>();
 
 	std::cout << "[config] Reading configuration." << std::endl;
 	if (config::read())
@@ -79,30 +87,15 @@ int main() {
 	updater::check_and_update(config::automatic_update);
 #endif
 
-	std::cout << "[cs2] Waiting for cs2.exe..." << std::endl;
-
-	while (!hack::process->AttachProcessHj("cs2.exe"))
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-
-	std::cout << "[cs2] Attached to cs2.exe\n" << std::endl;
-
 	std::cout << "[updater] Reading offsets from file offsets.json." << std::endl;
 	if (updater::read())
 		std::cout << "[updater] Sucessfully read offsets file\n" << std::endl;
 	else
 		std::cout << "[updater] Error reading offsets file, reseting to the default state\n" << std::endl;
 
-	do {
-		hack::base_client = hack::process->GetModule("client.dll");
-		hack::base_engine = hack::process->GetModule("engine2.dll");
-		if (hack::base_client.base == 0 || hack::base_engine.base == 0) {
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			std::cout << "[cs2] Failed to find module client.dll/engine2.dll, waiting for the game to load it..." << std::endl;
-		}
-	} while (hack::base_client.base == 0 || hack::base_engine.base == 0);
+	g_game.init();
 
-	const uintptr_t buildNumber = hack::process->read<uintptr_t>(hack::base_engine.base + updater::offsets::dwBuildNumber);
-	if (buildNumber != updater::build_number) {
+	if (g_game.buildNumber != updater::build_number) {
 		std::cout << "[cs2] Build number doesnt match, the game has been updated and this esp most likely wont work." << std::endl;
 		std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
 		std::cout << "[cs2] Press any key to continue" << std::endl;
@@ -114,10 +107,10 @@ int main() {
 
 	std::cout << "[overlay] Waiting to focus game to create the overlay..." << std::endl;
 	std::cout << "[overlay] Make sure your game is in \"Full Screen Windowed\"" << std::endl;
-	while (GetForegroundWindow() != hack::process->hwnd_) {
+	while (GetForegroundWindow() != g_game.process->hwnd_) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		hack::process->UpdateHWND();
-		ShowWindow(hack::process->hwnd_, TRUE);
+		g_game.process->UpdateHWND();
+		ShowWindow(g_game.process->hwnd_, TRUE);
 	}
 	std::cout << "[overlay] Creating window overlay..." << std::endl;
 
@@ -126,13 +119,13 @@ int main() {
 	wc.lpfnWndProc = WndProc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hbrBackground = WHITE_BRUSH;
-	wc.hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongA(hack::process->hwnd_, (-6))); // GWL_HINSTANCE));
+	wc.hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongA(g_game.process->hwnd_, (-6))); // GWL_HINSTANCE));
 	wc.lpszMenuName = " ";
 	wc.lpszClassName = " ";
 
 	RegisterClassExA(&wc);
 
-	GetClientRect(hack::process->hwnd_, &g::gameBounds);
+	GetClientRect(g_game.process->hwnd_, &g::gameBounds);
 
 	// Create the window
 	HINSTANCE hInstance = NULL;
@@ -146,6 +139,9 @@ int main() {
 	ShowWindow(hWnd, TRUE);
 	//SetActiveWindow(hack::process->hwnd_);
 
+	// Launch game memory reading thread
+	std::thread read(read_thread);
+
 #ifndef _UC
 	std::cout << "\n[settings] In Game keybinds:\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[F7] enable/disable extra flags\n\t[F8] enable/disable head tracker circle\n\t[end] Unload esp.\n" << std::endl;
 #else
@@ -155,9 +151,9 @@ int main() {
 
 	// Message loop
 	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0))
+	while (GetMessage(&msg, NULL, 0, 0) && !finish)
 	{
-		if (GetAsyncKeyState(VK_END) & 0x8000) break;
+		if (GetAsyncKeyState(VK_END) & 0x8000) finish = true;
 
 		if (GetAsyncKeyState(VK_F5) & 0x8000) { config::team_esp = !config::team_esp; config::save(); Beep(700, 100); };
 #ifndef _UC
@@ -173,6 +169,8 @@ int main() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
+	read.detach();
+
 	Beep(700, 100); Beep(700, 100);
 
 	std::cout << "[overlay] Destroying overlay window." << std::endl;
@@ -181,8 +179,7 @@ int main() {
 
 	DestroyWindow(hWnd);
 
-	std::cout << "[cs2] Deataching from process" << std::endl;
-	hack::process->Close();
+	g_game.close();
 
 #ifdef NDEBUG
 	std::cout << "[cs2] Press any key to close" << std::endl;
