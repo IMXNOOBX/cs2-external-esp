@@ -5,13 +5,13 @@ namespace render
 {
 	void DrawCircle(HDC hdc, int x, int y, int radius, COLORREF color)
 	{
-		HBRUSH hBrush = CreateSolidBrush(color);
-		HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+		HPEN hPen = CreatePen(PS_SOLID, 2, color);
+		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
-		Ellipse(hdc, x - radius, y - radius, x + radius, y + radius);
+		Arc(hdc, x - radius, y - radius, x + radius, y + radius + 4, 0, 0, 0, 0);
 
-		SelectObject(hdc, hOldBrush);
-		DeleteObject(hBrush);
+		SelectObject(hdc, hOldPen);
+		DeleteObject(hPen);
 	}
 
 	void DrawBorderBox(HDC hdc, int x, int y, int w, int h, COLORREF borderColor)
