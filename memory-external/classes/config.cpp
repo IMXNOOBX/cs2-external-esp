@@ -20,6 +20,8 @@ namespace config {
 		if (data.empty())
 			return false;
 
+		if (data["show_head_tracker"].is_boolean())
+			show_head_tracker = data["show_head_tracker"];
 		if (data["team_esp"].is_boolean())
 			team_esp = data["team_esp"];
 		if (data["automatic_update"].is_boolean())
@@ -63,23 +65,18 @@ namespace config {
 			};
 		}
 
-		//if (data["show_distance"].is_boolean())
-		//	show_distance = data["show_distance"];
-		//if (data["show_armor"].is_boolean())
-		//	show_armor = data["show_armor"];
 		//if (data["rainbow"].is_boolean())
 		//	rainbow = data["rainbow"];
 		//if (data["rainbow_speed"].is_number())
 		//	rainbow_speed = data["rainbow_speed"];
-		//if (data["head_tracker"].is_boolean())
-		//	head_tracker = data["head_tracker"];
 
 		return true;
 	}
 
 	void save() {
 		json data;
-
+		
+		data["show_head_tracker"] = show_head_tracker;
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
 		data["render_distance"] = render_distance;
@@ -91,11 +88,8 @@ namespace config {
 		data["esp_name_color"] = { esp_name_color.r, esp_name_color.g, esp_name_color.b };
 		data["esp_distance_color"] = { esp_distance_color.r, esp_distance_color.g, esp_distance_color.b };
 
-		//data["show_distance"] = show_distance;
-		//data["show_armor"] = show_armor;
 		//data["rainbow"] = rainbow;
 		//data["rainbow_speed"] = rainbow_speed;
-		//data["head_tracker"] = head_tracker;
 
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;
