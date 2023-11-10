@@ -12,7 +12,7 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 * Releases have been removed in order to be allowed in unknowncheats so the binaries are published there
 1. Go to unknwoncheats post [**cs2-external-esp**](https://www.unknowncheats.me/forum/counter-strike-2-a/600259-cs2-external-esp.html)
 2. Click on the binary file you want to download and download it.
-3. Open the binary file and cs2 (doesnt matter which one goes first)
+3. Open the binary file and cs2 (doesnt matter which one goes first (if you are having issues with esp not showing, wait to open till in game))
 ❗ Make sure your game is in full screen windowed
 
 ## 💧 Repository Update
