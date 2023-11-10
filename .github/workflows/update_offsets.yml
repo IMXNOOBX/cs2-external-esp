@@ -35,13 +35,30 @@ jobs:
         echo "Repository has no updates"
         exit 0
 
-    - name: Commit and push changes
-      if: steps.run-python-script.outcome == 'success'
-      run: |
-        git config --global user.email ${{ secrets.GIT_USER_EMAIL }}
-        git config --global user.name ${{ secrets.GIT_USER_NAME }}
-        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-        git add offsets/offsets.json
-        git commit -m "Automatically updated offsets from https://github.com/a2x/cs2-dumper"
-        git push
-      shell: bash
+    # - name: Commit and push changes
+    #   if: steps.run-python-script.outcome == 'success'
+    #   run: |
+    #     git config --global user.email ${{ secrets.GIT_USER_EMAIL }}
+    #     git config --global user.name ${{ secrets.GIT_USER_NAME }}
+    #     git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+    #     git add offsets/offsets.json
+    #     git commit -m "Automatically updated offsets from https://github.com/a2x/cs2-dumper"
+    #     git push
+    #   shell: bash
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: Automatically updated offsets a2x/cs2-dumper
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: offset-update
+        delete-branch: true
+        title: 'Automatically updated offsets'
+        body: |
+          Offsets Updated
+           - Automatically updated offsets from [cs2-dumper](https://github.com/a2x/cs2-dumper)
+        labels: |
+          update-offsets
+        reviewers: IMXNOOBX
