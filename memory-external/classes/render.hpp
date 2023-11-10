@@ -8,7 +8,7 @@ namespace render
 		HPEN hPen = CreatePen(PS_SOLID, 2, color);
 		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
-		Arc(hdc, x - radius, y - radius, x + radius, y + radius + 4, 0, 0, 0, 0);
+		Arc(hdc, x - radius, y - radius, x + radius, y + radius * 1.5, 0, 0, 0, 0);
 
 		SelectObject(hdc, hOldPen);
 		DeleteObject(hPen);
