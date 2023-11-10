@@ -68,7 +68,7 @@ namespace hack {
 						g::hdcBuffer,
 						screenHeadPos.x,
 						screenHeadPos.y,
-						5,
+						width / 5,
 						config::esp_box_color_enemy
 					);
 				}
