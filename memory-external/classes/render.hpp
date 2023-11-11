@@ -3,6 +3,18 @@
 
 namespace render
 {
+	void DrawLine(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color)
+	{
+		HPEN hPen = CreatePen(PS_SOLID, 2, color);
+		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+
+		MoveToEx(hdc, x1, y1, NULL);
+		LineTo(hdc, x2, y2);
+
+		SelectObject(hdc, hOldPen);
+		DeleteObject(hPen);
+	}
+
 	void DrawCircle(HDC hdc, int x, int y, int radius, COLORREF color)
 	{
 		HPEN hPen = CreatePen(PS_SOLID, 2, color);

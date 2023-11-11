@@ -20,8 +20,10 @@ namespace config {
 		if (data.empty())
 			return false;
 
-		if (data["show_head_tracker"].is_boolean())
-			show_head_tracker = data["show_head_tracker"];
+		if (data["show_box_esp"].is_boolean())
+			show_box_esp = data["show_box_esp"];
+		if (data["show_skeleton_esp"].is_boolean())
+			show_skeleton_esp = data["show_skeleton_esp"];
 		if (data["team_esp"].is_boolean())
 			team_esp = data["team_esp"];
 		if (data["automatic_update"].is_boolean())
@@ -46,6 +48,22 @@ namespace config {
 				data["esp_box_color_enemy"][0].get<int>(),
 				data["esp_box_color_enemy"][1].get<int>(),
 				data["esp_box_color_enemy"][2].get<int>()
+			};
+		}
+
+		if (data.find("esp_skeleton_color_team") != data.end()) {
+			esp_box_color_team = {
+				data["esp_skeleton_color_team"][0].get<int>(),
+				data["esp_skeleton_color_team"][1].get<int>(),
+				data["esp_skeleton_color_team"][2].get<int>()
+			};
+		}
+
+		if (data.find("esp_skeleton_color_enemy") != data.end()) {
+			esp_box_color_enemy = {
+				data["esp_skeleton_color_enemy"][0].get<int>(),
+				data["esp_skeleton_color_enemy"][1].get<int>(),
+				data["esp_skeleton_color_enemy"][2].get<int>()
 			};
 		}
 
@@ -76,7 +94,7 @@ namespace config {
 	void save() {
 		json data;
 		
-		data["show_head_tracker"] = show_head_tracker;
+		data["show_box_esp"] = show_box_esp;
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
 		data["render_distance"] = render_distance;
@@ -85,6 +103,8 @@ namespace config {
 
 		data["esp_box_color_team"] = { esp_box_color_team.r, esp_box_color_team.g, esp_box_color_team.b };
 		data["esp_box_color_enemy"] = { esp_box_color_enemy.r, esp_box_color_enemy.g, esp_box_color_enemy.b };
+		data["esp_skeleton_color_team"] = { esp_box_color_team.r, esp_box_color_team.g, esp_box_color_team.b };
+		data["esp_skeleton_color_enemy"] = { esp_box_color_enemy.r, esp_box_color_enemy.g, esp_box_color_enemy.b };
 		data["esp_name_color"] = { esp_name_color.r, esp_name_color.g, esp_name_color.b };
 		data["esp_distance_color"] = { esp_distance_color.r, esp_distance_color.g, esp_distance_color.b };
 
