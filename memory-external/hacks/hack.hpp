@@ -65,6 +65,7 @@ namespace hack {
 						player->bones.bonePositions["head"].x,
 						player->bones.bonePositions["head"].y - width / 12,
 						width / 5,
+						(g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy)
 					);
 
 					// render::DrawLine(g::hdcBuffer, player->bones.bonePositions["head"].x, player->bones.bonePositions["head"].y, player->bones.bonePositions["neck_0"].x, player->bones.bonePositions["neck_0"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
