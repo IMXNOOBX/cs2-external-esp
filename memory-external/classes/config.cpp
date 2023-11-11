@@ -94,6 +94,7 @@ namespace config {
 	void save() {
 		json data;
 		
+		data["show_skeleton_esp"] = show_skeleton_esp;
 		data["show_box_esp"] = show_box_esp;
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
