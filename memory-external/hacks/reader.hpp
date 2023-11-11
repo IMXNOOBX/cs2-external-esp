@@ -12,7 +12,7 @@ struct view_matrix_t {
 	float matrix[4][4];
 };
 
-class PBones {
+class CBones {
 public:
 	std::map<std::string, Vector3> bonePositions;
 };
@@ -37,7 +37,7 @@ public:
 	std::string name;
 	Vector3 origin;
 	Vector3 head;
-	PBones bones;
+	CBones bones;
 	bool is_defusing;
 	bool is_spotted;
 	int32_t money;
