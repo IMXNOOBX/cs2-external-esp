@@ -5,10 +5,6 @@
 #include "../classes/auto_updater.hpp"
 #include "../classes/config.hpp"
 
-#ifndef M_PI
-#define M_PI (3.14159265358979323846264338327950288)
-#endif
-
 std::map<std::string, int> boneMap = {
 	{"head", 6},
 	{"neck_0", 5},
