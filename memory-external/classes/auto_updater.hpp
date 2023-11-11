@@ -46,6 +46,7 @@ namespace updater {
 		inline std::ptrdiff_t m_pInGameMoneyServices = 0x6D0;
 		inline std::ptrdiff_t m_iAccount = 0x40;
 		inline std::ptrdiff_t m_vecAbsOrigin = 0xC8;
+		inline std::ptrdiff_t m_vOldOrigin = 0x1224;
 		inline std::ptrdiff_t m_pGameSceneNode = 0x310;
 		inline std::ptrdiff_t m_flFlashOverlayAlpha = 0x1444;
 		inline std::ptrdiff_t m_bIsDefusing = 0x1390;
@@ -56,6 +57,5 @@ namespace updater {
 		inline std::ptrdiff_t m_hPlayerPawn = 0x7BC;
 		inline std::ptrdiff_t m_sSanitizedPlayerName = 0x720;
 		inline std::ptrdiff_t m_iTeamNum = 0x3BF;
-		inline std::ptrdiff_t m_vecOrigin = 0x1214;
 	}
 }
