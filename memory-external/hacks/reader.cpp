@@ -1,7 +1,29 @@
 #include "reader.hpp"
 #include <thread>
+#include <map>
+#include <cmath>
 #include "../classes/auto_updater.hpp"
 #include "../classes/config.hpp"
+
+std::map<std::string, int> boneMap = {
+	{"head", 6},
+	{"neck_0", 5},
+	{"spine_1", 4},
+	{"spine_2", 2},
+	{"pelvis", 0},
+	{"arm_upper_L", 8},
+	{"arm_lower_L", 9},
+	{"hand_L", 10},
+	{"arm_upper_R", 13},
+	{"arm_lower_R", 14},
+	{"hand_R", 15},
+	{"leg_upper_L", 22},
+	{"leg_lower_L", 23},
+	{"ankle_L", 24},
+	{"leg_upper_R", 25},
+	{"leg_lower_R", 26},
+	{"ankle_R", 27}
+};
 
 // CC4
 uintptr_t CC4::get_planted() {
@@ -57,26 +79,26 @@ void CGame::loop() {
 
 	entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
 
-	const uintptr_t localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
-	const uintptr_t localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 120 * (localPlayerPawn & 0x1FF));
+	localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
+	localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 120 * (localPlayerPawn & 0x1FF));
 	if (!localpCSPlayerPawn) return;
 
 	view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
 
 	localTeam = process->read<int>(localPlayer + updater::offsets::m_iTeamNum);
-	localOrigin = process->read<Vector3>(localpCSPlayerPawn + updater::offsets::m_vecOrigin);
+	localOrigin = process->read<Vector3>(localpCSPlayerPawn + updater::offsets::m_vOldOrigin);
 	isC4Planted = process->read<bool>(base_client.base + updater::offsets::dwPlantedC4 - 0x8);
 
 	inGame = true;
 	int playerIndex = 0;
 	std::vector<CPlayer> list;
+	CPlayer player;
+	uintptr_t list_entry, list_entry2, playerPawn, playerMoneyServices, clippingWeapon, weaponData, playerNameData;
 
 	while (true) {
 		playerIndex++;
-		uintptr_t list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
+		list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
 		if (!list_entry) break;
-
-		CPlayer player;
 
 		player.entity = process->read<uintptr_t>(list_entry + 120 * (playerIndex & 0x1FF));
 		if (!player.entity) continue;
@@ -90,9 +112,9 @@ void CGame::loop() {
 		player.team = process->read<int>(player.entity + updater::offsets::m_iTeamNum);
 		if (config::team_esp && (player.team == localTeam)) continue;
 
-		const std::uint32_t playerPawn = process->read<std::uint32_t>(player.entity + updater::offsets::m_hPlayerPawn);
+		playerPawn = process->read<std::uint32_t>(player.entity + updater::offsets::m_hPlayerPawn);
 
-		const uintptr_t list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
+		list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
 		if (!list_entry2) continue;
 
 		player.pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerPawn & 0x1FF));
@@ -103,10 +125,23 @@ void CGame::loop() {
 		if (player.health <= 0 || player.health > 100) continue;
 
 		if (config::team_esp && (player.pCSPlayerPawn == localPlayer)) continue;
+		
+		/*
+		* Unused for now, but for a vis check
+		*
+		* player.spottedState = process->read<uintptr_t>(player.pCSPlayerPawn + 0x1630);
+		* player.is_spotted = process->read<DWORD_PTR>(player.spottedState + 0xC); // bSpottedByMask
+		* player.is_spotted = process->read<bool>(player.spottedState + 0x8); // bSpotted
+		*/
 
-		player.name = read_string(player.entity + updater::offsets::m_sSanitizedPlayerName);
+		playerNameData = process->read<uintptr_t>(player.entity + updater::offsets::m_sSanitizedPlayerName);
+		char buffer[256];
+		process->read_raw(playerNameData, buffer, sizeof(buffer));
+		std::string name = std::string(buffer);
+		player.name = name;
 
-		player.origin = process->read<Vector3>(player.pCSPlayerPawn + updater::offsets::m_vecOrigin);
+		player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
+		player.origin = process->read<Vector3>(player.pCSPlayerPawn + updater::offsets::m_vOldOrigin);
 		player.head = { player.origin.x, player.origin.y, player.origin.z + 75.f };
 
 		if (player.origin.x == localOrigin.x && player.origin.y == localOrigin.y && player.origin.z == localOrigin.z)
@@ -115,12 +150,11 @@ void CGame::loop() {
 		if (config::render_distance != -1 && (localOrigin - player.origin).length2d() > config::render_distance) continue;
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
-		if (config::show_head_tracker) {
-			const uintptr_t gamescene = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
-			const uintptr_t bonearray = process->read<uint64_t>(gamescene + 0x160 + 0x80);
-			player.skull = process->read<Vector3>(bonearray + 6 * 32);
+		if (config::show_skeleton_esp) {
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
+			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
+			player.ReadBones();
 		}
-
 
 		if (config::show_extra_flags) {
 			/*
@@ -129,14 +163,17 @@ void CGame::loop() {
 			*/
 			player.is_defusing = process->read<bool>(player.pCSPlayerPawn + updater::offsets::m_bIsDefusing);
 
-			const uintptr_t playerMoneyServices = process->read<uintptr_t>(player.entity + updater::offsets::m_pInGameMoneyServices);
+			playerMoneyServices = process->read<uintptr_t>(player.entity + updater::offsets::m_pInGameMoneyServices);
 			player.money = process->read<int32_t>(playerMoneyServices + updater::offsets::m_iAccount);
 
 			player.flashAlpha = process->read<float>(player.pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
 
-			const auto clippingWeapon = process->read<std::uint64_t>(player.pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
-			const auto weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
-			std::string weaponName = read_string(weaponData + updater::offsets::m_szName);
+			clippingWeapon = process->read<std::uint64_t>(player.pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
+			weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
+			weaponData = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
+			char buffer[MAX_PATH];
+			process->read_raw(weaponData, buffer, sizeof(buffer));
+			std::string weaponName = std::string(buffer);
 			if (weaponName.compare(0, 7, "weapon_") == 0)
 				player.weapon = weaponName.substr(7, weaponName.length()); // Remove weapon_ prefix
 			else
@@ -150,14 +187,14 @@ void CGame::loop() {
 	players.assign(list.begin(), list.end());
 }
 
-std::string CGame::read_string(uintptr_t addr) {
-	const DWORD64 address = process->read<DWORD64>(addr);
-	if (address) {
-		char buffer[256];
-		process->read_raw(address, buffer, sizeof(buffer));
-		return std::string(buffer);
+void CPlayer::ReadBones() {
+	for (const auto& entry : boneMap) {
+		const std::string& boneName = entry.first;
+		int boneIndex = entry.second;
+		uintptr_t boneAddress = boneArray + boneIndex * 32;
+		Vector3 bonePosition = g_game.process->read<Vector3>(boneAddress);
+		bones.bonePositions[boneName] = g_game.world_to_screen(&bonePosition);
 	}
-	return "invalid";
 }
 
 Vector3 CGame::world_to_screen(Vector3* v) {
