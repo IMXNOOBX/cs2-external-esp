@@ -11,6 +11,7 @@
     "m_pInGameMoneyServices": 1744,
     "m_iAccount": 64,
     "m_vecAbsOrigin": 200,
+    "m_vOldOrigin": 4644,
     "m_pGameSceneNode": 784,
     "m_flFlashOverlayAlpha": 5212,
     "m_bIsDefusing": 5032,

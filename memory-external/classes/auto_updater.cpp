@@ -211,6 +211,8 @@ namespace updater {
 			offsets::m_iAccount = data["m_iAccount"];
 		if (data["m_vecAbsOrigin"].is_number())
 			offsets::m_vecAbsOrigin = data["m_vecAbsOrigin"];
+		if (data["m_vOldOrigin"].is_number())
+			offsets::m_vOldOrigin = data["m_vOldOrigin"];
 		if (data["m_pGameSceneNode"].is_number())
 			offsets::m_pGameSceneNode = data["m_pGameSceneNode"];
 		if (data["m_flFlashOverlayAlpha"].is_number())
@@ -231,8 +233,6 @@ namespace updater {
 			offsets::m_sSanitizedPlayerName = data["m_sSanitizedPlayerName"];
 		if (data["m_iTeamNum"].is_number())
 			offsets::m_iTeamNum = data["m_iTeamNum"];
-		if (data["m_vecOrigin"].is_number())
-			offsets::m_vecOrigin = data["m_vecOrigin"];
 
 		return true;
 	}
@@ -255,6 +255,7 @@ namespace updater {
 		data["m_pInGameMoneyServices"] = offsets::m_pInGameMoneyServices;
 		data["m_iAccount"] = offsets::m_iAccount;
 		data["m_vecAbsOrigin"] = offsets::m_vecAbsOrigin;
+		data["m_vOldOrigin"] = offsets::m_vOldOrigin;
 		data["m_pGameSceneNode"] = offsets::m_pGameSceneNode;
 		data["m_flFlashOverlayAlpha"] = offsets::m_flFlashOverlayAlpha;
 		data["m_bIsDefusing"] = offsets::m_bIsDefusing;
@@ -265,7 +266,6 @@ namespace updater {
 		data["m_hPlayerPawn"] = offsets::m_hPlayerPawn;
 		data["m_sSanitizedPlayerName"] = offsets::m_sSanitizedPlayerName;
 		data["m_iTeamNum"] = offsets::m_iTeamNum;
-		data["m_vecOrigin"] = offsets::m_vecOrigin;
 
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;
