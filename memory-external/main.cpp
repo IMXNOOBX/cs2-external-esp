@@ -143,9 +143,9 @@ int main() {
 	std::thread read(read_thread);
 
 #ifndef _UC
-	std::cout << "\n[settings] In Game keybinds:\n\t[F4] enable/disable Box ESP\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[F7] enable/disable extra flags\n\t[F8] enable/disable skeleton esp\n\t[end] Unload esp.\n" << std::endl;
+	std::cout << "\n[settings] In Game keybinds:\n\t[F4] enable/disable Box ESP\n\t[F5] enable/disable Team ESP\n\t[F6] enable/disable automatic updates\n\t[F7] enable/disable extra flags\n\t[F8] enable/disable skeleton esp\n\t[F9] enable/disable head tracker\n\t[end] Unload esp.\n" << std::endl;
 #else
-	std::cout << "\n[settings] In Game keybinds:\n\t[F4] enable/disable Box ESP\n\t[F5] enable/disable Team ESP\n\t[F7] enable/disable extra flags[F8] enable/disable skeleton esp\n\t[end] Unload esp.\n" << std::endl;
+	std::cout << "\n[settings] In Game keybinds:\n\t[F4] enable/disable Box ESP\n\t[F5] enable/disable Team ESP\n\t[F7] enable/disable extra flags\n\t[F8] enable/disable skeleton esp\n\t[F9] enable/disable head tracker\n\t[end] Unload esp.\n" << std::endl;
 #endif
 	std::cout << "[settings] Make sure you check the config for additional settings!" << std::endl;
 
@@ -164,6 +164,8 @@ int main() {
 		if (GetAsyncKeyState(VK_F7) & 0x8000) { config::show_extra_flags = !config::show_extra_flags; config::save(); Beep(700, 100); };
 
 		if (GetAsyncKeyState(VK_F8) & 0x8000) { config::show_skeleton_esp = !config::show_skeleton_esp; config::save(); Beep(700, 100); };
+
+		if (GetAsyncKeyState(VK_F9) & 0x8000) { config::show_head_tracker = !config::show_head_tracker; config::save(); Beep(700, 100); };
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
