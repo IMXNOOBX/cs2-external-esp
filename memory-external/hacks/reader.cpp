@@ -125,7 +125,7 @@ void CGame::loop() {
 		if (player.health <= 0 || player.health > 100) continue;
 
 		if (config::team_esp && (player.pCSPlayerPawn == localPlayer)) continue;
-		
+
 		/*
 		* Unused for now, but for a vis check
 		*
@@ -154,6 +154,12 @@ void CGame::loop() {
 			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
 			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
 			player.ReadBones();
+		}
+
+		if (config::show_head_tracker && !config::show_skeleton_esp) {
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
+			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
+			player.ReadHead();
 		}
 
 		if (config::show_extra_flags) {
@@ -187,12 +193,22 @@ void CGame::loop() {
 	players.assign(list.begin(), list.end());
 }
 
+uintptr_t boneAddress;
+Vector3 bonePosition;
+int boneIndex;
+void CPlayer::ReadHead() {
+	boneAddress = boneArray + 6 * 32;
+	bonePosition = g_game.process->read<Vector3>(boneAddress);
+	bones.bonePositions["head"] = g_game.world_to_screen(&bonePosition);
+
+}
+
 void CPlayer::ReadBones() {
 	for (const auto& entry : boneMap) {
 		const std::string& boneName = entry.first;
-		int boneIndex = entry.second;
-		uintptr_t boneAddress = boneArray + boneIndex * 32;
-		Vector3 bonePosition = g_game.process->read<Vector3>(boneAddress);
+		boneIndex = entry.second;
+		boneAddress = boneArray + boneIndex * 32;
+		bonePosition = g_game.process->read<Vector3>(boneAddress);
 		bones.bonePositions[boneName] = g_game.world_to_screen(&bonePosition);
 	}
 }
