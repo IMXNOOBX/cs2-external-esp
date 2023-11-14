@@ -24,6 +24,8 @@ namespace config {
 			show_box_esp = data["show_box_esp"];
 		if (data["show_skeleton_esp"].is_boolean())
 			show_skeleton_esp = data["show_skeleton_esp"];
+		if (data["show_head_tracker"].is_boolean())
+			show_head_tracker = data["show_head_tracker"];
 		if (data["team_esp"].is_boolean())
 			team_esp = data["team_esp"];
 		if (data["automatic_update"].is_boolean())
@@ -96,6 +98,7 @@ namespace config {
 		
 		data["show_box_esp"] = show_box_esp;
 		data["show_skeleton_esp"] = show_skeleton_esp;
+		data["show_head_tracker"] = show_head_tracker;
 		data["team_esp"] = team_esp;
 		data["automatic_update"] = automatic_update;
 		data["render_distance"] = render_distance;

@@ -59,7 +59,7 @@ namespace hack {
 				float distance = g_game.localOrigin.calculate_distance(player->origin);
 				int roundedDistance = std::round(distance / 10.f);
 
-				if (config::show_skeleton_esp) {
+				if (config::show_head_tracker) {
 					render::DrawCircle(
 						g::hdcBuffer,
 						player->bones.bonePositions["head"].x,
@@ -67,7 +67,9 @@ namespace hack {
 						width / 5,
 						(g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy)
 					);
+				}
 
+				if (config::show_skeleton_esp) {
 					// render::DrawLine(g::hdcBuffer, player->bones.bonePositions["head"].x, player->bones.bonePositions["head"].y, player->bones.bonePositions["neck_0"].x, player->bones.bonePositions["neck_0"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
 					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["neck_0"].x, player->bones.bonePositions["neck_0"].y, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
 					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, player->bones.bonePositions["spine_2"].x, player->bones.bonePositions["spine_2"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
