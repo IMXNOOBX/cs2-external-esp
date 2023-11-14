@@ -44,6 +44,7 @@ public:
 	float flashAlpha;
 	std::string weapon;
 	void ReadBones();
+	void ReadHead();
 };
 
 class CGame
