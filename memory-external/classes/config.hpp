@@ -29,6 +29,7 @@ namespace config {
 	inline int flag_render_distance = 200;
 	inline bool show_box_esp = true;
 	inline bool show_skeleton_esp = false;
+	inline bool show_head_tracker = false;
 	inline bool show_extra_flags = false;
 
 	inline RGB esp_box_color_team = { 75, 175, 75 };
