@@ -1,8 +1,8 @@
 {
     "build_number": 13968,
     "dwLocalPlayer": 25152952,
-    "dwEntityList": 24828640,
-    "dwViewMatrix": 25215200,
+    "dwEntityList": 24828656,
+    "dwViewMatrix": 25215232,
     "dwBuildNumber": 4764964,
     "dwPlantedC4": 25234632,
     "m_flC4Blow": 3760,
@@ -19,8 +19,12 @@
     "m_pClippingWeapon": 4776,
     "m_ArmorValue": 5384,
     "m_iHealth": 812,
-    "m_hPlayerPawn": 1980,
+    "m_hPlayerPawn": 2004,
     "m_sSanitizedPlayerName": 1824,
     "m_iTeamNum": 959,
     "m_vecOrigin": 4644
 }
+
+
+
+
