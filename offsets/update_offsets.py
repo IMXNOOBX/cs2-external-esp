@@ -37,6 +37,7 @@ dest_data["dwBuildNumber"] = source_data["engine2_dll"]["data"]["dwBuildNumber"]
 dest_data["dwLocalPlayer"] = source_data["client_dll"]["data"]["dwLocalPlayerPawn"]["value"]
 dest_data["dwEntityList"] = source_data["client_dll"]["data"]["dwEntityList"]["value"]
 dest_data["dwViewMatrix"] = source_data["client_dll"]["data"]["dwViewMatrix"]["value"]
+dest_data["dwPlantedC4"] = source_data["client_dll"]["data"]["dwPlantedC4"]["value"]
 
 with open(dest_path, 'w') as dest_file:
     json.dump(dest_data, dest_file, indent=4)
