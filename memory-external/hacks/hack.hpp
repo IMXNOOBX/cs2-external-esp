@@ -7,6 +7,24 @@
 
 namespace hack {
 
+	std::vector<std::pair<std::string, std::string>> boneConnections = {
+						{"neck_0", "spine_1"},
+						{"spine_1", "spine_2"},
+						{"spine_2", "pelvis"},
+						{"spine_1", "arm_upper_L"},
+						{"arm_upper_L", "arm_lower_L"},
+						{"arm_lower_L", "hand_L"},
+						{"spine_1", "arm_upper_R"},
+						{"arm_upper_R", "arm_lower_R"},
+						{"arm_lower_R", "hand_R"},
+						{"pelvis", "leg_upper_L"},
+						{"leg_upper_L", "leg_lower_L"},
+						{"leg_lower_L", "ankle_L"},
+						{"pelvis", "leg_upper_R"},
+						{"leg_upper_R", "leg_lower_R"},
+						{"leg_lower_R", "ankle_R"}
+	};
+
 	void loop() {
 		if (g_game.isC4Planted)
 		{
@@ -70,24 +88,17 @@ namespace hack {
 				}
 
 				if (config::show_skeleton_esp) {
-					// render::DrawLine(g::hdcBuffer, player->bones.bonePositions["head"].x, player->bones.bonePositions["head"].y, player->bones.bonePositions["neck_0"].x, player->bones.bonePositions["neck_0"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["neck_0"].x, player->bones.bonePositions["neck_0"].y, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, player->bones.bonePositions["spine_2"].x, player->bones.bonePositions["spine_2"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["spine_2"].x, player->bones.bonePositions["spine_2"].y, player->bones.bonePositions["pelvis"].x, player->bones.bonePositions["pelvis"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
+					for (const auto& connection : boneConnections) {
+						const std::string& boneFrom = connection.first;
+						const std::string& boneTo = connection.second;
 
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, player->bones.bonePositions["arm_upper_L"].x, player->bones.bonePositions["arm_upper_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["arm_upper_L"].x, player->bones.bonePositions["arm_upper_L"].y, player->bones.bonePositions["arm_lower_L"].x, player->bones.bonePositions["arm_lower_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["arm_lower_L"].x, player->bones.bonePositions["arm_lower_L"].y, player->bones.bonePositions["hand_L"].x, player->bones.bonePositions["hand_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["spine_1"].x, player->bones.bonePositions["spine_1"].y, player->bones.bonePositions["arm_upper_R"].x, player->bones.bonePositions["arm_upper_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["arm_upper_R"].x, player->bones.bonePositions["arm_upper_R"].y, player->bones.bonePositions["arm_lower_R"].x, player->bones.bonePositions["arm_lower_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["arm_lower_R"].x, player->bones.bonePositions["arm_lower_R"].y, player->bones.bonePositions["hand_R"].x, player->bones.bonePositions["hand_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["pelvis"].x, player->bones.bonePositions["pelvis"].y, player->bones.bonePositions["leg_upper_L"].x, player->bones.bonePositions["leg_upper_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["leg_upper_L"].x, player->bones.bonePositions["leg_upper_L"].y, player->bones.bonePositions["leg_lower_L"].x, player->bones.bonePositions["leg_lower_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["leg_lower_L"].x, player->bones.bonePositions["leg_lower_L"].y, player->bones.bonePositions["ankle_L"].x, player->bones.bonePositions["ankle_L"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["pelvis"].x, player->bones.bonePositions["pelvis"].y, player->bones.bonePositions["leg_upper_R"].x, player->bones.bonePositions["leg_upper_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["leg_upper_R"].x, player->bones.bonePositions["leg_upper_R"].y, player->bones.bonePositions["leg_lower_R"].x, player->bones.bonePositions["leg_lower_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
-					render::DrawLine(g::hdcBuffer, player->bones.bonePositions["leg_lower_R"].x, player->bones.bonePositions["leg_lower_R"].y, player->bones.bonePositions["ankle_R"].x, player->bones.bonePositions["ankle_R"].y, g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy);
+						render::DrawLine(
+							g::hdcBuffer,
+							player->bones.bonePositions[boneFrom].x, player->bones.bonePositions[boneFrom].y,
+							player->bones.bonePositions[boneTo].x, player->bones.bonePositions[boneTo].y,
+							g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy
+						);
+					}
 				}
 
 				if (config::show_box_esp)
