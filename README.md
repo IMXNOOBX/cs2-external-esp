@@ -50,7 +50,7 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 
 ## 📘 Developer Instructions
 
-1. Build the program using Visual Studio 2022
+1. Build the program using **Visual Studio 2022**
 	- Build: **`x64 - Release`**
 
 2. Locate your binary file in the folder `<arch>/<configuration>`, e.g., `x64/Release`.
