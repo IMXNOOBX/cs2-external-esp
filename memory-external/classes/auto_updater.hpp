@@ -33,7 +33,7 @@ namespace updater {
 	inline int build_number = 13964;
 
 	namespace offsets {
-		inline std::ptrdiff_t dwLocalPlayer = 0x17E7158;
+		inline std::ptrdiff_t dwLocalPlayerController = 0x17E7158;
 		inline std::ptrdiff_t dwEntityList = 0x1798738;
 		inline std::ptrdiff_t dwViewMatrix = 0x1886710;
 		inline std::ptrdiff_t dwBuildNumber = 0x487514;

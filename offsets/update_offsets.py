@@ -34,7 +34,7 @@ if dest_data["build_number"] == int(build_number):
 dest_data["build_number"] = int(build_number)
 
 dest_data["dwBuildNumber"] = source_data["engine2_dll"]["data"]["dwBuildNumber"]["value"]
-dest_data["dwLocalPlayer"] = source_data["client_dll"]["data"]["dwLocalPlayerPawn"]["value"]
+dest_data["dwLocalPlayerController"] = source_data["client_dll"]["data"]["dwLocalPlayerController"]["value"]
 dest_data["dwEntityList"] = source_data["client_dll"]["data"]["dwEntityList"]["value"]
 dest_data["dwViewMatrix"] = source_data["client_dll"]["data"]["dwViewMatrix"]["value"]
 dest_data["dwPlantedC4"] = source_data["client_dll"]["data"]["dwPlantedC4"]["value"]

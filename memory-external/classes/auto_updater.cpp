@@ -187,8 +187,11 @@ namespace updater {
 		if (data["build_number"].is_number())
 			build_number = data["build_number"];
 
+		/* little cross compatibility with older builds */
 		if (data["dwLocalPlayer"].is_number())
-			offsets::dwLocalPlayer = data["dwLocalPlayer"];
+			offsets::dwLocalPlayerController = data["dwLocalPlayer"];
+		if (data["dwLocalPlayerController"].is_number())
+			offsets::dwLocalPlayerController = data["dwLocalPlayerController"];
 		if (data["dwEntityList"].is_number())
 			offsets::dwEntityList = data["dwEntityList"];
 		if (data["dwViewMatrix"].is_number())
@@ -242,7 +245,7 @@ namespace updater {
 
 		data["build_number"] = build_number;
 
-		data["dwLocalPlayer"] = offsets::dwLocalPlayer;
+		data["dwLocalPlayerController"] = offsets::dwLocalPlayerController;
 		data["dwEntityList"] = offsets::dwEntityList;
 		data["dwViewMatrix"] = offsets::dwViewMatrix;
 		data["dwBuildNumber"] = offsets::dwBuildNumber;

@@ -71,7 +71,7 @@ void CGame::loop() {
 	inGame = false;
 	isC4Planted = false;
 
-	localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayer);
+	localPlayer = process->read<uintptr_t>(base_client.base + updater::offsets::dwLocalPlayerController);
 	if (!localPlayer) return;
 
 	localPlayerPawn = process->read<std::uint32_t>(localPlayer + updater::offsets::m_hPlayerPawn);
