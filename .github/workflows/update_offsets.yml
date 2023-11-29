@@ -54,7 +54,7 @@ jobs:
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
         branch: offset-update
-        delete-branch: true
+        delete-branch: false
         title: 'Automatically updated offsets'
         body: |
           Offsets Updated
