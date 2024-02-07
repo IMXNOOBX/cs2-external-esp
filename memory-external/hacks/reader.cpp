@@ -151,13 +151,13 @@ void CGame::loop() {
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
 		if (config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x318);
 			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
 			player.ReadBones();
 		}
 
 		if (config::show_head_tracker && !config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x318);
 			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
 			player.ReadHead();
 		}
@@ -175,7 +175,7 @@ void CGame::loop() {
 			player.flashAlpha = process->read<float>(player.pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
 
 			clippingWeapon = process->read<std::uint64_t>(player.pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
-			weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
+			weaponData = process->read<std::uint64_t>(clippingWeapon + 0x368);
 			weaponData = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
 			char buffer[MAX_PATH];
 			process->read_raw(weaponData, buffer, sizeof(buffer));
