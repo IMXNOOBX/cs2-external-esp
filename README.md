@@ -1,6 +1,6 @@
 # 🎡 CS2 External ESP
 
-Simple external esp using gdi overlay to render esp boxes on top of cs2 highlighting your enemies and teammates including their health, name and health number. If you want to check out discord overlay rendering check [discord-overlay-esp](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay)
+Simple external ESP for Counter-Strike 2 using the GDI overlay to render esp boxes on top of CS2, highlighting your enemies and teammates including their health and name. If you want to check out Discord overlay rendering check the [discord-overlay-esp](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay) tree.
 
 ### Make sure you 🌟 the project if you like it ❤
 
@@ -9,17 +9,17 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 [![Cs2ESP](https://cdn.discordapp.com/attachments/903283950267564094/1148569148318822461/image.png)](https://youtu.be/SV_lddIxQ5w)
 ## 🌳 Simple Use
 
-* Releases have been removed in order to be allowed in unknowncheats so the binaries are published there
-1. Go to unknwoncheats post [**cs2-external-esp**](https://www.unknowncheats.me/forum/counter-strike-2-a/600259-cs2-external-esp.html)
+* Releases have been removed in order to be allowed in UnknownCheats, so the binaries are published there.
+1. Go to the UnknownCheats post [**cs2-external-esp**](https://www.unknowncheats.me/forum/counter-strike-2-a/600259-cs2-external-esp.html)
 2. Click on the binary file you want to download and download it.
-3. Open the binary file and cs2 (doesnt matter which one goes first (if you are having issues with esp not showing, wait to open till in game))
+3. Open the binary file and CS2 (Doesn't matter which one goes first (If you are having issues with ESP not showing, wait to open till in game))
 ❗ Make sure your game is in full screen windowed
 
 ## 💧 Repository Update
 
-* If you have updated the offsets, and want to share it with everyone follow this  steps
+* If you have updated the offsets, and want to share it with everyone follow these steps
 
-1. Create a [pull request](https://github.com/IMXNOOBX/cs2-external-esp/pulls) and provided just the `offsets/offsets.json` updated file in the pull request. if there are any other files modified it will be denied
+1. Create a [pull request](https://github.com/IMXNOOBX/cs2-external-esp/pulls) and provide just the `offsets/offsets.json` updated file in the pull request. If there are any other files modified it will be denied.
 
 2. Provide a valid image that the esp is working on the latest version on the game
 
@@ -27,19 +27,20 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 
 ## ✔ Manually Update
 
-* To manually update the esp offsets i have included an offsets.json file which will be created once opened.
+* To manually update the ESP offsets I have included an offsets.json file which will be created once opened.
 
-1. Two ways to get the latest offsets.
-1.1 Go to this [unknowncheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
-1.2 Or go to this repository [cs2-dumper](https://github.com/a2x/cs2-dumper) and find the latest offstes
+Currently there are two ways to get the latest offsets.
+1. Manually updating them
+1.1a Go to this [UnknownCheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
+1.1b Or go to the [cs2-dumper](https://github.com/a2x/cs2-dumper) repository and find the latest offsets
 
-2. You will find somethig like this
+1.2 You will find something like this
 
 ```cpp
 #define dwLocalPlayer 0x1715418 // This is hexadecimal
 ```
 
-3. You will have to translate it to decimal and put it in the offsets file next to the esp executable like so, you can use [**this website**](https://www.rapidtables.com/convert/number/hex-to-decimal.html)
+1.3 You will have to translate it to decimal and put it in the offsets file next to the ESP executable like so, you can use [**this website**](https://www.rapidtables.com/convert/number/hex-to-decimal.html)
 
 ```json
 {
@@ -47,6 +48,11 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
     ...
 }	
 ```
+
+2. Automatically updating them using a script
+2.1 Download the `update_offsets.py` script and `offsets.json` file from [the offsets folder](https://github.com/IMXNOOBX/cs2-external-esp/tree/main/offsets) in this repository
+2.2 Put the `update_offsets.py` script next to the `offsets.json` file found next to your ESP executable
+2.3 Run `update_offsets.py`, the offsets will be automatically written to `offsets.json`
 
 ## 📘 Developer Instructions
 
@@ -64,7 +70,7 @@ Simple external esp using gdi overlay to render esp boxes on top of cs2 highligh
 * [ifBars](https://github.com/ifBars) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/37) to the project and ideas
 * [Bekston](https://github.com/Bekston) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/20) to the project and ideas
 * [Apxaey](https://github.com/Apxaey) for releasing an easy way to implement [handle hijacking](https://github.com/Apxaey/Handle-Hijacking-Anti-Cheat-Bypass) 
-* Unknowncheats comunity for their reseach!
+* The UnknownCheats comumnity for their research!
 
 # 🔖 License & Copyright
 
