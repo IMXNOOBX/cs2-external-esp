@@ -19,7 +19,7 @@ if response.status_code == 200:
     if commit_data:
         for commit in commit_data:
             commit_message = commit['commit']['message']
-            build_match = re.search(r'\bGame Update (\d+)(?: \(\d+\))?\b', commit_message)
+            build_match = re.search(r'\bGame [Uu]pdate \((\d+)(?: \(\d+\))?\b', commit_message)
             if build_match:
                 build_number = int(build_match.group(1))
                 break
