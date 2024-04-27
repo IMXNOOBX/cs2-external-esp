@@ -3,7 +3,7 @@ import requests
 import json
 import re
 
-source_url = "https://github.com/a2x/cs2-dumper/raw/main/generated/offsets.json"
+source_url = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
 dest_path = "./offsets/offsets.json"
 
