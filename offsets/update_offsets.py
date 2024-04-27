@@ -2,10 +2,17 @@ import sys
 import requests
 import json
 import re
+import os
 
 source_url = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
-dest_path = "./offsets/offsets.json"
+if os.path.isfile("./offsets/offsets.json"):
+    dest_path = "./offsets/offsets.json"
+elif os.path.isfile("./offsets.json"):
+    dest_path = "./offsets.json"
+else:
+    print("Invalid path for 'offsets.json'")
+    exit()
 
 # Fetch the source JSON
 source_response = requests.get(source_url)
