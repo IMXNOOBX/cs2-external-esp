@@ -2,10 +2,17 @@ import sys
 import requests
 import json
 import re
+import os
 
-source_url = "https://github.com/a2x/cs2-dumper/raw/main/generated/offsets.json"
+source_url = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json"
 commits_url = "https://api.github.com/repos/a2x/cs2-dumper/commits"
-dest_path = "./offsets/offsets.json"
+if os.path.isfile("./offsets/offsets.json"):
+    dest_path = "./offsets/offsets.json"
+elif os.path.isfile("./offsets.json"):
+    dest_path = "./offsets.json"
+else:
+    print("Invalid path for 'offsets.json'")
+    exit()
 
 # Fetch the source JSON
 source_response = requests.get(source_url)
@@ -19,7 +26,7 @@ if response.status_code == 200:
     if commit_data:
         for commit in commit_data:
             commit_message = commit['commit']['message']
-            build_match = re.search(r'\bGame Update (\d+)(?: \(\d+\))?\b', commit_message)
+            build_match = re.search(r'\bGame [Uu]pdate \((\d+)(?: \(\d+\))?\b', commit_message)
             if build_match:
                 build_number = int(build_match.group(1))
                 break
@@ -33,11 +40,11 @@ if dest_data["build_number"] == int(build_number):
 
 dest_data["build_number"] = int(build_number)
 
-dest_data["dwBuildNumber"] = source_data["engine2_dll"]["data"]["dwBuildNumber"]["value"]
-dest_data["dwLocalPlayerController"] = source_data["client_dll"]["data"]["dwLocalPlayerController"]["value"]
-dest_data["dwEntityList"] = source_data["client_dll"]["data"]["dwEntityList"]["value"]
-dest_data["dwViewMatrix"] = source_data["client_dll"]["data"]["dwViewMatrix"]["value"]
-dest_data["dwPlantedC4"] = source_data["client_dll"]["data"]["dwPlantedC4"]["value"]
+dest_data["dwBuildNumber"] = source_data["engine2.dll"]["dwBuildNumber"]
+dest_data["dwLocalPlayerController"] = source_data["client.dll"]["dwLocalPlayerController"]
+dest_data["dwEntityList"] = source_data["client.dll"]["dwEntityList"]
+dest_data["dwViewMatrix"] = source_data["client.dll"]["dwViewMatrix"]
+dest_data["dwPlantedC4"] = source_data["client.dll"]["dwPlantedC4"]
 
 with open(dest_path, 'w') as dest_file:
     json.dump(dest_data, dest_file, indent=4)
