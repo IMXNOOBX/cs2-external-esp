@@ -151,14 +151,14 @@ void CGame::loop() {
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
 		if (config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
-			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x308);
+			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x170 + 0x80);
 			player.ReadBones();
 		}
 
 		if (config::show_head_tracker && !config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x310);
-			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x160 + 0x80);
+			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x308);
+			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x170 + 0x80);
 			player.ReadHead();
 		}
 
