@@ -6,7 +6,7 @@ Simple external ESP for Counter-Strike 2 using the GDI overlay to render esp box
 
 ## Video Showcase
 
-[![Cs2ESP](https://cdn.discordapp.com/attachments/903283950267564094/1148569148318822461/image.png)](https://youtu.be/SV_lddIxQ5w)
+[![Cs2ESP](.github/image.png)](https://youtu.be/SV_lddIxQ5w)
 ## 🌳 Simple Use
 
 * Releases have been removed in order to be allowed in UnknownCheats, so the binaries are published there.
