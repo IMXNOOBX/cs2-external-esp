@@ -3,6 +3,7 @@
 #include "../classes/vector.hpp"
 #include <map>
 #include <string>
+#include <mutex>
 
 struct view_matrix_t {
 	float* operator[ ](int index) {
@@ -75,3 +76,5 @@ private:
 };
 
 inline CGame g_game;
+
+inline std::mutex dataMutex;

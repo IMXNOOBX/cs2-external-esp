@@ -68,6 +68,9 @@ void CGame::close() {
 }
 
 void CGame::loop() {
+
+	std::lock_guard<std::mutex> lock(dataMutex);
+
 	inGame = false;
 	isC4Planted = false;
 
@@ -151,14 +154,14 @@ void CGame::loop() {
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
 		if (config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x308);
-			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x170 + 0x80);
+			player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
+			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x1F0);
 			player.ReadBones();
 		}
 
 		if (config::show_head_tracker && !config::show_skeleton_esp) {
-			player.gameSceneNode = process->read<uint64_t>(player.pCSPlayerPawn + 0x308);
-			player.boneArray = process->read<uint64_t>(player.gameSceneNode + 0x170 + 0x80);
+			player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
+			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x1F0);
 			player.ReadHead();
 		}
 
