@@ -26,6 +26,9 @@ namespace hack {
 	};
 
 	void loop() {
+
+		std::lock_guard<std::mutex> lock(dataMutex);
+
 		if (g_game.isC4Planted)
 		{
 			Vector3 c4Origin = g_game.c4.get_origin();

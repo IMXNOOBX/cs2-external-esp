@@ -68,6 +68,9 @@ void CGame::close() {
 }
 
 void CGame::loop() {
+
+	std::lock_guard<std::mutex> lock(dataMutex);
+
 	inGame = false;
 	isC4Planted = false;
 
