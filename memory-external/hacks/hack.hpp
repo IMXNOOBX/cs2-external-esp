@@ -6,7 +6,6 @@
 #include "../classes/globals.hpp"
 
 namespace hack {
-
 	std::vector<std::pair<std::string, std::string>> boneConnections = {
 						{"neck_0", "spine_1"},
 						{"spine_1", "spine_2"},
@@ -27,7 +26,7 @@ namespace hack {
 
 	void loop() {
 
-		std::lock_guard<std::mutex> lock(dataMutex);
+		std::lock_guard<std::mutex> lock(reader_mutex);
 
 		if (g_game.isC4Planted)
 		{
@@ -73,165 +72,169 @@ namespace hack {
 			const Vector3 screenPos = g_game.world_to_screen(&player->origin);
 			const Vector3 screenHead = g_game.world_to_screen(&player->head);
 
-			if (screenPos.z >= 0.01f) {
-				const float height = screenPos.y - screenHead.y;
-				const float width = height / 2.4f;
+			if (
+				screenPos.z < 0.01f || 
+				!utils.is_in_bounds(screenPos, g_game.game_bounds.right, g_game.game_bounds.bottom)
+				)
+				continue;
 
-				float distance = g_game.localOrigin.calculate_distance(player->origin);
-				int roundedDistance = std::round(distance / 10.f);
+			const float height = screenPos.y - screenHead.y;
+			const float width = height / 2.4f;
 
-				if (config::show_head_tracker) {
-					render::DrawCircle(
+			float distance = g_game.localOrigin.calculate_distance(player->origin);
+			int roundedDistance = std::round(distance / 10.f);
+
+			if (config::show_head_tracker) {
+				render::DrawCircle(
+					g::hdcBuffer,
+					player->bones.bonePositions["head"].x,
+					player->bones.bonePositions["head"].y - width / 12,
+					width / 5,
+					(g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy)
+				);
+			}
+
+			if (config::show_skeleton_esp) {
+				for (const auto& connection : boneConnections) {
+					const std::string& boneFrom = connection.first;
+					const std::string& boneTo = connection.second;
+
+					render::DrawLine(
 						g::hdcBuffer,
-						player->bones.bonePositions["head"].x,
-						player->bones.bonePositions["head"].y - width / 12,
-						width / 5,
-						(g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy)
+						player->bones.bonePositions[boneFrom].x, player->bones.bonePositions[boneFrom].y,
+						player->bones.bonePositions[boneTo].x, player->bones.bonePositions[boneTo].y,
+						g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy
 					);
 				}
+			}
 
-				if (config::show_skeleton_esp) {
-					for (const auto& connection : boneConnections) {
-						const std::string& boneFrom = connection.first;
-						const std::string& boneTo = connection.second;
-
-						render::DrawLine(
-							g::hdcBuffer,
-							player->bones.bonePositions[boneFrom].x, player->bones.bonePositions[boneFrom].y,
-							player->bones.bonePositions[boneTo].x, player->bones.bonePositions[boneTo].y,
-							g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy
-						);
-					}
-				}
-
-				if (config::show_box_esp)
-				{
-					render::DrawBorderBox(
-						g::hdcBuffer,
-						screenHead.x - width / 2,
-						screenHead.y,
-						width,
-						height,
-						(g_game.localTeam == player->team ? config::esp_box_color_team : config::esp_box_color_enemy)
-					);
-				}
-
+			if (config::show_box_esp)
+			{
 				render::DrawBorderBox(
 					g::hdcBuffer,
-					screenHead.x - (width / 2 + 10),
-					screenHead.y + (height * (100 - player->armor) / 100),
-					2,
-					height - (height * (100 - player->armor) / 100),
-					RGB(0, 185, 255)
-				);
-
-				render::DrawBorderBox(
-					g::hdcBuffer,
-					screenHead.x - (width / 2 + 5),
-					screenHead.y + (height * (100 - player->health) / 100),
-					2,
-					height - (height * (100 - player->health) / 100),
-					RGB(
-						(255 - player->health),
-						(55 + player->health * 2),
-						75
-					)
-				);
-
-				render::RenderText(
-					g::hdcBuffer,
-					screenHead.x + (width / 2 + 5),
+					screenHead.x - width / 2,
 					screenHead.y,
-					player->name.c_str(),
-					config::esp_name_color,
+					width,
+					height,
+					(g_game.localTeam == player->team ? config::esp_box_color_team : config::esp_box_color_enemy)
+				);
+			}
+
+			render::DrawBorderBox(
+				g::hdcBuffer,
+				screenHead.x - (width / 2 + 10),
+				screenHead.y + (height * (100 - player->armor) / 100),
+				2,
+				height - (height * (100 - player->armor) / 100),
+				RGB(0, 185, 255)
+			);
+
+			render::DrawBorderBox(
+				g::hdcBuffer,
+				screenHead.x - (width / 2 + 5),
+				screenHead.y + (height * (100 - player->health) / 100),
+				2,
+				height - (height * (100 - player->health) / 100),
+				RGB(
+					(255 - player->health),
+					(55 + player->health * 2),
+					75
+				)
+			);
+
+			render::RenderText(
+				g::hdcBuffer,
+				screenHead.x + (width / 2 + 5),
+				screenHead.y,
+				player->name.c_str(),
+				config::esp_name_color,
+				10
+			);
+
+			/**
+			* I know is not the best way but a simple way to not saturate the screen with a ton of information
+			*/
+			if (roundedDistance > config::flag_render_distance)
+				continue;
+
+			render::RenderText(
+				g::hdcBuffer,
+				screenHead.x + (width / 2 + 5),
+				screenHead.y + 10,
+				(std::to_string(player->health) + "hp").c_str(),
+				RGB(
+					(255 - player->health),
+					(55 + player->health * 2),
+					75
+				),
+				10
+			);
+
+			render::RenderText(
+				g::hdcBuffer,
+				screenHead.x + (width / 2 + 5),
+				screenHead.y + 20,
+				(std::to_string(player->armor) + "armor").c_str(),
+				RGB(
+					(255 - player->armor),
+					(55 + player->armor * 2),
+					75
+				),
+				10
+			);
+
+			if (config::show_extra_flags)
+			{
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					screenHead.y + 30,
+					player->weapon.c_str(),
+					config::esp_distance_color,
 					10
 				);
-
-				/**
-				* I know is not the best way but a simple way to not saturate the screen with a ton of information
-				*/
-				if (roundedDistance > config::flag_render_distance)
-					continue;
 
 				render::RenderText(
 					g::hdcBuffer,
 					screenHead.x + (width / 2 + 5),
-					screenHead.y + 10,
-					(std::to_string(player->health) + "hp").c_str(),
-					RGB(
-						(255 - player->health),
-						(55 + player->health * 2),
-						75
-					),
+					screenHead.y + 40,
+					(std::to_string(roundedDistance) + "m away").c_str(),
+					config::esp_distance_color,
 					10
 				);
 
 				render::RenderText(
 					g::hdcBuffer,
 					screenHead.x + (width / 2 + 5),
-					screenHead.y + 20,
-					(std::to_string(player->armor) + "armor").c_str(),
-					RGB(
-						(255 - player->armor),
-						(55 + player->armor * 2),
-						75
-					),
+					screenHead.y + 50,
+					("$" + std::to_string(player->money)).c_str(),
+					RGB(0, 125, 0),
 					10
 				);
 
-				if (config::show_extra_flags)
+				if (player->flashAlpha > 100)
 				{
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 30,
-						player->weapon.c_str(),
+						screenHead.y + 60,
+						"Player is flashed",
 						config::esp_distance_color,
 						10
 					);
+				}
 
+				if (player->is_defusing)
+				{
+					const std::string defuText = "Player is defusing";
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 40,
-						(std::to_string(roundedDistance) + "m away").c_str(),
+						screenHead.y + 60,
+						defuText.c_str(),
 						config::esp_distance_color,
 						10
 					);
-
-					render::RenderText(
-						g::hdcBuffer,
-						screenHead.x + (width / 2 + 5),
-						screenHead.y + 50,
-						("$" + std::to_string(player->money)).c_str(),
-						RGB(0, 125, 0),
-						10
-					);
-
-					if (player->flashAlpha > 100)
-					{
-						render::RenderText(
-							g::hdcBuffer,
-							screenHead.x + (width / 2 + 5),
-							screenHead.y + 60,
-							"Player is flashed",
-							config::esp_distance_color,
-							10
-						);
-					}
-
-					if (player->is_defusing)
-					{
-						const std::string defuText = "Player is defusing";
-						render::RenderText(
-							g::hdcBuffer,
-							screenHead.x + (width / 2 + 5),
-							screenHead.y + 60,
-							defuText.c_str(),
-							config::esp_distance_color,
-							10
-						);
-					}
 				}
 			}
 		}

@@ -77,4 +77,4 @@ private:
 
 inline CGame g_game;
 
-inline std::mutex dataMutex;
+inline std::mutex reader_mutex;
