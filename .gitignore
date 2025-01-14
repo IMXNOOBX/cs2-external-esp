@@ -5,6 +5,7 @@
 
 # Ignore all the offsets.json files but the one in the folder offsets for the auto updater
 offsets.json
+config.json
 !offsets/offsets.json 
 
 # User-specific files
@@ -400,4 +401,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/memory-external/config.json
