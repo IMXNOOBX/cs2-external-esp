@@ -1,8 +1,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <Windows.h>
+#include <windows.h>
 
+#include "classes/utils.h"
 #include "memory/memory.hpp"
 #include "classes/vector.hpp"
 #include "hacks/reader.hpp"
@@ -73,7 +74,8 @@ void read_thread() {
 }
 
 int main() {
-	SetConsoleTitle("cs2-external-esp");
+	utils.update_console_title();
+
 	std::cout << "[info] Github Repository: https://github.com/IMXNOOBX/cs2-external-esp" << std::endl;
 	std::cout << "[info] Unknowncheats thread: https://www.unknowncheats.me/forum/counter-strike-2-releases/600259-cs2-external-esp.html\n" << std::endl;
 

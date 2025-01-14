@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include "utils.h"
 #include "json.hpp"
 #include "auto_updater.hpp"
 
@@ -15,7 +16,6 @@ struct RGB {
 		return RGB(r, g, b);
 	}
 };
-
 
 namespace config {
 	const std::string file_path = "config.json";
@@ -33,9 +33,9 @@ namespace config {
 	inline bool show_extra_flags = false;
 
 	inline RGB esp_box_color_team = { 75, 175, 75 };
-	inline RGB esp_box_color_enemy = { 175, 75, 75 };
+	inline RGB esp_box_color_enemy = { 225, 75, 75 };
 	inline RGB esp_skeleton_color_team = { 75, 175, 75 };
-	inline RGB esp_skeleton_color_enemy = { 175, 75, 75 };
+	inline RGB esp_skeleton_color_enemy = { 225, 75, 75 };
 	inline RGB esp_name_color = { 75, 75, 175 };
 	inline RGB esp_distance_color = { 75, 75, 175 };
 }

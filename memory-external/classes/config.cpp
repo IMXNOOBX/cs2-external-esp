@@ -118,5 +118,7 @@ namespace config {
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;
 		output.close();
+
+		utils.update_console_title();
 	}
 }

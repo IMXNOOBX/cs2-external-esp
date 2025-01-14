@@ -71,6 +71,9 @@ void CGame::loop() {
 
 	std::lock_guard<std::mutex> lock(dataMutex);
 
+	if (updater::offsets::dwLocalPlayerController == 0x0)
+		throw std::runtime_error("Offsets have not been corretly set, cannot proceed.");
+
 	inGame = false;
 	isC4Planted = false;
 

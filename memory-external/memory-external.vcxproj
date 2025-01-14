@@ -214,6 +214,7 @@
   <ItemGroup>
     <ClCompile Include="classes\auto_updater.cpp" />
     <ClCompile Include="classes\config.cpp" />
+    <ClCompile Include="classes\utils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="memory\memory.cpp" />
     <ClCompile Include="hacks\reader.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="classes\globals.hpp" />
     <ClInclude Include="classes\json.hpp" />
     <ClInclude Include="classes\render.hpp" />
+    <ClInclude Include="classes\utils.h" />
     <ClInclude Include="classes\vector.hpp" />
     <ClInclude Include="hacks\hack.hpp" />
     <ClInclude Include="memory\handle_hijack.hpp" />
