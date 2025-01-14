@@ -43,7 +43,7 @@ void CGame::init() {
 	std::cout << "[cs2] Waiting for cs2.exe..." << std::endl;
 
 	process = std::make_shared<pProcess>();
-	while (!process->AttachProcessHj("cs2.exe"))
+	while (!process->AttachProcess("cs2.exe"))
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	std::cout << "[cs2] Attached to cs2.exe\n" << std::endl;
@@ -68,8 +68,7 @@ void CGame::close() {
 }
 
 void CGame::loop() {
-
-	std::lock_guard<std::mutex> lock(dataMutex);
+	std::lock_guard<std::mutex> lock(reader_mutex);
 
 	if (updater::offsets::dwLocalPlayerController == 0x0)
 		throw std::runtime_error("Offsets have not been corretly set, cannot proceed.");
