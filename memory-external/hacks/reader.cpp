@@ -180,8 +180,10 @@ void CGame::loop() {
 			player.flashAlpha = process->read<float>(player.pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
 
 			clippingWeapon = process->read<std::uint64_t>(player.pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
-			weaponData = process->read<std::uint64_t>(clippingWeapon + 0x360);
-			weaponData = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);
+			std::uint64_t firstLevel = process->read<std::uint64_t>(clippingWeapon + 0x10); // First offset
+			weaponData = process->read<std::uint64_t>(firstLevel + 0x20); // Final offset
+			/*weaponData = process->read<std::uint64_t>(clippingWeapon + 0x10);
+			weaponData = process->read<std::uint64_t>(weaponData + updater::offsets::m_szName);*/
 			char buffer[MAX_PATH];
 			process->read_raw(weaponData, buffer, sizeof(buffer));
 			std::string weaponName = std::string(buffer);
