@@ -98,7 +98,7 @@ int main() {
 	g_game.init();
 
 	if (g_game.buildNumber != updater::build_number) {
-		std::cout << "[cs2] Build number doesnt match, the game has been updated and this esp most likely wont work." << std::endl;
+		std::cout << "[cs2] Build number " << g_game.buildNumber << " doesnt match " << updater::build_number << ", the game has been updated and this esp most likely wont work." << std::endl;
 		std::cout << "[warn] If the esp doesnt work, consider updating offsets manually in the file offsets.json" << std::endl;
 		std::cout << "[cs2] Press any key to continue" << std::endl;
 		std::cin.get();
