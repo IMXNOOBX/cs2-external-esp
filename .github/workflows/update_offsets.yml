@@ -50,7 +50,7 @@ jobs:
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: Automatically updated offsets a2x/cs2-dumper
+        commit-message: Automatically updated offsets from a2x/cs2-dumper
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
         branch: offset-update
