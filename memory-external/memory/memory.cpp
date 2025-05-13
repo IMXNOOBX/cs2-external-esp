@@ -82,7 +82,7 @@ HANDLE OpenProcessNt(DWORD dwDesiredAccess, BOOL bInheritHandle,
 		DWORD _;
 
 		handle_ = OpenProcessNt(PROCESS_QUERY_INFORMATION |PROCESS_VM_OPERATION |
-                                PROCESS_VM_READ | PROCESS_VM_WRITE,FALSE, pid_);
+                                PROCESS_VM_READ,FALSE, pid_);
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
 		base_client_.base = (uintptr_t)modules[0];
