@@ -58,7 +58,20 @@ HWND pProcess::GetWindowHandleFromProcessId(DWORD ProcessId) {
 	return NULL; // No main window found for the given process ID
 }
 
-bool pProcess::AttachProcess(const char* ProcessName)
+HANDLE OpenProcessNt(DWORD dwDesiredAccess, BOOL bInheritHandle,
+                       DWORD dwProcessId) {
+  // At last is same with "OpenProcess", but we call NativeAPI instead of WindowsAPI directly.
+  HANDLE hProcess = 0;
+  _NtOpenProcess NtOpenProcess = (_NtOpenProcess)GetProcAddress(
+      GetModuleHandleA("ntdll.dll"), "NtOpenProcess");
+  CLIENT_ID clientId = {(HANDLE)dwProcessId, NULL};
+  OBJECT_ATTRIBUTES objAttr = hj::InitObjectAttributes(NULL, 0, NULL, NULL);
+  NtOpenProcess(&hProcess, dwDesiredAccess,
+                &objAttr, &clientId);
+  return hProcess;
+}
+
+  bool pProcess::AttachProcess(const char* ProcessName)
 {
 	this->pid_ = this->FindProcessIdByProcessName(ProcessName);
 
@@ -68,7 +81,7 @@ bool pProcess::AttachProcess(const char* ProcessName)
 		MODULEINFO module_info;
 		DWORD _;
 
-		handle_ = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid_);
+		handle_ = OpenProcessNt(PROCESS_ALL_ACCESS, FALSE, pid_);
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
 		base_client_.base = (uintptr_t)modules[0];
