@@ -86,7 +86,12 @@ int main() {
 		std::cout << "[updater] Error reading config file, reseting to the default state\n" << std::endl;
 
 #ifndef _UC
-	updater::check_and_update(config::automatic_update);
+	try {
+		updater::check_and_update(config::automatic_update);
+	}
+	catch (std::exception& e) {
+		std::cout << "An exceptio was caught while read " << e.what() << std::endl;
+	}
 #endif
 
 	std::cout << "[updater] Reading offsets from file offsets.json." << std::endl;
