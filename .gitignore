@@ -7,6 +7,7 @@
 offsets.json
 config.json
 !offsets/offsets.json 
+typos
 
 # User-specific files
 *.rsuser

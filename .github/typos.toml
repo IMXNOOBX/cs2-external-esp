@@ -1,0 +1,6 @@
+[files]
+extend-exclude = [
+  "**/include/**",
+  "**/x64/**",
+  "/x64/**"
+]
