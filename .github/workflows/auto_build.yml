@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - auto-build # For testing
+    #   - auto-build # testing
     paths-ignore:
       - '**/*.json'
 
