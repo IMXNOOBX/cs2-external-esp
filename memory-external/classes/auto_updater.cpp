@@ -52,8 +52,6 @@ namespace updater {
 			}
 		}
 		else {
-
-
 			char response;
 			if (!automatic_update) {
 				std::cout << "[updater] Do you want to download the latest offsets? (y/n): ";
@@ -108,12 +106,13 @@ namespace updater {
 		if (data.empty())
 			return false;
 
-		if (data.is_array()) {
-			json last_commit = data[0];
-			json last_commit_author = last_commit["commit"]["author"];
+		if (!data.is_array())
+			return false;
 
-			commit = last_commit_author;
-		}
+		json last_commit = data[0];
+		json last_commit_author = last_commit["commit"]["author"];
+
+		commit = last_commit_author;
 
 		InternetCloseHandle(hConnect);
 		InternetCloseHandle(hInternet);
