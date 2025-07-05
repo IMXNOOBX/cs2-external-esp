@@ -16,18 +16,18 @@ namespace updater {
 		std::cout << "[updater] Last GitHub repository update was made by " << last_commit_author_name << " on " << last_commit_date.substr(0, 10) << std::endl;
 
 		// Parse the GitHub date string and convert it to a std::tm structure
-		std::tm commit_date = {};
-		std::istringstream(last_commit_date) >> std::get_time(&commit_date, "%Y-%m-%dT%H:%M:%SZ");
+		std::tm commit_tm_date = {};
+		std::istringstream(last_commit_date) >> std::get_time(&commit_tm_date, "%Y-%m-%dT%H:%M:%SZ");
 
-		std::chrono::system_clock::time_point commitTimePoint = std::chrono::system_clock::from_time_t(std::mktime(&commit_date));
+		std::chrono::system_clock::time_point commit_date = std::chrono::system_clock::from_time_t(std::mktime(&commit_tm_date));
 
 		if (file_good("offsets.json")) {
-			fs::file_time_type lastModifiedTime = fs::last_write_time("offsets.json");
-			auto lastModifiedClockTime = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-				lastModifiedTime - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
+			fs::file_time_type last_modified_file_time = fs::last_write_time("offsets.json");
+			auto last_modified = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+				last_modified_file_time - fs::file_time_type::clock::now() + std::chrono::system_clock::now());
 
 			// Check if the local file is older than the last GitHub commit
-			if (lastModifiedClockTime < commitTimePoint) {
+			if (last_modified < commit_date) {
 				std::cout << "[updater] Local file is older than the last GitHub commit." << std::endl;
 
 				char response;
