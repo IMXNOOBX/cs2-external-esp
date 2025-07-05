@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+    #   - auto-build # Testing
 
 jobs:
   run:
@@ -16,7 +17,7 @@ jobs:
     - name: Check spelling of SRC folder
       uses: crate-ci/typos@master
       with:
-        files: ./src
+        files: ./memory-external
         config: .github/typos.toml
         write_changes: true  # Write changes if typos are detected
       continue-on-error: true
