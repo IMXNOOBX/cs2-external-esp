@@ -81,9 +81,9 @@ int main() {
 
 	std::cout << "[config] Reading configuration." << std::endl;
 	if (config::read())
-		std::cout << "[updater] Sucessfully read configuration file\n" << std::endl;
+		std::cout << "[updater] Successfully read configuration file\n" << std::endl;
 	else
-		std::cout << "[updater] Error reading config file, reseting to the default state\n" << std::endl;
+		std::cout << "[updater] Error reading config file, resetting to the default state\n" << std::endl;
 
 #ifndef _UC
 	try {
@@ -96,9 +96,9 @@ int main() {
 
 	std::cout << "[updater] Reading offsets from file offsets.json." << std::endl;
 	if (updater::read())
-		std::cout << "[updater] Sucessfully read offsets file\n" << std::endl;
+		std::cout << "[updater] Successfully read offsets file\n" << std::endl;
 	else
-		std::cout << "[updater] Error reading offsets file, reseting to the default state\n" << std::endl;
+		std::cout << "[updater] Error reading offsets file, resetting to the default state\n" << std::endl;
 
 	g_game.init();
 

@@ -15,7 +15,7 @@
     If you follow the guidelines above and use this bypass you will be safe from usermode anticheats like VAC.
     Obviously you can build and adapt upon my code to suit your needs.
     If I was to make a cheat for myself i would put this bypass into something i call an 'external internal' cheat.
-    Whereby you make a cheat and inject into a legitimate program like discord and add a check to the this bypass to only hijack a handle from the process you inject into, giving the appearence that nothing is out of the ordinary
+    Whereby you make a cheat and inject into a legitimate program like discord and add a check to the this bypass to only hijack a handle from the process you inject into, giving the appearance that nothing is out of the ordinary
     However you can implement this bypass into any form of cheat, its your decision.
     If you need want some more info i recommend you watch my YT video on this bypass.
     Anyways if you want to see more of my stuff feel free to join my discord server discord.gg/********. Here's my YT as well https://www.youtube.com/channel/UCPN6OOLxn1OaBP5jPThIiog.
@@ -41,12 +41,12 @@ typedef struct _UNICODE_STRING {
 	USHORT Length;
 	USHORT MaximumLength;
 	PWCH   Buffer;
-} UNICODE_STRING, * PUNICODE_STRING;
+} UNICODE_STRING, * PUNYCODE_STRING;
 
 typedef struct _OBJECT_ATTRIBUTES {
 	ULONG           Length;
 	HANDLE          RootDirectory;
-	PUNICODE_STRING ObjectName;
+	PUNYCODE_STRING ObjectName;
 	ULONG           Attributes;
 	PVOID           SecurityDescriptor;
 	PVOID           SecurityQualityOfService;
@@ -122,7 +122,7 @@ namespace hj {
 	HANDLE HijackedHandle = NULL;
 
 	// simple function i made that will just initialize our Object_Attributes structure as NtOpenProcess will fail otherwise
-    OBJECT_ATTRIBUTES InitObjectAttributes(PUNICODE_STRING name, ULONG attributes, HANDLE hRoot, PSECURITY_DESCRIPTOR security)
+    OBJECT_ATTRIBUTES InitObjectAttributes(PUNYCODE_STRING name, ULONG attributes, HANDLE hRoot, PSECURITY_DESCRIPTOR security)
     {
         OBJECT_ATTRIBUTES object;
 
@@ -135,7 +135,7 @@ namespace hj {
         return object;
     }
 
-	bool IsHandleValid(HANDLE handle) // i made this to simply check if a handle is valid rather than repeating the if statments
+	bool IsHandleValid(HANDLE handle) // i made this to simply check if a handle is valid rather than repeating the if statements
 	{
 		if (handle && handle != INVALID_HANDLE_VALUE)
 		{
@@ -156,7 +156,7 @@ namespace hj {
 
 		boolean OldPriv; //store the old privileges
 
-		// Give our program SeDeugPrivileges whcih allows us to get a handle to every process, even the highest privileged SYSTEM level processes.
+		// Give our program SeDebugPrivileges which allows us to get a handle to every process, even the highest privileged SYSTEM level processes.
 		RtlAdjustPrivilege(SeDebugPriv, TRUE, FALSE, &OldPriv);
 
 		//get the address of NtQuerySystemInformation in ntdll.dll so we can find all the open handles on our system
@@ -179,7 +179,7 @@ namespace hj {
 		//the size variable is the amount of bytes allocated to store all the open handles
 		DWORD size = sizeof(SYSTEM_HANDLE_INFORMATION);
 
-		//we allocate the memory to store all the handles on the heap rather than the stack becuase of the large amount of data
+		//we allocate the memory to store all the handles on the heap rather than the stack because of the large amount of data
 		hInfo = (SYSTEM_HANDLE_INFORMATION*) new byte[size];
 
 		//zero the memory handle info
@@ -252,7 +252,7 @@ namespace hj {
 
 			//create a a handle with duplicate only permissions to the process with a handle to our target. NOT OUR TARGET.
 			NtRet = NtOpenProcess(&procHandle, PROCESS_DUP_HANDLE, &Obj_Attribute, &clientID);
-			if (!IsHandleValid(procHandle) || !NT_SUCCESS(NtRet)) //check is the funcions succeeded and check the handle is valid
+			if (!IsHandleValid(procHandle) || !NT_SUCCESS(NtRet)) //check is the functions succeeded and check the handle is valid
 			{
 				continue;
 			}
@@ -260,7 +260,7 @@ namespace hj {
 
 			//we duplicate the handle another process has to our target into our cheat with whatever permissions we want. I did all access.
 			NtRet = NtDuplicateObject(procHandle, (HANDLE)hInfo->Handles[i].Handle, NtCurrentProcess, &HijackedHandle, PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_DUP_HANDLE, 0, 0);
-			if (!IsHandleValid(HijackedHandle) || !NT_SUCCESS(NtRet))//check is the funcions succeeded and check the handle is valid
+			if (!IsHandleValid(HijackedHandle) || !NT_SUCCESS(NtRet))//check is the functions succeeded and check the handle is valid
 			{
 
 				continue;
