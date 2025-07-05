@@ -37,12 +37,12 @@ namespace updater {
 				}
 
 				if (automatic_update || (response == 'Y' || response == 'y')) {
-					if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
+					if (download_file(raw_updated_offsets.c_str(), "offsets.json")) {
 						std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
 						return true;
 					}
 					else {
-						std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
+						std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offsets << "\n" << std::endl;
 					}
 				}
 
@@ -59,12 +59,12 @@ namespace updater {
 			}
 
 			if (automatic_update || (response == 'Y' || response == 'y')) {
-				if (download_file(raw_updated_offets.c_str(), "offsets.json")) {
+				if (download_file(raw_updated_offsets.c_str(), "offsets.json")) {
 					std::cout << "[updater] Successfully downloaded latest offsets.json file\n" << std::endl;
 					return true;
 				}
 				else {
-					std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offets << "\n" << std::endl;
+					std::cout << "[updater] Error: Failed to download file, try downloading manually from " << raw_updated_offsets << "\n" << std::endl;
 				}
 			}
 		}
