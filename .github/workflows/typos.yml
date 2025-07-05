@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - auto-build # testing
+      - auto-build # Testing
 
 jobs:
   run:
