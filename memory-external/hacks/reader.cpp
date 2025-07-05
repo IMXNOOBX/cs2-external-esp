@@ -71,7 +71,7 @@ void CGame::loop() {
 	std::lock_guard<std::mutex> lock(reader_mutex);
 
 	if (updater::offsets::dwLocalPlayerController == 0x0)
-		throw std::runtime_error("Offsets have not been corretly set, cannot proceed.");
+		throw std::runtime_error("Offsets have not been correctly set, cannot proceed.");
 
 	inGame = false;
 	isC4Planted = false;
@@ -169,7 +169,7 @@ void CGame::loop() {
 
 		if (config::show_extra_flags) {
 			/*
-			* Reading values for extra flags is now seperated from the other reads
+			* Reading values for extra flags is now separated from the other reads
 			* This removes unnecessary memory reads, improving performance when not showing extra flags
 			*/
 			player.is_defusing = process->read<bool>(player.pCSPlayerPawn + updater::offsets::m_bIsDefusing);
