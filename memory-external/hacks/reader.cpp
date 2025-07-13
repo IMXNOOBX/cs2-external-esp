@@ -139,11 +139,23 @@ void CGame::loop() {
 		* player.is_spotted = process->read<bool>(player.spottedState + 0x8); // bSpotted
 		*/
 
-		playerNameData = process->read<uintptr_t>(player.entity + updater::offsets::m_sSanitizedPlayerName);
-		char buffer[256];
-		process->read_raw(playerNameData, buffer, sizeof(buffer));
-		std::string name = std::string(buffer);
-		player.name = name;
+		// Read entity controller from the player pawn
+		uintptr_t handle = process->read<std::uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_hController);
+		int index = handle & 0x7FFF;
+		int segment = index >> 9;
+		int entry = index & 0x1FF;
+
+		uintptr_t controllerListSegment = process->read<uintptr_t>(entity_list + 0x8 * segment + 0x10);
+		uintptr_t controller = process->read<uintptr_t>(controllerListSegment + 120 * entry);
+
+		if (!controller)
+			continue;
+
+		// Read player name from the controller
+		char buffer[256] = {};
+		process->read_raw(controller + updater::offsets::m_iszPlayerName, buffer, sizeof(buffer) - 1);
+		buffer[sizeof(buffer) - 1] = '\0';
+		player.name = buffer;
 
 		player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
 		player.origin = process->read<Vector3>(player.pCSPlayerPawn + updater::offsets::m_vOldOrigin);
