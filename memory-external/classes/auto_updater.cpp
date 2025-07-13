@@ -231,10 +231,12 @@ namespace updater {
 			offsets::m_iHealth = data["m_iHealth"];
 		if (data["m_hPlayerPawn"].is_number())
 			offsets::m_hPlayerPawn = data["m_hPlayerPawn"];
-		if (data["dwSanitizedName"].is_number())
-			offsets::m_sSanitizedPlayerName = data["m_sSanitizedPlayerName"];
 		if (data["m_iTeamNum"].is_number())
 			offsets::m_iTeamNum = data["m_iTeamNum"];
+		if (data["m_hController"].is_number())
+			offsets::m_hController = data["m_hController"];
+		if (data["m_iszPlayerName"].is_number())
+			offsets::m_iszPlayerName = data["m_iszPlayerName"];
 
 		return true;
 	}
@@ -266,8 +268,9 @@ namespace updater {
 		data["m_ArmorValue"] = offsets::m_ArmorValue;
 		data["m_iHealth"] = offsets::m_iHealth;
 		data["m_hPlayerPawn"] = offsets::m_hPlayerPawn;
-		data["m_sSanitizedPlayerName"] = offsets::m_sSanitizedPlayerName;
 		data["m_iTeamNum"] = offsets::m_iTeamNum;
+		data["m_hController"] = offsets::m_hController;
+		data["m_iszPlayerName"] = offsets::m_iszPlayerName;
 
 		std::ofstream output(file_path);
 		output << std::setw(4) << data << std::endl;

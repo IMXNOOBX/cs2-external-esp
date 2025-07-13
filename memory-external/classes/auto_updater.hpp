@@ -55,7 +55,8 @@ namespace updater {
 		inline std::ptrdiff_t m_ArmorValue = 0x0;
 		inline std::ptrdiff_t m_iHealth = 0x0;
 		inline std::ptrdiff_t m_hPlayerPawn = 0x0;
-		inline std::ptrdiff_t m_sSanitizedPlayerName = 0x0;
 		inline std::ptrdiff_t m_iTeamNum = 0x0;
+		inline std::ptrdiff_t m_hController = 0x0;
+		inline std::ptrdiff_t m_iszPlayerName = 0x0;
 	}
 }
