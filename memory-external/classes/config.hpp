@@ -36,6 +36,6 @@ namespace config {
 	inline RGB esp_box_color_enemy = { 225, 75, 75 };
 	inline RGB esp_skeleton_color_team = { 75, 175, 75 };
 	inline RGB esp_skeleton_color_enemy = { 225, 75, 75 };
-	inline RGB esp_name_color = { 75, 75, 175 };
+	inline RGB esp_name_color = { 250, 250, 250 };
 	inline RGB esp_distance_color = { 75, 75, 175 };
 }
