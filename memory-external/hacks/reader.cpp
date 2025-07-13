@@ -148,7 +148,7 @@ void CGame::loop() {
 		uintptr_t controllerListSegment = process->read<uintptr_t>(entity_list + 0x8 * segment + 0x10);
 		uintptr_t controller = process->read<uintptr_t>(controllerListSegment + 120 * entry);
 
-		if (!controller || controller > 0x7FFFFFFFFFFF)
+		if (!controller)
 			continue;
 
 		// Read player name from the controller
