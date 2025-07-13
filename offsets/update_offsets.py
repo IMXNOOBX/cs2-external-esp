@@ -103,7 +103,9 @@ offsets_json["m_flTimerLength"] = client_json_base["C_PlantedC4"]["fields"]["m_f
 offsets_json["m_hPlayerPawn"] = client_json_base["CCSPlayerController"]["fields"]["m_hPlayerPawn"]
 offsets_json["m_iAccount"] = client_json_base["CCSPlayerController_InGameMoneyServices"]["fields"]["m_iAccount"]
 offsets_json["m_pInGameMoneyServices"] = client_json_base["CCSPlayerController"]["fields"]["m_pInGameMoneyServices"]
-offsets_json["m_sSanitizedPlayerName"] = client_json_base["CCSPlayerController"]["fields"]["m_sSanitizedPlayerName"]
+offsets_json["m_hController"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_hController"]
+offsets_json["m_hController"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_hController"]
+offsets_json["m_iszPlayerName"] = client_json_base["C_BasePlayerController"]["fields"]["m_iszPlayerName"]
 
 offsets_json["m_iHealth"] = client_json_base["C_BaseEntity"]["fields"]["m_iHealth"]
 offsets_json["m_iTeamNum"] = client_json_base["C_BaseEntity"]["fields"]["m_iTeamNum"]
