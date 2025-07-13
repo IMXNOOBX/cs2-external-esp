@@ -140,7 +140,7 @@ void CGame::loop() {
 		*/
 
 		// Read entity controller from the player pawn
-		uint32_t handle = process->read<std::uint32_t>(player.pCSPlayerPawn + updater::offsets::m_hController);
+		uintptr_t handle = process->read<std::uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_hController);
 		int index = handle & 0x7FFF;
 		int segment = index >> 9;
 		int entry = index & 0x1FF;
