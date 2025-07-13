@@ -6,10 +6,14 @@ Simple external ESP for Counter-Strike 2 using the GDI overlay to render esp box
 
 ## Video Showcase
 
-[![Cs2ESP](.github/image.png)](https://youtu.be/SV_lddIxQ5w)
+[![Cs2ESP](.github/showcase.png)](https://youtu.be/SV_lddIxQ5w)
 ## 🌳 Simple Use
 
-* Releases have been removed in order to be allowed in UnknownCheats, so the binaries are published there.
+<!-- * Releases have been removed in order to be allowed in UnknownCheats, so the binaries are published there. -->
+> You can download the latest binaries from the build artifacts in the [**Actions**](https://github.com/IMXNOOBX/cs2-external-esp/actions/workflows/auto_build.yml) tab.
+
+* The application has been updated compared to the one in UC, i suggest you to build it yourself or use the automatic builds from above.
+
 1. Go to the UnknownCheats post [**cs2-external-esp**](https://www.unknowncheats.me/forum/counter-strike-2-a/600259-cs2-external-esp.html)
 2. Click on the binary file you want to download and download it.
 3. Open the binary file and CS2 (Doesn't matter which one goes first (If you are having issues with ESP not showing, wait to open till in game))
@@ -70,11 +74,13 @@ Currently there are two ways to get the latest offsets.
 * [ifBars](https://github.com/ifBars) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/37) to the project and ideas
 * [Bekston](https://github.com/Bekston) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/20) to the project and ideas
 * [Apxaey](https://github.com/Apxaey) for releasing an easy way to implement [handle hijacking](https://github.com/Apxaey/Handle-Hijacking-Anti-Cheat-Bypass) 
-* The UnknownCheats comumnity for their research!
+* All [contributors](https://github.com/IMXNOOBX/cs2-external-esp/graphs/contributors) who have helped improve the project!
+* The UnknownCheats community for their research!
 
 # 🔖 License & Copyright
 
 This project is licensed under [**CC BY-NC 4.0**](https://creativecommons.org/licenses/by-nc/4.0/).
+
 ```diff
 + You are free to:
 	• Share: Copy and redistribute the material in any medium or format.
