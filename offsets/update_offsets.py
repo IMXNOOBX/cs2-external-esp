@@ -106,7 +106,7 @@ offsets_json["m_pInGameMoneyServices"] = client_json_base["CCSPlayerController"]
 
 offsets_json["m_sSanitizedPlayerName"] = client_json_base["CCSPlayerController"]["fields"]["m_sSanitizedPlayerName"] # Added for backwards compatibility, this is the same as m_iszPlayerName
 offsets_json["m_hController"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_hController"]
-offsets_json["m_iszPlayerName"] = client_json_base["C_BasePlayerController"]["fields"]["m_iszPlayerName"]
+offsets_json["m_iszPlayerName"] = client_json_base["CBasePlayerController"]["fields"]["m_iszPlayerName"]
 
 offsets_json["m_iHealth"] = client_json_base["C_BaseEntity"]["fields"]["m_iHealth"]
 offsets_json["m_iTeamNum"] = client_json_base["C_BaseEntity"]["fields"]["m_iTeamNum"]
