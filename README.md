@@ -34,8 +34,8 @@ Simple external ESP for Counter-Strike 2 using the GDI overlay to render esp box
 * To manually update the ESP offsets I have included an offsets.json file which will be created once opened.
 
 Currently there are two ways to get the latest offsets.
-1. Manually updating them
-1.1a Go to this [UnknownCheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community
+1. Manually updating them <br>
+1.1a Go to this [UnknownCheats thread](https://www.unknowncheats.me/forum/counter-strike-2-a/576077-counter-strike-2-reversal-structs-offsets.html) and find the latest offsets posted by the community <br>
 1.1b Or go to the [cs2-dumper](https://github.com/a2x/cs2-dumper) repository and find the latest offsets
 
 1.2 You will find something like this
@@ -53,9 +53,9 @@ Currently there are two ways to get the latest offsets.
 }	
 ```
 
-2. Automatically updating them using a script
-2.1 Download the `update_offsets.py` script and `offsets.json` file from [the offsets folder](https://github.com/IMXNOOBX/cs2-external-esp/tree/main/offsets) in this repository
-2.2 Put the `update_offsets.py` script next to the `offsets.json` file found next to your ESP executable
+2. Automatically updating them using a script <br>
+2.1 Download the `update_offsets.py` script and `offsets.json` file from [the offsets folder](https://github.com/IMXNOOBX/cs2-external-esp/tree/main/offsets) in this repository <br>
+2.2 Put the `update_offsets.py` script next to the `offsets.json` file found next to your ESP executable <br>
 2.3 Run `update_offsets.py`, the offsets will be automatically written to `offsets.json`
 
 ## 📘 Developer Instructions
