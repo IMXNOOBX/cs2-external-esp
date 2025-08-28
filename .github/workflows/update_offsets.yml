@@ -27,13 +27,23 @@ jobs:
       id: run-python-script
       run: |
         python ./offsets/update_offsets.py
+        echo "exit_code=$?" >> $GITHUB_OUTPUT
       continue-on-error: true
 
     - name: Check Python Script Exit Code
       if: steps.run-python-script.outcome == 'failure'
       run: |
-        echo "Repository has no updates"
-        exit 0
+        echo "Python script exited with code: ${{ steps.run-python-script.outputs.exit_code }}"
+        
+        if [ "${{ steps.run-python-script.outputs.exit_code }}" -eq 2 ]; then
+          echo "Could not parse offsets json file, most likely due to a schema change, check logs above!"
+          exit 1
+        fi
+
+        if [ "${{ steps.run-python-script.outputs.exit_code }}" -ne 0 ]; then
+          echo "Repository has no updates"
+          exit 0
+        fi
 
     # - name: Commit and push changes
     #   if: steps.run-python-script.outcome == 'success'

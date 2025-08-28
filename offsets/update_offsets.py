@@ -73,14 +73,19 @@ if offsets_json["build_number"] == int(build_number):
 
     print("Local offsets (dwLocalPlayer/dwViewMatrix) are outdated, pulling the latest offsets.")
 
-offsets_json["build_number"] = int(build_number)
+try:
+    offsets_json["build_number"] = int(build_number)
 
-offsets_json["dwBuildNumber"] = offsets["engine2.dll"]["dwBuildNumber"]
-offsets_json["dwLocalPlayer"] = offsets["client.dll"]["dwLocalPlayerPawn"]
-offsets_json["dwLocalPlayerController"] = offsets["client.dll"]["dwLocalPlayerController"]
-offsets_json["dwEntityList"] = offsets["client.dll"]["dwEntityList"]
-offsets_json["dwViewMatrix"] = offsets["client.dll"]["dwViewMatrix"]
-offsets_json["dwPlantedC4"] = offsets["client.dll"]["dwPlantedC4"]
+    offsets_json["dwBuildNumber"] = offsets["engine2.dll"]["dwBuildNumber"]
+    offsets_json["dwLocalPlayer"] = offsets["client.dll"]["dwLocalPlayerPawn"]
+    offsets_json["dwLocalPlayerController"] = offsets["client.dll"]["dwLocalPlayerController"]
+    offsets_json["dwEntityList"] = offsets["client.dll"]["dwEntityList"]
+    offsets_json["dwViewMatrix"] = offsets["client.dll"]["dwViewMatrix"]
+    offsets_json["dwPlantedC4"] = offsets["client.dll"]["dwPlantedC4"]
+except KeyError as e:
+    print(f"KeyError (#1): {e}")
+    print("The structure of the remote offsets.json has changed. Please check the repository for updates.")
+    exit(2)
 
 client = get_raw_file(urls["client_dll"])
 
@@ -88,33 +93,38 @@ if not client:
     print("Could not find the latest client.dll.")
     exit(1)
 
-client_json_base = client["client.dll"]["classes"]
+try:
+    client_json_base = client["client.dll"]["classes"]
 
-offsets_json["m_bIsDefusing"] = client_json_base["C_CSPlayerPawn"]["fields"]["m_bIsDefusing"]
-offsets_json["m_ArmorValue"] = client_json_base["C_CSPlayerPawn"]["fields"]["m_ArmorValue"]
+    offsets_json["m_bIsDefusing"] = client_json_base["C_CSPlayerPawn"]["fields"]["m_bIsDefusing"]
+    offsets_json["m_ArmorValue"] = client_json_base["C_CSPlayerPawn"]["fields"]["m_ArmorValue"]
+    offsets_json["m_pClippingWeapon"] = client_json_base["C_CSPlayerPawn"]["fields"]["m_pClippingWeapon"]
 
-offsets_json["m_pClippingWeapon"] = client_json_base["C_CSPlayerPawnBase"]["fields"]["m_pClippingWeapon"]
-offsets_json["m_flFlashOverlayAlpha"] = client_json_base["C_CSPlayerPawnBase"]["fields"]["m_flFlashOverlayAlpha"]
+    offsets_json["m_flFlashOverlayAlpha"] = client_json_base["C_CSPlayerPawnBase"]["fields"]["m_flFlashOverlayAlpha"]
 
-offsets_json["m_flC4Blow"] = client_json_base["C_PlantedC4"]["fields"]["m_flC4Blow"]
-offsets_json["m_flNextBeep"] = client_json_base["C_PlantedC4"]["fields"]["m_flNextBeep"]
-offsets_json["m_flTimerLength"] = client_json_base["C_PlantedC4"]["fields"]["m_flTimerLength"]
+    offsets_json["m_flC4Blow"] = client_json_base["C_PlantedC4"]["fields"]["m_flC4Blow"]
+    offsets_json["m_flNextBeep"] = client_json_base["C_PlantedC4"]["fields"]["m_flNextBeep"]
+    offsets_json["m_flTimerLength"] = client_json_base["C_PlantedC4"]["fields"]["m_flTimerLength"]
 
-offsets_json["m_hPlayerPawn"] = client_json_base["CCSPlayerController"]["fields"]["m_hPlayerPawn"]
-offsets_json["m_iAccount"] = client_json_base["CCSPlayerController_InGameMoneyServices"]["fields"]["m_iAccount"]
-offsets_json["m_pInGameMoneyServices"] = client_json_base["CCSPlayerController"]["fields"]["m_pInGameMoneyServices"]
+    offsets_json["m_hPlayerPawn"] = client_json_base["CCSPlayerController"]["fields"]["m_hPlayerPawn"]
+    offsets_json["m_iAccount"] = client_json_base["CCSPlayerController_InGameMoneyServices"]["fields"]["m_iAccount"]
+    offsets_json["m_pInGameMoneyServices"] = client_json_base["CCSPlayerController"]["fields"]["m_pInGameMoneyServices"]
 
-offsets_json["m_sSanitizedPlayerName"] = client_json_base["CCSPlayerController"]["fields"]["m_sSanitizedPlayerName"] # Added for backwards compatibility, this is the same as m_iszPlayerName
-offsets_json["m_hController"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_hController"]
-offsets_json["m_iszPlayerName"] = client_json_base["CBasePlayerController"]["fields"]["m_iszPlayerName"]
+    offsets_json["m_sSanitizedPlayerName"] = client_json_base["CCSPlayerController"]["fields"]["m_sSanitizedPlayerName"] # Added for backwards compatibility, this is the same as m_iszPlayerName
+    offsets_json["m_hController"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_hController"]
+    offsets_json["m_iszPlayerName"] = client_json_base["CBasePlayerController"]["fields"]["m_iszPlayerName"]
 
-offsets_json["m_iHealth"] = client_json_base["C_BaseEntity"]["fields"]["m_iHealth"]
-offsets_json["m_iTeamNum"] = client_json_base["C_BaseEntity"]["fields"]["m_iTeamNum"]
-offsets_json["m_pGameSceneNode"] = client_json_base["C_BaseEntity"]["fields"]["m_pGameSceneNode"]
+    offsets_json["m_iHealth"] = client_json_base["C_BaseEntity"]["fields"]["m_iHealth"]
+    offsets_json["m_iTeamNum"] = client_json_base["C_BaseEntity"]["fields"]["m_iTeamNum"]
+    offsets_json["m_pGameSceneNode"] = client_json_base["C_BaseEntity"]["fields"]["m_pGameSceneNode"]
 
-offsets_json["m_szName"] = client_json_base["CCSWeaponBaseVData"]["fields"]["m_szName"]
-offsets_json["m_vOldOrigin"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_vOldOrigin"]
-offsets_json["m_vecAbsOrigin"] = client_json_base["CGameSceneNode"]["fields"]["m_vecAbsOrigin"]
+    offsets_json["m_szName"] = client_json_base["CCSWeaponBaseVData"]["fields"]["m_szName"]
+    offsets_json["m_vOldOrigin"] = client_json_base["C_BasePlayerPawn"]["fields"]["m_vOldOrigin"]
+    offsets_json["m_vecAbsOrigin"] = client_json_base["CGameSceneNode"]["fields"]["m_vecAbsOrigin"]
+except KeyError as e:
+    print(f"KeyError (#2): {e}")
+    print("The structure of the remote client_dll.json has changed. Please check the repository for updates.")
+    exit(2)
 
 with open(dest_path, 'w') as dest_file:
     json.dump(offsets_json, dest_file, indent=4)
