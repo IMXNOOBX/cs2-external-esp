@@ -167,15 +167,17 @@ void CGame::loop() {
 		if (config::render_distance != -1 && (localOrigin - player.origin).length2d() > config::render_distance) continue;
 		if (player.origin.x == 0 && player.origin.y == 0) continue;
 
+		// Bone array offset updated from 0x1F0 to 0x210 (m_modelState + 128)
 		if (config::show_skeleton_esp) {
 			player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
-			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x1F0);
+			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x210);
 			player.ReadBones();
 		}
 
+		// Apply the same fix here
 		if (config::show_head_tracker && !config::show_skeleton_esp) {
 			player.gameSceneNode = process->read<uintptr_t>(player.pCSPlayerPawn + updater::offsets::m_pGameSceneNode);
-			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x1F0);
+			player.boneArray = process->read<uintptr_t>(player.gameSceneNode + 0x210);
 			player.ReadHead();
 		}
 
