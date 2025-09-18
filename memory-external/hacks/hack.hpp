@@ -120,68 +120,72 @@ namespace hack {
 				);
 			}
 
-			render::DrawBorderBox(
-				g::hdcBuffer,
-				screenHead.x - (width / 2 + 10),
-				screenHead.y + (height * (100 - player->armor) / 100),
-				2,
-				height - (height * (100 - player->armor) / 100),
-				RGB(0, 185, 255)
-			);
+			if (config::show_basic_flags)
+			{
+				render::DrawBorderBox(
+					g::hdcBuffer,
+					screenHead.x - (width / 2 + 10),
+					screenHead.y + (height * (100 - player->armor) / 100),
+					2,
+					height - (height * (100 - player->armor) / 100),
+					RGB(0, 185, 255)
+				);
 
-			render::DrawBorderBox(
-				g::hdcBuffer,
-				screenHead.x - (width / 2 + 5),
-				screenHead.y + (height * (100 - player->health) / 100),
-				2,
-				height - (height * (100 - player->health) / 100),
-				RGB(
-					(255 - player->health),
-					(55 + player->health * 2),
-					75
-				)
-			);
+				render::DrawBorderBox(
+					g::hdcBuffer,
+					screenHead.x - (width / 2 + 5),
+					screenHead.y + (height * (100 - player->health) / 100),
+					2,
+					height - (height * (100 - player->health) / 100),
+					RGB(
+						(255 - player->health),
+						(55 + player->health * 2),
+						75
+					)
+				);
 
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y,
-				player->name.c_str(),
-				config::esp_name_color,
-				10
-			);
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					screenHead.y,
+					player->name.c_str(),
+					config::esp_name_color,
+					10
+				);
+				
+				/**
+				* I know is not the best way but a simple way to not saturate the screen with a ton of information
+				*/
+				if (roundedDistance > config::flag_render_distance)
+					continue;
 
-			/**
-			* I know is not the best way but a simple way to not saturate the screen with a ton of information
-			*/
-			if (roundedDistance > config::flag_render_distance)
-				continue;
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					screenHead.y + 10,
+					(std::to_string(player->health) + "hp").c_str(),
+					RGB(
+						(255 - player->health),
+						(55 + player->health * 2),
+						75
+					),
+					10
+				);
 
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y + 10,
-				(std::to_string(player->health) + "hp").c_str(),
-				RGB(
-					(255 - player->health),
-					(55 + player->health * 2),
-					75
-				),
-				10
-			);
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					screenHead.y + 20,
+					(std::to_string(player->armor) + "armor").c_str(),
+					RGB(
+						(255 - player->armor),
+						(55 + player->armor * 2),
+						75
+					),
+					10
+				);
+			}
 
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y + 20,
-				(std::to_string(player->armor) + "armor").c_str(),
-				RGB(
-					(255 - player->armor),
-					(55 + player->armor * 2),
-					75
-				),
-				10
-			);
 
 			if (config::show_extra_flags)
 			{

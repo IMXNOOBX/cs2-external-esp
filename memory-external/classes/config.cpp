@@ -36,6 +36,8 @@ namespace config {
 			flag_render_distance = data["flag_render_distance"];
 		if (data["show_extra_flags"].is_boolean())
 			show_extra_flags = data["show_extra_flags"];
+		if (data["show_basic_flags"].is_boolean())
+			show_basic_flags = data["show_basic_flags"];
 
 		if (data.find("esp_box_color_team") != data.end()) {
 			esp_box_color_team = {
@@ -104,6 +106,7 @@ namespace config {
 		data["render_distance"] = render_distance;
 		data["flag_render_distance"] = flag_render_distance;
 		data["show_extra_flags"] = show_extra_flags;
+		data["show_basic_flags"] = show_basic_flags;
 
 		data["esp_box_color_team"] = { esp_box_color_team.r, esp_box_color_team.g, esp_box_color_team.b };
 		data["esp_box_color_enemy"] = { esp_box_color_enemy.r, esp_box_color_enemy.g, esp_box_color_enemy.b };

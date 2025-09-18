@@ -31,6 +31,7 @@ namespace config {
 	inline bool show_skeleton_esp = false;
 	inline bool show_head_tracker = false;
 	inline bool show_extra_flags = false;
+	inline bool show_basic_flags = true;
 
 	inline RGB esp_box_color_team = { 75, 175, 75 };
 	inline RGB esp_box_color_enemy = { 225, 75, 75 };
