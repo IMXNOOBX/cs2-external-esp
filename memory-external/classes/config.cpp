@@ -36,8 +36,22 @@ namespace config {
 			flag_render_distance = data["flag_render_distance"];
 		if (data["show_extra_flags"].is_boolean())
 			show_extra_flags = data["show_extra_flags"];
-		if (data["show_basic_flags"].is_boolean())
-			show_basic_flags = data["show_basic_flags"];
+		if (data["show_health_bars"].is_boolean())
+			show_health_bars = data["show_basic_flags"];
+		if (data["show_health_flags"].is_boolean())
+			show_health_flags = data["show_health_flags"];
+		if (data["show_money_flag"].is_boolean())
+			show_money_flag = data["show_money_flag"];
+		if (data["show_distance_flag"].is_boolean())
+			show_distance_flag = data["show_distance_flag"];
+		if (data["show_name_flag"].is_boolean())
+			show_name_flag = data["show_name_flag"];
+		if (data["show_weapon_flag"].is_boolean())
+			show_weapon_flag = data["show_weapon_flag"];
+		if (data["show_defusing_flag"].is_boolean())
+			show_defusing_flag = data["show_defusing_flag"];
+		if (data["show_flashed_flag"].is_boolean())
+			show_flashed_flag = data["show_flashed_flag"];
 
 		if (data.find("esp_box_color_team") != data.end()) {
 			esp_box_color_team = {
@@ -106,7 +120,14 @@ namespace config {
 		data["render_distance"] = render_distance;
 		data["flag_render_distance"] = flag_render_distance;
 		data["show_extra_flags"] = show_extra_flags;
-		data["show_basic_flags"] = show_basic_flags;
+		data["show_health_bars"] = show_health_bars;
+		data["show_health_flags"] = show_health_flags;
+		data["show_money_flag"] = show_money_flag;
+		data["show_distance_flag"] = show_distance_flag;
+		data["show_name_flag"] = show_name_flag;
+		data["show_weapon_flag"] = show_weapon_flag;
+		data["show_defusing_flag"] = show_defusing_flag;
+		data["show_flashed_flag"] = show_flashed_flag;
 
 		data["esp_box_color_team"] = { esp_box_color_team.r, esp_box_color_team.g, esp_box_color_team.b };
 		data["esp_box_color_enemy"] = { esp_box_color_enemy.r, esp_box_color_enemy.g, esp_box_color_enemy.b };
