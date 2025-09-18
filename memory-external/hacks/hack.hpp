@@ -25,6 +25,7 @@ namespace hack {
 	};
 
 	void loop() {
+		if (config::panic) return;
 
 		std::lock_guard<std::mutex> lock(reader_mutex);
 

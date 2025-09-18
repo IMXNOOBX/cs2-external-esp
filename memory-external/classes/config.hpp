@@ -23,6 +23,8 @@ namespace config {
 	extern bool read();
 	extern void save();
 
+	inline bool panic = false;
+
 	inline bool automatic_update = false;
 	inline bool team_esp = false;
 	inline float render_distance = -1.f;
