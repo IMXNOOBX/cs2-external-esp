@@ -23,6 +23,8 @@ namespace config {
 	extern bool read();
 	extern void save();
 
+	inline bool panic = false;
+
 	inline bool automatic_update = false;
 	inline bool team_esp = false;
 	inline float render_distance = -1.f;
@@ -30,7 +32,14 @@ namespace config {
 	inline bool show_box_esp = true;
 	inline bool show_skeleton_esp = false;
 	inline bool show_head_tracker = false;
-	inline bool show_extra_flags = false;
+	inline bool show_health_bars = true;
+	inline bool show_health_flags = true;
+	inline bool show_money_flag = false;
+	inline bool show_distance_flag = false;
+	inline bool show_name_flag = true;
+	inline bool show_weapon_flag = false;
+	inline bool show_defusing_flag = false;
+	inline bool show_flashed_flag = false;
 
 	inline RGB esp_box_color_team = { 75, 175, 75 };
 	inline RGB esp_box_color_enemy = { 225, 75, 75 };

@@ -25,6 +25,7 @@ namespace hack {
 	};
 
 	void loop() {
+		if (config::panic) return;
 
 		std::lock_guard<std::mutex> lock(reader_mutex);
 
@@ -84,6 +85,10 @@ namespace hack {
 			float distance = g_game.localOrigin.calculate_distance(player->origin);
 			int roundedDistance = std::round(distance / 10.f);
 
+			int flagBaseY = screenHead.y;  // for dynamic flag pos
+			int flagYOffset = 0;           // incremented for each flag
+			int flagLineSpacing = 10;      // space between the flags
+
 			if (config::show_head_tracker) {
 				render::DrawCircle(
 					g::hdcBuffer,
@@ -120,125 +125,153 @@ namespace hack {
 				);
 			}
 
-			render::DrawBorderBox(
-				g::hdcBuffer,
-				screenHead.x - (width / 2 + 10),
-				screenHead.y + (height * (100 - player->armor) / 100),
-				2,
-				height - (height * (100 - player->armor) / 100),
-				RGB(0, 185, 255)
-			);
+			if (config::show_health_bars)
+			{
+				render::DrawBorderBox(
+					g::hdcBuffer,
+					screenHead.x - (width / 2 + 10),
+					screenHead.y + (height * (100 - player->armor) / 100),
+					2,
+					height - (height * (100 - player->armor) / 100),
+					RGB(0, 185, 255)
+				);
 
-			render::DrawBorderBox(
-				g::hdcBuffer,
-				screenHead.x - (width / 2 + 5),
-				screenHead.y + (height * (100 - player->health) / 100),
-				2,
-				height - (height * (100 - player->health) / 100),
-				RGB(
-					(255 - player->health),
-					(55 + player->health * 2),
-					75
-				)
-			);
+				render::DrawBorderBox(
+					g::hdcBuffer,
+					screenHead.x - (width / 2 + 5),
+					screenHead.y + (height * (100 - player->health) / 100),
+					2,
+					height - (height * (100 - player->health) / 100),
+					RGB(
+						(255 - player->health),
+						(55 + player->health * 2),
+						75
+					)
+				);
+			}
 
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y,
-				player->name.c_str(),
-				config::esp_name_color,
-				10
-			);
-
-			/**
-			* I know is not the best way but a simple way to not saturate the screen with a ton of information
-			*/
-			if (roundedDistance > config::flag_render_distance)
-				continue;
-
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y + 10,
-				(std::to_string(player->health) + "hp").c_str(),
-				RGB(
-					(255 - player->health),
-					(55 + player->health * 2),
-					75
-				),
-				10
-			);
-
-			render::RenderText(
-				g::hdcBuffer,
-				screenHead.x + (width / 2 + 5),
-				screenHead.y + 20,
-				(std::to_string(player->armor) + "armor").c_str(),
-				RGB(
-					(255 - player->armor),
-					(55 + player->armor * 2),
-					75
-				),
-				10
-			);
-
-			if (config::show_extra_flags)
+			if (config::show_name_flag)
 			{
 				render::RenderText(
 					g::hdcBuffer,
 					screenHead.x + (width / 2 + 5),
-					screenHead.y + 30,
+					flagBaseY + flagYOffset,
+					player->name.c_str(),
+					config::esp_name_color,
+					10
+				);
+				flagYOffset += flagLineSpacing;
+			}
+
+			if (config::show_health_flags)
+			{
+				/**
+				* I know is not the best way but a simple way to not saturate the screen with a ton of information
+				*/
+				if (roundedDistance > config::flag_render_distance)
+					continue;
+
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					flagBaseY + flagYOffset,
+					(std::to_string(player->health) + "hp").c_str(),
+					RGB(
+						(255 - player->health),
+						(55 + player->health * 2),
+						75
+					),
+					10
+				);
+				flagYOffset += flagLineSpacing;
+
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					flagBaseY + flagYOffset,
+					(std::to_string(player->armor) + "armor").c_str(),
+					RGB(
+						(255 - player->armor),
+						(55 + player->armor * 2),
+						75
+					),
+					10
+				);
+				flagYOffset += flagLineSpacing;
+			}
+
+			if (config::show_weapon_flag)
+			{
+				render::RenderText(
+					g::hdcBuffer,
+					screenHead.x + (width / 2 + 5),
+					flagBaseY + flagYOffset,
 					player->weapon.c_str(),
 					config::esp_distance_color,
 					10
 				);
+				flagYOffset += flagLineSpacing;
+			}
 
+			if (config::show_distance_flag)
+			{
 				render::RenderText(
 					g::hdcBuffer,
 					screenHead.x + (width / 2 + 5),
-					screenHead.y + 40,
+					flagBaseY + flagYOffset,
 					(std::to_string(roundedDistance) + "m away").c_str(),
 					config::esp_distance_color,
 					10
 				);
+				flagYOffset += flagLineSpacing;				
+			}
 
+			if (config::show_money_flag)
+			{
 				render::RenderText(
 					g::hdcBuffer,
 					screenHead.x + (width / 2 + 5),
-					screenHead.y + 50,
+					flagBaseY + flagYOffset,
 					("$" + std::to_string(player->money)).c_str(),
 					RGB(0, 125, 0),
 					10
-				);
+				);	
+				flagYOffset += flagLineSpacing;			
+			}
 
+			if (config::show_flashed_flag)
+			{
 				if (player->flashAlpha > 100)
 				{
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 60,
+						flagBaseY + flagYOffset,
 						"Player is flashed",
 						config::esp_distance_color,
 						10
 					);
+					flagYOffset += flagLineSpacing;
 				}
+			}
 
+			if (config::show_defusing_flag)
+			{
 				if (player->is_defusing)
 				{
 					const std::string defuText = "Player is defusing";
 					render::RenderText(
 						g::hdcBuffer,
 						screenHead.x + (width / 2 + 5),
-						screenHead.y + 60,
+						flagBaseY + flagYOffset,
 						defuText.c_str(),
 						config::esp_distance_color,
 						10
 					);
 				}
+				flagYOffset += flagLineSpacing;
 			}
 		}
 		// std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
-

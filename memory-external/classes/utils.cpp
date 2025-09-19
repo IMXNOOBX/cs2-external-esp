@@ -8,7 +8,8 @@ void Utils::update_console_title() {
     config::show_head_tracker ? title += " | Head Tracker: [O]" : title += " | Head Tracker: [X]";
     config::team_esp ? title += " | Team: [O]" : title += " | Team: [X]";
     config::automatic_update ? title += " | Auto Update: [O]" : title += " | Auto Update: [X]";
-    config::show_extra_flags ? title += " | Flags: [O]" : title += " | Flags: [X]";
+	//config::show_money_flag || config::show_distance_flag || config::show_defusing_flag || config::show_weapon_flag || config::show_name_flag || config::show_flashed_flag || config::show_health_flags
+ //       ? title += " | Flags: [O]" : title += " | Flags: [X]";
 
 	SetConsoleTitle(title.c_str());
 }
