@@ -16,7 +16,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Global GUI state variables
-bool finish = false;
+bool gui_finish = false;
 bool show_gui = false;
 bool gui_has_focus = false;
 static bool gui_initialized = false;
@@ -265,10 +265,66 @@ void RenderImGui()
         ImGui::PopStyleColor();
 #endif
 
-        ImGui::PushStyleColor(ImGuiCol_Text, config::show_extra_flags ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
-        if (ImGui::Checkbox("Extra Flags [F7]", &config::show_extra_flags))
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_health_bars ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Health Bars", &config::show_health_bars))
             config::save();
         ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_health_flags ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Health Flags", &config::show_health_flags))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_money_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Money Flag", &config::show_money_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_distance_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Distance Flag", &config::show_distance_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_name_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Name Flag", &config::show_name_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_weapon_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Weapon Flag", &config::show_weapon_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_defusing_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Defusing Flag", &config::show_defusing_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        ImGui::PushStyleColor(ImGuiCol_Text, config::show_flashed_flag ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 100, 100, 255));
+        if (ImGui::Checkbox("Flashed Flag", &config::show_flashed_flag))
+            config::save();
+        ImGui::PopStyleColor();
+
+        // COLOR SELECTORS
+        ImGui::Text("Colors");
+        if (ImGui::ColorEdit3("Box (Team)", (float*)&config::esp_box_color_team))
+            config::save();
+
+        if (ImGui::ColorEdit3("Box (Enemy)", (float*)&config::esp_box_color_enemy))
+            config::save();
+
+        if (ImGui::ColorEdit3("Skeleton (Team)", (float*)&config::esp_skeleton_color_team))
+            config::save();
+
+        if (ImGui::ColorEdit3("Skeleton (Enemy)", (float*)&config::esp_skeleton_color_enemy))
+            config::save();
+
+        if (ImGui::ColorEdit3("Name", (float*)&config::esp_name_color))
+            config::save();
+
+        if (ImGui::ColorEdit3("Distance", (float*)&config::esp_distance_color))
+            config::save();
+
     }
     else
     {
@@ -314,7 +370,7 @@ void RenderImGui()
 
     // Status and keybinds
     ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 200, 200, 255));
-    ImGui::Text("Status: %s", finish ? "Stopping..." : "Running");
+    ImGui::Text("Status: %s", gui_finish ? "Stopping..." : "Running");
     ImGui::PopStyleColor();
 
     ImGui::Spacing();
@@ -348,7 +404,7 @@ void RenderImGui()
 
 void GuiThread()
 {
-    while (!finish)
+    while (!gui_finish)
     {
         if (show_gui)
         {

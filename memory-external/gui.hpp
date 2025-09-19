@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 
-extern bool finish;
+extern bool gui_finish;
 extern bool show_gui;
 extern bool gui_has_focus;
 
