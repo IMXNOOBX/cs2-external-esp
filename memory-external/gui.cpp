@@ -182,6 +182,26 @@ bool InitImGui()
     return true;
 }
 
+bool ColorEdit3RGB(const char* label, RGB& color)
+{
+    float col[3] = {
+        color.r / 255.0f,
+        color.g / 255.0f,
+        color.b / 255.0f
+    };
+
+    bool changed = ImGui::ColorEdit3(label, col);
+
+    if (changed) {
+        color.r = static_cast<int>(col[0] * 255.0f);
+        color.g = static_cast<int>(col[1] * 255.0f);
+        color.b = static_cast<int>(col[2] * 255.0f);
+    }
+
+    return changed;
+}
+
+
 void RenderImGui()
 {
     if (!show_gui || !gui_initialized || !g_pd3dDevice)
@@ -307,24 +327,23 @@ void RenderImGui()
 
         // COLOR SELECTORS
         ImGui::Text("Colors");
-        if (ImGui::ColorEdit3("Box (Team)", (float*)&config::esp_box_color_team))
+        if (ColorEdit3RGB("Box (Team)", config::esp_box_color_team))
             config::save();
 
-        if (ImGui::ColorEdit3("Box (Enemy)", (float*)&config::esp_box_color_enemy))
+        if (ColorEdit3RGB("Box (Enemy)", config::esp_box_color_enemy))
             config::save();
 
-        if (ImGui::ColorEdit3("Skeleton (Team)", (float*)&config::esp_skeleton_color_team))
+        if (ColorEdit3RGB("Skeleton (Team)", config::esp_skeleton_color_team))
             config::save();
 
-        if (ImGui::ColorEdit3("Skeleton (Enemy)", (float*)&config::esp_skeleton_color_enemy))
+        if (ColorEdit3RGB("Skeleton (Enemy)", config::esp_skeleton_color_enemy))
             config::save();
 
-        if (ImGui::ColorEdit3("Name", (float*)&config::esp_name_color))
+        if (ColorEdit3RGB("Name", config::esp_name_color))
             config::save();
 
-        if (ImGui::ColorEdit3("Distance", (float*)&config::esp_distance_color))
+        if (ColorEdit3RGB("Distance", config::esp_distance_color))
             config::save();
-
     }
     else
     {
