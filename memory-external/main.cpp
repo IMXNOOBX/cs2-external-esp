@@ -16,6 +16,7 @@
 
 bool finish = false;
 static HWND overlay_hwnd = nullptr;
+static render::DX11Renderer renderer;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -23,13 +24,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
         overlay_hwnd = hWnd;
-        g::hdcBuffer = CreateCompatibleDC(NULL);
-        g::hbmBuffer = CreateCompatibleBitmap(GetDC(hWnd), g::gameBounds.right, g::gameBounds.bottom);
-        SelectObject(g::hdcBuffer, g::hbmBuffer);
-        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hWnd, RGB(255, 255, 255), 0, LWA_COLORKEY);
         std::cout << "[overlay] Window created successfully" << std::endl;
         Beep(500, 100);
+        break;
+
+    case WM_SIZE:
+        if (renderer.m_device != nullptr && wParam != SIZE_MINIMIZED)
+        {
+            GetClientRect(hWnd, &g::gameBounds);
+        }
         break;
 
     case WM_ERASEBKGND:
@@ -39,20 +42,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hWnd, &ps);
-        FillRect(g::hdcBuffer, &ps.rcPaint, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-        if (GetForegroundWindow() == g_game.process->hwnd_)
-            hack::loop();
+        if (render::g_renderer)
+        {
+            renderer.BeginFrame();
 
-        BitBlt(hdc, 0, 0, g::gameBounds.right, g::gameBounds.bottom, g::hdcBuffer, 0, 0, SRCCOPY);
+            if (GetForegroundWindow() == g_game.process->hwnd_)
+                hack::loop(*render::g_renderer);
+
+            renderer.EndFrame();
+            renderer.Present();
+        }
+
         EndPaint(hWnd, &ps);
         InvalidateRect(hWnd, NULL, TRUE);
         break;
     }
 
     case WM_DESTROY:
-        DeleteDC(g::hdcBuffer);
-        DeleteObject(g::hbmBuffer);
+        renderer.Shutdown();
         PostQuitMessage(0);
         break;
 
@@ -124,7 +132,7 @@ int main()
     wc.cbSize = sizeof(WNDCLASSEXA);
     wc.lpfnWndProc = WndProc;
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.hbrBackground = WHITE_BRUSH;
+    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); // Changed to black for DX11
     wc.hInstance = reinterpret_cast<HINSTANCE>(GetWindowLongA(g_game.process->hwnd_, (-6)));
     wc.lpszMenuName = " ";
     wc.lpszClassName = " ";
@@ -138,11 +146,28 @@ int main()
         g::gameBounds.left, g::gameBounds.top, g::gameBounds.right - g::gameBounds.left, g::gameBounds.bottom + g::gameBounds.left,
         NULL, NULL, hInstance, NULL);
 
-    if (hWnd == NULL)
+    if (hWnd == NULL) {
+        std::cout << "[overlay] Failed to create overlay window" << std::endl;
         return 0;
+    }
+
+    // Initialize DirectX 11 renderer
+    if (!renderer.Initialize(hWnd, g::gameBounds.right - g::gameBounds.left, g::gameBounds.bottom + g::gameBounds.left)) {
+        std::cout << "[overlay] Failed to initialize DirectX 11 renderer" << std::endl;
+        DestroyWindow(hWnd);
+        return 0;
+    }
+
+    // Set the global renderer pointer
+    render::g_renderer = &renderer;
+
+    // Make window transparent for overlay effect
+    SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
     SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     ShowWindow(hWnd, TRUE);
+
+    std::cout << "[overlay] DirectX 11 renderer initialized successfully" << std::endl;
 
     std::thread gui_thread(GuiThread);
     std::thread read(read_thread);
@@ -178,28 +203,36 @@ int main()
             std::this_thread::sleep_for(std::chrono::milliseconds(75));
         }
 
-        if (GetAsyncKeyState(VK_F4) & 0x8000) { config::show_box_esp = !config::show_box_esp; config::save(); Beep(700, 100);}
-        if (GetAsyncKeyState(VK_F5) & 0x8000) { config::team_esp = !config::team_esp; config::save(); Beep(700, 100);}
+        if (GetAsyncKeyState(VK_F4) & 0x8000) { config::show_box_esp = !config::show_box_esp; config::save(); Beep(700, 100); }
+        if (GetAsyncKeyState(VK_F5) & 0x8000) { config::team_esp = !config::team_esp; config::save(); Beep(700, 100); }
 #ifndef _UC
-        if (GetAsyncKeyState(VK_F6) & 0x8000) { config::automatic_update = !config::automatic_update; config::save(); Beep(700, 100);}
+        if (GetAsyncKeyState(VK_F6) & 0x8000) { config::automatic_update = !config::automatic_update; config::save(); Beep(700, 100); }
 #endif
-        if (GetAsyncKeyState(VK_F7) & 0x8000) { config::panic = !config::panic; Beep(700, 100);}
-        if (GetAsyncKeyState(VK_F8) & 0x8000) { config::show_skeleton_esp = !config::show_skeleton_esp; config::save(); Beep(700, 100);}
-        if (GetAsyncKeyState(VK_F9) & 0x8000) { config::show_head_tracker = !config::show_head_tracker; config::save(); Beep(700, 100);}
+        if (GetAsyncKeyState(VK_F7) & 0x8000) { config::panic = !config::panic; Beep(700, 100); }
+        if (GetAsyncKeyState(VK_F8) & 0x8000) { config::show_skeleton_esp = !config::show_skeleton_esp; config::save(); Beep(700, 100); }
+        if (GetAsyncKeyState(VK_F9) & 0x8000) { config::show_head_tracker = !config::show_head_tracker; config::save(); Beep(700, 100); }
 
         TranslateMessage(&msg);
         DispatchMessage(&msg);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
-    gui_thread.detach();
-    read.detach();
+    finish = true;
+    gui_finish = true;
+
+    if (gui_thread.joinable())
+        gui_thread.join();
+    if (read.joinable())
+        read.join();
 
     Beep(700, 100); Beep(700, 100);
 
     std::cout << "[overlay] Destroying overlay window." << std::endl;
-    DeleteDC(g::hdcBuffer);
-    DeleteObject(g::hbmBuffer);
+
+    // Clean up renderer before destroying window
+    render::g_renderer = nullptr;
+    renderer.Shutdown();
+
     DestroyWindow(hWnd);
     g_game.close();
 

@@ -24,7 +24,7 @@ namespace hack {
 						{"leg_lower_R", "ankle_R"}
 	};
 
-	void loop() {
+	void loop(render::DX11Renderer renderer) {
 		if (config::panic) return;
 
 		std::lock_guard<std::mutex> lock(reader_mutex);
@@ -42,7 +42,6 @@ namespace hack {
 				float width = height * 1.4f;
 
 				render::DrawFilledBox(
-					g::hdcBuffer,
 					c4ScreenPos.x - (width / 2),
 					c4ScreenPos.y - (height / 2),
 					width,
@@ -50,8 +49,7 @@ namespace hack {
 					config::esp_box_color_enemy
 				);
 
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					c4ScreenPos.x + (width / 2 + 5),
 					c4ScreenPos.y,
 					"C4",
@@ -91,7 +89,6 @@ namespace hack {
 
 			if (config::show_head_tracker) {
 				render::DrawCircle(
-					g::hdcBuffer,
 					player->bones.bonePositions["head"].x,
 					player->bones.bonePositions["head"].y - width / 12,
 					width / 5,
@@ -105,7 +102,6 @@ namespace hack {
 					const std::string& boneTo = connection.second;
 
 					render::DrawLine(
-						g::hdcBuffer,
 						player->bones.bonePositions[boneFrom].x, player->bones.bonePositions[boneFrom].y,
 						player->bones.bonePositions[boneTo].x, player->bones.bonePositions[boneTo].y,
 						g_game.localTeam == player->team ? config::esp_skeleton_color_team : config::esp_skeleton_color_enemy
@@ -116,7 +112,6 @@ namespace hack {
 			if (config::show_box_esp)
 			{
 				render::DrawBorderBox(
-					g::hdcBuffer,
 					screenHead.x - width / 2,
 					screenHead.y,
 					width,
@@ -128,7 +123,6 @@ namespace hack {
 			if (config::show_health_bars)
 			{
 				render::DrawBorderBox(
-					g::hdcBuffer,
 					screenHead.x - (width / 2 + 10),
 					screenHead.y + (height * (100 - player->armor) / 100),
 					2,
@@ -137,7 +131,6 @@ namespace hack {
 				);
 
 				render::DrawBorderBox(
-					g::hdcBuffer,
 					screenHead.x - (width / 2 + 5),
 					screenHead.y + (height * (100 - player->health) / 100),
 					2,
@@ -152,8 +145,7 @@ namespace hack {
 
 			if (config::show_name_flag)
 			{
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					player->name.c_str(),
@@ -171,8 +163,7 @@ namespace hack {
 				if (roundedDistance > config::flag_render_distance)
 					continue;
 
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					(std::to_string(player->health) + "hp").c_str(),
@@ -185,8 +176,7 @@ namespace hack {
 				);
 				flagYOffset += flagLineSpacing;
 
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					(std::to_string(player->armor) + "armor").c_str(),
@@ -202,8 +192,7 @@ namespace hack {
 
 			if (config::show_weapon_flag)
 			{
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					player->weapon.c_str(),
@@ -215,8 +204,7 @@ namespace hack {
 
 			if (config::show_distance_flag)
 			{
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					(std::to_string(roundedDistance) + "m away").c_str(),
@@ -228,8 +216,7 @@ namespace hack {
 
 			if (config::show_money_flag)
 			{
-				render::RenderText(
-					g::hdcBuffer,
+				renderer.RenderText(
 					screenHead.x + (width / 2 + 5),
 					flagBaseY + flagYOffset,
 					("$" + std::to_string(player->money)).c_str(),
@@ -243,8 +230,7 @@ namespace hack {
 			{
 				if (player->flashAlpha > 100)
 				{
-					render::RenderText(
-						g::hdcBuffer,
+					renderer.RenderText(
 						screenHead.x + (width / 2 + 5),
 						flagBaseY + flagYOffset,
 						"Player is flashed",
@@ -260,8 +246,7 @@ namespace hack {
 				if (player->is_defusing)
 				{
 					const std::string defuText = "Player is defusing";
-					render::RenderText(
-						g::hdcBuffer,
+					renderer.RenderText(
 						screenHead.x + (width / 2 + 5),
 						flagBaseY + flagYOffset,
 						defuText.c_str(),
@@ -272,6 +257,7 @@ namespace hack {
 				flagYOffset += flagLineSpacing;
 			}
 		}
+		
 		// std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
