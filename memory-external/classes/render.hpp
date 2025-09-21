@@ -60,6 +60,7 @@ namespace render
     {
     public:
         ComPtr<ID3D11Device> m_device;
+        ID3D11DeviceContext* GetContext() const { return m_context.Get(); }
 
     private:
         ComPtr<ID3D11DeviceContext> m_context;
@@ -72,7 +73,6 @@ namespace render
         ComPtr<ID3D11Buffer> m_constantBuffer;
         ComPtr<ID3D11RasterizerState> m_rasterizerState;
         ComPtr<ID3D11BlendState> m_blendState;
-
 
         struct ConstantBuffer
         {
@@ -110,7 +110,7 @@ namespace render
         void AddLineVertex(float x, float y, const Color& color);
         void AddTriangleVertex(float x, float y, const Color& color);
         XMFLOAT2 ScreenToNDC(int x, int y);
-    };
+    };;
 
     DX11Renderer* g_renderer = nullptr;
 
@@ -406,7 +406,6 @@ namespace render
 
     void DX11Renderer::DrawFilledBox(int x, int y, int width, int height, const Color& color)
     {
-        // Create two triangles to form a rectangle
         // Triangle 1
         AddTriangleVertex(static_cast<float>(x), static_cast<float>(y), color);
         AddTriangleVertex(static_cast<float>(x + width), static_cast<float>(y), color);
