@@ -181,18 +181,28 @@ void CGame::loop() {
 			player.ReadHead();
 		}
 
-		if (config::show_extra_flags) {
-			/*
-			* Reading values for extra flags is now separated from the other reads
-			* This removes unnecessary memory reads, improving performance when not showing extra flags
-			*/
+		/*
+		* Reading values for extra flags is now separated from the other reads
+		* This removes unnecessary memory reads, improving performance when not showing extra flags
+		*/
+		if (config::show_defusing_flag)
+		{
 			player.is_defusing = process->read<bool>(player.pCSPlayerPawn + updater::offsets::m_bIsDefusing);
+		}
 
+		if (config::show_money_flag)
+		{
 			playerMoneyServices = process->read<uintptr_t>(player.entity + updater::offsets::m_pInGameMoneyServices);
 			player.money = process->read<int32_t>(playerMoneyServices + updater::offsets::m_iAccount);
+		}
 
+		if (config::show_flashed_flag)
+		{
 			player.flashAlpha = process->read<float>(player.pCSPlayerPawn + updater::offsets::m_flFlashOverlayAlpha);
+		}
 
+		if (config::show_weapon_flag)
+		{
 			clippingWeapon = process->read<std::uint64_t>(player.pCSPlayerPawn + updater::offsets::m_pClippingWeapon);
 			std::uint64_t firstLevel = process->read<std::uint64_t>(clippingWeapon + 0x10); // First offset
 			weaponData = process->read<std::uint64_t>(firstLevel + 0x20); // Final offset
