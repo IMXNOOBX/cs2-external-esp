@@ -85,7 +85,7 @@ void CGame::loop() {
 	entity_list = process->read<uintptr_t>(base_client.base + updater::offsets::dwEntityList);
 
 	localList_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((localPlayerPawn & 0x7FFF) >> 9) + 16);
-	localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 120 * (localPlayerPawn & 0x1FF));
+	localpCSPlayerPawn = process->read<uintptr_t>(localList_entry2 + 112 * (localPlayerPawn & 0x1FF));
 	if (!localpCSPlayerPawn) return;
 
 	view_matrix = process->read<view_matrix_t>(base_client.base + updater::offsets::dwViewMatrix);
@@ -105,7 +105,7 @@ void CGame::loop() {
 		list_entry = process->read<uintptr_t>(entity_list + (8 * (playerIndex & 0x7FFF) >> 9) + 16);
 		if (!list_entry) break;
 
-		player.entity = process->read<uintptr_t>(list_entry + 120 * (playerIndex & 0x1FF));
+		player.entity = process->read<uintptr_t>(list_entry + 112 * (playerIndex & 0x1FF));
 		if (!player.entity) continue;
 
 		/**
@@ -122,7 +122,7 @@ void CGame::loop() {
 		list_entry2 = process->read<uintptr_t>(entity_list + 0x8 * ((playerPawn & 0x7FFF) >> 9) + 16);
 		if (!list_entry2) continue;
 
-		player.pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 120 * (playerPawn & 0x1FF));
+		player.pCSPlayerPawn = process->read<uintptr_t>(list_entry2 + 112 * (playerPawn & 0x1FF));
 		if (!player.pCSPlayerPawn) continue;
 
 		player.health = process->read<int>(player.pCSPlayerPawn + updater::offsets::m_iHealth);
@@ -146,7 +146,7 @@ void CGame::loop() {
 		int entry = index & 0x1FF;
 
 		uintptr_t controllerListSegment = process->read<uintptr_t>(entity_list + 0x8 * segment + 0x10);
-		uintptr_t controller = process->read<uintptr_t>(controllerListSegment + 120 * entry);
+		uintptr_t controller = process->read<uintptr_t>(controllerListSegment + 112 * entry);
 
 		if (!controller)
 			continue;
