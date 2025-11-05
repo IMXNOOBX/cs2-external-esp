@@ -40,7 +40,7 @@ std::string LogHelper::FormatConsole(const LogMessagePtr msg) {
 
 		const auto file = std::filesystem::path(location.file_name()).filename().string();
 
-		out << "[" << timestamp << "]" << ADD_COLOR_TO_STREAM(color) << "[" << GetLevelStr(level) << "/" << file << ":"
+		out << ADD_COLOR_TO_STREAM(LogColor::GRAY) << "[" << timestamp << "]" << ADD_COLOR_TO_STREAM(color) << "[" << GetLevelStr(level) << "/" << file << ":"
 		    << location.line() << "] " << RESET_STREAM_COLOR << msg->Message();
 
 		return out.str();

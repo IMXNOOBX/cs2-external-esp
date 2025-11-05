@@ -18,7 +18,8 @@ enum class LogColor
     GREEN = 32,
     YELLOW = 33,
     RED = 31,
-    BLACK = 30
+    BLACK = 30,
+    GRAY = 90
 };
 
 class LogHelper {

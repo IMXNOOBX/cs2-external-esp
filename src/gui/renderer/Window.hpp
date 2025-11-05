@@ -1,7 +1,6 @@
 #pragma once
 
 #include <d3d11.h>
-//#include <D3DX11tex.h>
 #include "imgui/backends/imgui_impl_dx11.h"
 #include "imgui/backends/imgui_impl_win32.h"
 
