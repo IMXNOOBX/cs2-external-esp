@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{394ef5ce-9a9a-41ed-9287-2758ae0a5412}</ProjectGuid>
+    <RootNamespace>src</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>cs2-external-esp</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>common.hpp</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>common.hpp</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="common.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="core\engine\cache\Cache.cpp" />
+    <ClCompile Include="core\engine\Engine.cpp" />
+    <ClCompile Include="core\logger\LogHelper.cpp" />
+    <ClCompile Include="core\memory\Memory.cpp" />
+    <ClCompile Include="external\AsyncLogger\src\LogCapture.cpp" />
+    <ClCompile Include="external\AsyncLogger\src\Logger.cpp" />
+    <ClCompile Include="external\AsyncLogger\src\LogIntermediate.cpp" />
+    <ClCompile Include="external\AsyncLogger\src\LogMessage.cpp" />
+    <ClCompile Include="external\AsyncLogger\src\LogStream.cpp" />
+    <ClCompile Include="external\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="external\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="external\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="gui\renderer\Window.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.hpp" />
+    <ClInclude Include="core\engine\cache\Cache.hpp" />
+    <ClInclude Include="core\engine\Engine.hpp" />
+    <ClInclude Include="core\logger\LogHelper.hpp" />
+    <ClInclude Include="core\memory\Memory.hpp" />
+    <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\common.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\LogCapture.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\LogIntermediate.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\LogLevel.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\LogMessage.hpp" />
+    <ClInclude Include="external\AsyncLogger\src\LogStream.hpp" />
+    <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="external\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="external\imgui\imconfig.h" />
+    <ClInclude Include="external\imgui\imgui.h" />
+    <ClInclude Include="external\imgui\imgui_internal.h" />
+    <ClInclude Include="external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\imgui\imstb_truetype.h" />
+    <ClInclude Include="external\json\include\nlohmann\adl_serializer.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\byte_container_with_subtype.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\abi_macros.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\conversions\from_json.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\conversions\to_chars.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\conversions\to_json.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\exceptions.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\hash.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\binary_reader.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\input_adapters.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\json_sax.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\lexer.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\parser.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\input\position_t.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\internal_iterator.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\iteration_proxy.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\iterator_traits.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\iter_impl.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\json_reverse_iterator.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\iterators\primitive_iterator.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\json_custom_base_class.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\json_pointer.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\json_ref.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\macro_scope.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\macro_unscope.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\call_std\begin.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\call_std\end.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\cpp_future.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\detected.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\identity_tag.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\is_sax.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\std_fs.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\type_traits.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\meta\void_t.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\output\binary_writer.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\output\output_adapters.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\output\serializer.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\string_concat.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\string_escape.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\string_utils.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\detail\value_t.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\json.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\json_fwd.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\ordered_map.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley.hpp" />
+    <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley_undef.hpp" />
+    <ClInclude Include="gui\renderer\Window.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
