@@ -172,8 +172,11 @@
     </ClCompile>
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
+    <ClCompile Include="core\engine\types\Entity.cpp" />
+    <ClCompile Include="core\engine\types\Player.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
+    <ClCompile Include="core\offsets\Dumper.cpp" />
     <ClCompile Include="external\AsyncLogger\src\LogCapture.cpp" />
     <ClCompile Include="external\AsyncLogger\src\Logger.cpp" />
     <ClCompile Include="external\AsyncLogger\src\LogIntermediate.cpp" />
@@ -186,15 +189,25 @@
     <ClCompile Include="external\imgui\imgui_draw.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="gui\renderer\Window.cpp" />
+    <ClCompile Include="external\timer\timer.cpp" />
+    <ClCompile Include="gui\frontend\menu\Menu.cpp" />
+    <ClCompile Include="gui\renderer\Renderer.cpp" />
+    <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
+    <ClInclude Include="core\engine\math\Math.hpp" />
+    <ClInclude Include="core\engine\math\Vec2.hpp" />
+    <ClInclude Include="core\engine\math\Vec3.hpp" />
+    <ClInclude Include="core\engine\types\Entity.hpp" />
+    <ClInclude Include="core\engine\types\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
     <ClInclude Include="core\memory\Memory.hpp" />
+    <ClInclude Include="core\offsets\Dumper.hpp" />
+    <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
     <ClInclude Include="external\AsyncLogger\src\common.hpp" />
     <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp" />
@@ -203,6 +216,7 @@
     <ClInclude Include="external\AsyncLogger\src\LogLevel.hpp" />
     <ClInclude Include="external\AsyncLogger\src\LogMessage.hpp" />
     <ClInclude Include="external\AsyncLogger\src\LogStream.hpp" />
+    <ClInclude Include="external\exception.hpp" />
     <ClInclude Include="external\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="external\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="external\imgui\imconfig.h" />
@@ -257,7 +271,10 @@
     <ClInclude Include="external\json\include\nlohmann\ordered_map.hpp" />
     <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley.hpp" />
     <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley_undef.hpp" />
-    <ClInclude Include="gui\renderer\Window.hpp" />
+    <ClInclude Include="external\timer\timer.hpp" />
+    <ClInclude Include="gui\frontend\menu\Menu.hpp" />
+    <ClInclude Include="gui\renderer\Renderer.hpp" />
+    <ClInclude Include="gui\renderer\window\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

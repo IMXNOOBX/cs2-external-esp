@@ -1,5 +1,8 @@
 #pragma once
 
+constexpr int MAX_ENTITIES = 1024;
+constexpr int MAX_PLAYERS = 64;
+
 class Cache {
 public:
     ~Cache() = default;

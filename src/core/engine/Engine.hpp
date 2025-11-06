@@ -10,8 +10,11 @@ public:
     Engine& operator=(Engine&&)      = delete;
 
    static bool Init();
+   static ProcessModule GetClient();
+   static ProcessModule GetEngine();
+   static std::shared_ptr<pProcess> GetProcess();
 private:
-    Engine(){};
+    Engine() {};
 
     static Engine& GetInstance()
     {
@@ -23,6 +26,8 @@ private:
 
     bool AwaitProcess();
     bool AwaitModules();
+
+    void Thread();
 private:
     std::shared_ptr<pProcess> process;
     ProcessModule base_client;

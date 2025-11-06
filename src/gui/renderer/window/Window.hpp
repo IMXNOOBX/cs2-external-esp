@@ -1,8 +1,8 @@
 #pragma once
 
 #include <d3d11.h>
-#include "imgui/backends/imgui_impl_dx11.h"
-#include "imgui/backends/imgui_impl_win32.h"
+#include <imgui/backends/imgui_impl_dx11.h>
+#include <imgui/backends/imgui_impl_win32.h>
 
 class Window {
 public:
@@ -34,9 +34,6 @@ public:
 	static IDXGISwapChain* swap_chain;
 	static ID3D11RenderTargetView* render_targetview;
 
-	static HINSTANCE parent_instance;
-
-	inline static bool RenderMenu;
 	inline static bool shouldRun;
 };
 

@@ -1,7 +1,21 @@
 #include "Engine.hpp"
 
+#include "core/offsets/Dumper.hpp"
+
 bool Engine::Init() {
     return GetInstance().InitImpl();
+}
+
+ProcessModule Engine::GetClient() {
+    return GetInstance().base_client;
+}
+
+ProcessModule Engine::GetEngine() {
+    return GetInstance().base_engine;
+}
+
+std::shared_ptr<pProcess> Engine::GetProcess() {
+    return GetInstance().process;
 }
 
 bool Engine::InitImpl() {
@@ -16,8 +30,44 @@ bool Engine::InitImpl() {
         LOGF(FATAL, "Game took too long to load, please open me again once its fully loaded");
         return false;
     }
+
+    if (!Dumper::Init()) {
+        LOGF(FATAL, "Failed to dump game offsets");
+        return false;
+    }
     
+    std::thread(&Engine::Thread, this).detach();
+
     LOGF(INFO, "Succesfully initialized engine...");
+}
+
+struct view_matrix_t {
+    float* operator[ ](int index) {
+        return matrix[index];
+    }
+
+    float matrix[4][4];
+};
+
+void Engine::Thread() {
+    //uintptr_t number = process->read<uintptr_t>(base_engine.base + offsets::buildNumber);
+    //LOGF(VERBOSE, "Build number is {}", number);
+
+    while (true) {
+        view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + offsets::viewMatrix);
+
+        auto local_controller = process->read<uintptr_t>(base_client.base + offsets::localPlayerController);
+        auto local_pawn = process->read<uintptr_t>(local_controller + offsets::entity::playerPawn);
+
+        //uintptr_t listentry = process->read<uintptr_t>(base_client.base + offsets::entityList);
+        //          listentry = process->read<uintptr_t>(listentry + 0x10 + 8 * ((local_pawn & 0x7FFF) >> 9));
+
+        //uintptr_t pawn = process->read<uintptr_t>(listentry + 0x78 * (local_pawn & 0x1FF));
+
+        Vec3_t pos = process->read<Vec3_t>(local_pawn + offsets::pawn::pos);
+
+        LOGF(VERBOSE, "Your pos is ({}x, {}y, {}z)", pos.x, pos.y, pos.z);
+    }
 }
 
 bool Engine::AwaitProcess() {
