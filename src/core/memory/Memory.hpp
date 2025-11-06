@@ -66,11 +66,9 @@ public:
 		SIZE_T bytesRead;
 		pMemory cMemory;
 
-		if (cMemory.pfnNtReadVirtualMemory(this->handle_, (PVOID)(address), buffer, static_cast<ULONG>(size), (PULONG)&bytesRead))
-		{
-			return bytesRead == size;
-		}
-		return false;
+		NTSTATUS status = cMemory.pfnNtReadVirtualMemory(this->handle_, (PVOID)(address), buffer, static_cast<ULONG>(size), (PULONG)&bytesRead);
+	
+		return status == 0x00000000/*STATUS_SUCCESS*/ || bytesRead == size;
 	}
 
 	template<class T>

@@ -5,7 +5,6 @@ ID3D11DeviceContext* Window::device_context = nullptr;
 IDXGISwapChain* Window::swap_chain = nullptr;
 ID3D11RenderTargetView* Window::render_targetview = nullptr;
 
-HINSTANCE Window::parent_instance;
 HWND Window::window_ = nullptr;
 HWND Window::viewport_ = nullptr;
 WNDCLASSEX Window::wc = { };
@@ -103,17 +102,16 @@ void Window::DestroyDevice()
 		LOGF(VERBOSE, "Released Device");
 	}
 	else
-		LOGF(WARNING, "Device Not Found when Exiting.");
+		LOGF(WARNING, "Device Not Found to destroy.");
 }
 
 void Window::SpawnWindow()
 {
-	LOGF(VERBOSE, "Creating window with {} instance", parent_instance ? "Parent" : "New");
-
 	ImGui_ImplWin32_EnableDpiAwareness();
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_CLASSDC;
-	wc.hInstance = (parent_instance ? parent_instance : GetModuleHandleA(0));
+	wc.hInstance = GetModuleHandleA(0);
+	wc.lpszClassName = " ";
 	wc.lpfnWndProc = window_procedure;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
@@ -128,11 +126,11 @@ void Window::SpawnWindow()
 	RegisterClassEx(&wc);
 
 	window_ = CreateWindowEx(
-		WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-		"",
+		WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW,
+		" ",
 		"",
 		WS_POPUP,
-		100, 100, 50, 50,
+		0, 0, 0, 0,
 		NULL,
 		NULL,
 		wc.hInstance,
@@ -155,7 +153,6 @@ void Window::SpawnWindow()
 	ShowWindow(window_, SW_HIDE);
 	UpdateWindow(window_);
 	SetForeground(window_);
-	SetTopMost(window_, true);
 
 	LOGF(VERBOSE, "Window Created with HWND: " + std::to_string((long)window_));
 }
@@ -199,16 +196,6 @@ bool Window::CreateImGui()
 		LOGF(FATAL, "Failed ImGui_ImplDX11_Init");
 		return false;
 	}
-
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-	LOGF(VERBOSE, "Imgui initialized with viewport HWND: " + std::to_string((long)viewport->PlatformHandleRaw));
-	//viewport->PlatformHandleRaw = window_;
-	viewport_ = (HWND)viewport->PlatformHandleRaw;
-
-	// ImGui create window, it has to be set to that window specifically
-	SetWindowDisplayAffinity(viewport_, WDA_EXCLUDEFROMCAPTURE);
-
 
 	LOGF(VERBOSE, "ImGui Initialized");
 	return true;

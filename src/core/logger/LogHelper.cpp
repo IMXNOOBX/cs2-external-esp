@@ -18,6 +18,21 @@ void LogHelper::Destroy()
 bool LogHelper::InitImpl() {
     Logger::Init();
 
+    if (auto handle = GetStdHandle(STD_OUTPUT_HANDLE); handle != nullptr)
+    {
+        SetConsoleTitleA(__DATE__);
+        SetConsoleOutputCP(CP_UTF8);
+
+        DWORD consoleMode;
+        GetConsoleMode(handle, &consoleMode);
+
+        // terminal like behaviour enable full color support
+        consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+        consoleMode &= ~(ENABLE_QUICK_EDIT_MODE);
+
+        SetConsoleMode(handle, consoleMode);
+    }
+
     m_ConsoleOut.open("CONOUT$", std::ios_base::out | std::ios_base::app);
 
     Logger::AddSink([this](LogMessagePtr msg) {
