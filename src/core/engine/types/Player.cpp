@@ -83,8 +83,8 @@ bool Player::UpdatePawn() {
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
 
-	//if (!alive) // No need to continue 
-	//	return true;
+	if (!alive) // No need to continue 
+		return true;
 
 	this->pos = p->read<Vec3_t>(pawn + offsets::pawn::m_vOldOrigin);
 

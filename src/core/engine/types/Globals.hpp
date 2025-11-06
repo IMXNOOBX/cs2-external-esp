@@ -2,15 +2,17 @@
 
 class Globals {
 public:
-    static bool Update();
+    Globals() {};
+
+    bool Update();
 public:
-    static int max_clients;
+    int max_clients;
 
-    static long current_time;
+    long current_time;
 
-	static char map_name[32];
+	char map_name[32];
 
-	static bool in_match;
+	bool in_match;
 private:
-    static uintptr_t address;
+    uintptr_t address;
 };

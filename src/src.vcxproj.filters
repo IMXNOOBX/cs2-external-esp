@@ -329,5 +329,8 @@
     <ClInclude Include="core\engine\types\Globals.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\engine\math\Matrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

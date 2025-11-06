@@ -18,8 +18,8 @@ public:
 	static void StartRender();
 	static void EndRender();
 
-	static HWND window_;
-	static HWND viewport_;
+	static HWND hwnd;
+	static HWND viewport;
 	static WNDCLASSEX wc;
 
 	static bool IsWindowInForeground(HWND window) { return GetForegroundWindow() == window; }

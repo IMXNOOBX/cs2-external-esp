@@ -1,25 +1,22 @@
 #pragma once
+#include "core/engine/types/Player.hpp"
+#include "core/engine/types/Globals.hpp"
 
-constexpr int MAX_ENTITIES = 1024;
-constexpr int MAX_PLAYERS = 64;
+//constexpr int MAX_ENTITIES = 1024;
+//constexpr int MAX_PLAYERS = 64; // Mo need we get this from Globals
 
 class Cache {
 public:
-    ~Cache() = default;
-    Cache(const Cache&) = delete;
-    Cache(Cache&&) = delete;
-    Cache& operator=(const Cache&) = delete;
-    Cache& operator=(Cache&&) = delete;
+	Globals globals;
+	std::vector<Player> players;
+public:
+	static Cache& Get()
+	{
+		static Cache instance{};
+		return instance;
+	}
 
-    static bool Init();
+	static bool Refresh();
 private:
-    Cache() {};
-
-    static Cache& GetInstance()
-    {
-        static Cache i{};
-        return i;
-    }
-
-    bool InitImpl();
+	bool RefreshImpl();
 };
