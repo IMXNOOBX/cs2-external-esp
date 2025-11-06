@@ -14,16 +14,24 @@ namespace offsets
 	// engine2.dll
 	inline DWORD buildNumber;
 
-	namespace entity {
-		constexpr std::ptrdiff_t health = 0x32C;
-		constexpr std::ptrdiff_t teamId = 0x3BF;
-		constexpr std::ptrdiff_t isAlive = 0x7DC;
-		constexpr std::ptrdiff_t playerPawn = 0x5F4;
-		constexpr std::ptrdiff_t iszPlayerName = 0x628;
+	namespace controller {
+		constexpr std::ptrdiff_t m_hPawn = 0x6B4; // CHandle<C_BasePlayerPawn>
+		constexpr std::ptrdiff_t m_steamID = 0x770; // uint64
+		constexpr std::ptrdiff_t m_iszPlayerName = 0x6E8; // char[128]
+
+		//constexpr std::ptrdiff_t health = 0x32C;
+		//constexpr std::ptrdiff_t teamId = 0x3BF;
+		//constexpr std::ptrdiff_t isAlive = 0x7DC;
+		//constexpr std::ptrdiff_t playerPawn = 0x5F4;
+		//constexpr std::ptrdiff_t iszPlayerName = 0x628;
 	}
 
 	namespace pawn {
-		constexpr std::ptrdiff_t pos = 0x1224;
+		constexpr std::ptrdiff_t m_vOldOrigin = 0x15A0; // Vector
+		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
+		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
+
+#if 0
 		constexpr std::ptrdiff_t maxHealth = 0x328;
 		constexpr std::ptrdiff_t currentHealth = 0x32C;
 		constexpr std::ptrdiff_t gameSceneNode = 0x310;
@@ -41,20 +49,13 @@ namespace offsets
 		constexpr std::ptrdiff_t iFovStart = 0x214;
 		constexpr std::ptrdiff_t fFlags = 0x3C8;
 		constexpr std::ptrdiff_t bSpottedByMask = 0x1630 + 0xC; // entitySpottedState + bSpottedByMask
+#endif
 	}
 
 	namespace global {
-		constexpr std::ptrdiff_t realTime = 0x00;
-		constexpr std::ptrdiff_t frameCount = 0x04;
 		constexpr std::ptrdiff_t maxClients = 0x10;
-		constexpr std::ptrdiff_t intervalPerTick = 0x14;
+		constexpr std::ptrdiff_t currentMapName = 0x180;
 		constexpr std::ptrdiff_t currentTime = 0x2C;
-		constexpr std::ptrdiff_t currentTime2 = 0x30;
-		constexpr std::ptrdiff_t tickCount = 0x40;
-		constexpr std::ptrdiff_t intervalPerTick2 = 0x44;
-		constexpr std::ptrdiff_t currentNetchan = 0x0048;
-		constexpr std::ptrdiff_t currentMap = 0x0180;
-		constexpr std::ptrdiff_t currentMapName = 0x0188;
 	}
 
 	namespace signatures

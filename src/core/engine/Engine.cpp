@@ -1,6 +1,8 @@
 #include "Engine.hpp"
 
 #include "core/offsets/Dumper.hpp"
+#include "core/engine/types/Player.hpp"
+#include "core/engine/types/Globals.hpp"
 
 bool Engine::Init() {
     return GetInstance().InitImpl();
@@ -56,17 +58,23 @@ void Engine::Thread() {
     while (true) {
         view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + offsets::viewMatrix);
 
-        auto local_controller = process->read<uintptr_t>(base_client.base + offsets::localPlayerController);
-        auto local_pawn = process->read<uintptr_t>(local_controller + offsets::entity::playerPawn);
+        Globals::Update();
 
-        //uintptr_t listentry = process->read<uintptr_t>(base_client.base + offsets::entityList);
-        //          listentry = process->read<uintptr_t>(listentry + 0x10 + 8 * ((local_pawn & 0x7FFF) >> 9));
+        LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", Globals::map_name, Globals::max_clients, Globals::current_time);
 
-        //uintptr_t pawn = process->read<uintptr_t>(listentry + 0x78 * (local_pawn & 0x1FF));
+        auto entity_list_entry = process->read<DWORD64>(base_client.base + offsets::entityList);
+             entity_list_entry = process->read<DWORD64>(entity_list_entry + 0x10);
 
-        Vec3_t pos = process->read<Vec3_t>(local_pawn + offsets::pawn::pos);
+        for (int i = 0; i < Globals::max_clients; i++) {
+            auto player = Player(i, entity_list_entry);
 
-        LOGF(VERBOSE, "Your pos is ({}x, {}y, {}z)", pos.x, pos.y, pos.z);
+            if (!player.Update())
+                continue;
+
+            LOGF(VERBOSE, "Player {} ({}) [{}] has {}hp in team {} at pos ({}x, {}y, {}z)", player.name, player.steam_id, i, player.health, player.team, player.pos.x, player.pos.y, player.pos.z);
+        }
+
+        std::this_thread::sleep_for(1s);
     }
 }
 

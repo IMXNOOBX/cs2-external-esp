@@ -12,7 +12,7 @@ public:
    static bool Init();
    static ProcessModule GetClient();
    static ProcessModule GetEngine();
-   static std::shared_ptr<pProcess> GetProcess();
+   static std::shared_ptr<pProcess> GetProcess(); // Refactor this so its easier to access
 private:
     Engine() {};
 

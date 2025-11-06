@@ -172,7 +172,7 @@
     </ClCompile>
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
-    <ClCompile Include="core\engine\types\Entity.cpp" />
+    <ClCompile Include="core\engine\types\Globals.cpp" />
     <ClCompile Include="core\engine\types\Player.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
@@ -202,7 +202,7 @@
     <ClInclude Include="core\engine\math\Math.hpp" />
     <ClInclude Include="core\engine\math\Vec2.hpp" />
     <ClInclude Include="core\engine\math\Vec3.hpp" />
-    <ClInclude Include="core\engine\types\Entity.hpp" />
+    <ClInclude Include="core\engine\types\Globals.hpp" />
     <ClInclude Include="core\engine\types\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
     <ClInclude Include="core\memory\Memory.hpp" />
