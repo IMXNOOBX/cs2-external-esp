@@ -1,5 +1,8 @@
 #include "Menu.hpp"
 
+#include "core/engine/cache/Cache.hpp"
+
+
 bool Menu::Init() {
     return GetInstance().InitImpl();
 }
@@ -14,7 +17,6 @@ bool Menu::InitImpl() {
     LOGF(INFO, "Successfully initialized menu...");
     return true;
 }
-
 
 void Menu::RenderImpl() {
 	if (!isSetup)
@@ -32,6 +34,21 @@ void Menu::RenderImpl() {
 		ImGui::GetIO().DisplaySize - ImVec2(10, 10),
 		IM_COL32(255, 255, 255, 255)
 	);
+
+
+	auto cache = Cache::Get();
+
+	std::string player_list;
+	for (auto& player : cache.players) {
+		player_list += player.name;
+	}
+
+	ImGui::GetBackgroundDrawList()->AddText(
+		ImVec2(10, 10),
+		IM_COL32(255, 255, 255, 255),
+		player_list.c_str()
+	);
+
 
 	ImGui::End();
 }

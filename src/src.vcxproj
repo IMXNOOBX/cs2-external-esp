@@ -200,6 +200,7 @@
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\math\Math.hpp" />
+    <ClInclude Include="core\engine\math\Matrix.hpp" />
     <ClInclude Include="core\engine\math\Vec2.hpp" />
     <ClInclude Include="core\engine\math\Vec3.hpp" />
     <ClInclude Include="core\engine\types\Globals.hpp" />

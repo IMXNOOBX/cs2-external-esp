@@ -1,8 +1,7 @@
 #include "Engine.hpp"
 
 #include "core/offsets/Dumper.hpp"
-#include "core/engine/types/Player.hpp"
-#include "core/engine/types/Globals.hpp"
+#include "core/engine/cache/Cache.hpp"
 
 bool Engine::Init() {
     return GetInstance().InitImpl();
@@ -43,36 +42,13 @@ bool Engine::InitImpl() {
     LOGF(INFO, "Succesfully initialized engine...");
 }
 
-struct view_matrix_t {
-    float* operator[ ](int index) {
-        return matrix[index];
-    }
-
-    float matrix[4][4];
-};
 
 void Engine::Thread() {
     //uintptr_t number = process->read<uintptr_t>(base_engine.base + offsets::buildNumber);
     //LOGF(VERBOSE, "Build number is {}", number);
 
     while (true) {
-        view_matrix_t view_matrix = process->read<view_matrix_t>(base_client.base + offsets::viewMatrix);
-
-        Globals::Update();
-
-        LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", Globals::map_name, Globals::max_clients, Globals::current_time);
-
-        auto entity_list_entry = process->read<DWORD64>(base_client.base + offsets::entityList);
-             entity_list_entry = process->read<DWORD64>(entity_list_entry + 0x10);
-
-        for (int i = 0; i < Globals::max_clients; i++) {
-            auto player = Player(i, entity_list_entry);
-
-            if (!player.Update())
-                continue;
-
-            LOGF(VERBOSE, "Player {} ({}) [{}] has {}hp in team {} at pos ({}x, {}y, {}z)", player.name, player.steam_id, i, player.health, player.team, player.pos.x, player.pos.y, player.pos.z);
-        }
+        Cache::Refresh();
 
         std::this_thread::sleep_for(1s);
     }

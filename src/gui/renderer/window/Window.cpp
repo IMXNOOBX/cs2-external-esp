@@ -5,8 +5,8 @@ ID3D11DeviceContext* Window::device_context = nullptr;
 IDXGISwapChain* Window::swap_chain = nullptr;
 ID3D11RenderTargetView* Window::render_targetview = nullptr;
 
-HWND Window::window_ = nullptr;
-HWND Window::viewport_ = nullptr;
+HWND Window::hwnd = nullptr;
+HWND Window::viewport = nullptr;
 WNDCLASSEX Window::wc = { };
 
 extern LRESULT CALLBACK window_procedure(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -25,7 +25,7 @@ bool Window::CreateDevice()
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.OutputWindow = window_;
+	sd.OutputWindow = hwnd;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
@@ -111,7 +111,7 @@ void Window::SpawnWindow()
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_CLASSDC;
 	wc.hInstance = GetModuleHandleA(0);
-	wc.lpszClassName = " ";
+	wc.lpszClassName = "waaaaaaaaaaaaaa";
 	wc.lpfnWndProc = window_procedure;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
@@ -125,36 +125,41 @@ void Window::SpawnWindow()
 	// register our class
 	RegisterClassEx(&wc);
 
-	window_ = CreateWindowEx(
+	int screen_width = GetSystemMetrics(SM_CXSCREEN);
+	int screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+	hwnd = CreateWindowEx(
 		WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW,
-		" ",
-		"",
+		"waaaaaaaaaaaaaa",
+		"waaaaaaaaaaaaaa",
 		WS_POPUP,
-		0, 0, 0, 0,
+		0, 0, screen_width, screen_height,
 		NULL,
 		NULL,
 		wc.hInstance,
 		NULL
 	);
 
-	if (window_ == NULL) {
+	if (hwnd == NULL) {
 		LOGF(FATAL, "Failed to create Window");
 		return;
 	}
 
-	//SetWindowLongPtr(window_, GWLP_HWNDPARENT, parent_instance);
+	
+	SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
+	//SetWindowLongPtr(hwnd, GWLP_HWNDPARENT, parent_instance);
 
 	//MARGINS margins = { -1 };
-	//DwmExtendFrameIntoClientArea(window_, &margins);
+	//DwmExtendFrameIntoClientArea(hwnd, &margins);
 
-	SetWindowDisplayAffinity(window_, WDA_EXCLUDEFROMCAPTURE);
+	//SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE);
 
 	// show + update window
-	ShowWindow(window_, SW_HIDE);
-	UpdateWindow(window_);
-	SetForeground(window_);
+	ShowWindow(hwnd, TRUE);
+	UpdateWindow(hwnd);
+	SetForeground(hwnd);
 
-	LOGF(VERBOSE, "Window Created with HWND: " + std::to_string((long)window_));
+	LOGF(VERBOSE, "Window Created with HWND: " + std::to_string((long)hwnd));
 }
 
 /**
@@ -163,7 +168,7 @@ void Window::SpawnWindow()
 */
 void Window::DespawnWindow()
 {
-	DestroyWindow(window_);
+	DestroyWindow(hwnd);
 	UnregisterClass(wc.lpszClassName, wc.hInstance);
 	LOGF(VERBOSE, "Window Despawned");
 }
@@ -177,16 +182,15 @@ bool Window::CreateImGui()
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.IniFilename = nullptr;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	
 	io.IniFilename = nullptr; // Disable saving to .ini file
 
 	io.ConfigViewportsNoTaskBarIcon = true; // Disable showing in taskbar completely
 	io.ConfigViewportsNoAutoMerge = true;
-	
 
 	// Initialize ImGui for the Win32 library
-	if (!ImGui_ImplWin32_Init(window_)) {
+	if (!ImGui_ImplWin32_Init(hwnd)) {
 		LOGF(FATAL, "Failed ImGui_ImplWin32_Init");
 		return false;
 	}
@@ -321,15 +325,6 @@ LRESULT CALLBACK window_procedure(HWND window, UINT msg, WPARAM wParam, LPARAM l
 				Window::device->CreateRenderTargetView(back_buffer, nullptr, &Window::render_targetview);
 				back_buffer->Release();
 
-				{
-					ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-					Window::viewport_ = (HWND)viewport->PlatformHandleRaw;
-
-					SetWindowDisplayAffinity(Window::viewport_, WDA_EXCLUDEFROMCAPTURE);
-				}
-
-				//DEBUG_LOG(success, "Re-Created Device due to resized menu.");
 				return true;
 			}
 		}
@@ -342,7 +337,7 @@ LRESULT CALLBACK window_procedure(HWND window, UINT msg, WPARAM wParam, LPARAM l
 			const RECT* suggested_rect = (RECT*)lParam;
 
 			SetWindowPos(
-				Window::window_, 
+				Window::hwnd, 
 				nullptr, 
 				suggested_rect->left, suggested_rect->top, 
 				suggested_rect->right - suggested_rect->left, 
