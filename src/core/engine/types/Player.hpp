@@ -1,4 +1,5 @@
 #pragma once
+#include "core/engine/types/Bones.hpp"
 
 class Player {
 public:
@@ -27,16 +28,20 @@ public:
     char weapon[32];
     //std::string weapon;
 
+    std::vector<bone_pos> bone_list;
 private:
     int index; 
     uintptr_t le; // List Entry
 
     uintptr_t pawn;
     uintptr_t controller;
+    
+    bone_data bones[30]{};
 private:
     bool GetPawn();
     bool GetController();
 
     bool UpdatePawn();
+    bool UpdateSkeleton();
     bool UpdateController();
 };

@@ -29,6 +29,7 @@ private:
     bool HandleWindowOrder();
 private:
     bool isRunning = true;
-    bool isOpen = true;
+    bool isOpen = false;
 
+    bool isFocused = false;
 };

@@ -205,6 +205,7 @@
     <ClInclude Include="core\engine\math\Matrix.hpp" />
     <ClInclude Include="core\engine\math\Vec2.hpp" />
     <ClInclude Include="core\engine\math\Vec3.hpp" />
+    <ClInclude Include="core\engine\types\Bones.hpp" />
     <ClInclude Include="core\engine\types\Game.hpp" />
     <ClInclude Include="core\engine\types\Globals.hpp" />
     <ClInclude Include="core\engine\types\Player.hpp" />

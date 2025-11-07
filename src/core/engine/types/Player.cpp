@@ -96,8 +96,36 @@ bool Player::UpdatePawn() {
 
 	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
+	if (!UpdateSkeleton()) {
+		LOGF(FATAL, "Failed to update skeleton");
+		return false;
+	}
+
 	return true;
 }
+
+bool Player::UpdateSkeleton() {
+	auto p = Engine::GetProcess();
+
+	auto game_scene = p->read<DWORD64>(this->pawn + offsets::pawn::m_pGameSceneNode);
+
+	if (!game_scene)
+		return false;
+
+	auto bone_array = p->read<DWORD64>(game_scene + (offsets::bone::m_modelState + 0x80));
+
+	if (!bone_array)
+		return false;
+
+	if (!p->read_raw(bone_array, bones, sizeof(bones)))
+		return false;
+
+	for (int i = 0; i < 30; i++) 
+		this->bone_list.push_back({ bones[i].pos });
+
+	return true;
+}
+
 
 bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds) {
 	Vec2_t origin;
