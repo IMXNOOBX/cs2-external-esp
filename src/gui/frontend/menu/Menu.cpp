@@ -25,30 +25,12 @@ void Menu::RenderImpl() {
 	ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
 
-	if (ImGui::Begin("cs2-external-esp", &isMenuOpen, ImGuiWindowFlags_NoCollapse)) {
+	bool open; // dont really care
+	if (ImGui::Begin("cs2-external-esp", &open, ImGuiWindowFlags_NoCollapse)) {
 		ImGui::Text("Hello World!");
+
+		ImGui::Text("FPS %.1f", ImGui::GetIO().Framerate);
 	}
-
-	ImGui::GetBackgroundDrawList()->AddRect(
-		ImVec2(10, 10),
-		ImGui::GetIO().DisplaySize - ImVec2(10, 10),
-		IM_COL32(255, 255, 255, 255)
-	);
-
-
-	auto cache = Cache::Get();
-
-	std::string player_list;
-	for (auto& player : cache.players) {
-		player_list += player.name;
-	}
-
-	ImGui::GetBackgroundDrawList()->AddText(
-		ImVec2(10, 10),
-		IM_COL32(255, 255, 255, 255),
-		player_list.c_str()
-	);
-
 
 	ImGui::End();
 }

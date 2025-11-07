@@ -23,7 +23,12 @@ private:
     bool InitImpl();
     void ThreadImpl();
     void DestroyImpl();
+
+    void Render();
+    void HandleState();
+    bool HandleWindowOrder();
 private:
     bool isRunning = true;
+    bool isOpen = true;
 
 };

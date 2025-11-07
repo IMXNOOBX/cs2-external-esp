@@ -102,7 +102,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,7 +122,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,7 +140,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,7 +160,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -172,6 +172,7 @@
     </ClCompile>
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
+    <ClCompile Include="core\engine\types\Game.cpp" />
     <ClCompile Include="core\engine\types\Globals.cpp" />
     <ClCompile Include="core\engine\types\Player.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="external\timer\timer.cpp" />
+    <ClCompile Include="gui\frontend\esp\Esp.cpp" />
     <ClCompile Include="gui\frontend\menu\Menu.cpp" />
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
@@ -203,6 +205,7 @@
     <ClInclude Include="core\engine\math\Matrix.hpp" />
     <ClInclude Include="core\engine\math\Vec2.hpp" />
     <ClInclude Include="core\engine\math\Vec3.hpp" />
+    <ClInclude Include="core\engine\types\Game.hpp" />
     <ClInclude Include="core\engine\types\Globals.hpp" />
     <ClInclude Include="core\engine\types\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
@@ -273,6 +276,7 @@
     <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley.hpp" />
     <ClInclude Include="external\json\include\nlohmann\thirdparty\hedley\hedley_undef.hpp" />
     <ClInclude Include="external\timer\timer.hpp" />
+    <ClInclude Include="gui\frontend\esp\Esp.hpp" />
     <ClInclude Include="gui\frontend\menu\Menu.hpp" />
     <ClInclude Include="gui\renderer\Renderer.hpp" />
     <ClInclude Include="gui\renderer\window\Window.hpp" />

@@ -5,6 +5,7 @@ ID3D11DeviceContext* Window::device_context = nullptr;
 IDXGISwapChain* Window::swap_chain = nullptr;
 ID3D11RenderTargetView* Window::render_targetview = nullptr;
 
+bool Window::vsync = false;
 HWND Window::hwnd = nullptr;
 HWND Window::viewport = nullptr;
 WNDCLASSEX Window::wc = { };
@@ -20,8 +21,9 @@ bool Window::CreateDevice()
 	sd.BufferCount = 2;
 	sd.BufferDesc.Width = 0;
 	sd.BufferDesc.Height = 0;
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
+	//sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 0;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -105,16 +107,17 @@ void Window::DestroyDevice()
 		LOGF(WARNING, "Device Not Found to destroy.");
 }
 
-void Window::SpawnWindow()
+bool Window::SpawnWindow()
 {
 	ImGui_ImplWin32_EnableDpiAwareness();
 	wc.cbSize = sizeof(wc);
-	wc.style = CS_CLASSDC;
-	wc.hInstance = GetModuleHandleA(0);
-	wc.lpszClassName = "waaaaaaaaaaaaaa";
+	//wc.style = CS_CLASSDC;
+	wc.style = 0;
+	wc.hInstance = GetModuleHandle(0);
+	wc.lpszClassName = "wa";
 	wc.lpfnWndProc = window_procedure;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
+	//wc.cbClsExtra = 0;
+	//wc.cbWndExtra = 0;
 
 	//wc.hIcon = 0;
 	//wc.hIconSm = 0;
@@ -125,15 +128,15 @@ void Window::SpawnWindow()
 	// register our class
 	RegisterClassEx(&wc);
 
-	int screen_width = GetSystemMetrics(SM_CXSCREEN);
-	int screen_height = GetSystemMetrics(SM_CYSCREEN);
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
 
 	hwnd = CreateWindowEx(
 		WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW,
-		"waaaaaaaaaaaaaa",
-		"waaaaaaaaaaaaaa",
-		WS_POPUP,
-		0, 0, screen_width, screen_height,
+		"wa",
+		"wa",
+		WS_POPUP | WS_VISIBLE,
+		0, 0, width, height,
 		NULL,
 		NULL,
 		wc.hInstance,
@@ -142,30 +145,25 @@ void Window::SpawnWindow()
 
 	if (hwnd == NULL) {
 		LOGF(FATAL, "Failed to create Window");
-		return;
+		return false;
+	}
+	
+	if (!SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), BYTE(255), LWA_ALPHA)) {
+		LOGF(FATAL, "Failed to set layered window attributes");
+		return false;
 	}
 
-	
-	SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
-	//SetWindowLongPtr(hwnd, GWLP_HWNDPARENT, parent_instance);
-
-	//MARGINS margins = { -1 };
-	//DwmExtendFrameIntoClientArea(hwnd, &margins);
-
-	//SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE);
+	MARGINS margins = { -1 };
+	DwmExtendFrameIntoClientArea(hwnd, &margins);
 
 	// show + update window
-	ShowWindow(hwnd, TRUE);
+	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
 	SetForeground(hwnd);
 
-	LOGF(VERBOSE, "Window Created with HWND: " + std::to_string((long)hwnd));
+	LOGF(VERBOSE, "Window Created with HWND {} dimensions {}w {}h", (long)hwnd, width, height);
 }
 
-/**
-* @brief Destroys the window and unregisters the class.
-* @note This function will cause the program to exit.
-*/
 void Window::DespawnWindow()
 {
 	DestroyWindow(hwnd);
@@ -255,12 +253,11 @@ void Window::EndRender()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
-
-	// Present rendered frame with V-Sync
-	//swap_chain->Present(1U, 0U);
-
-	// Present rendered frame without V-Sync
-	swap_chain->Present(0U, 0U);
+	
+	if (vsync) // Present rendered frame with V-Sync
+		swap_chain->Present(1U, 0U);
+	else // Present rendered frame without V-Sync
+		swap_chain->Present(0U, 0U);
 }
 
 void Window::SetTopMost(HWND window, bool up_down) {
@@ -272,11 +269,69 @@ void Window::SetTopMost(HWND window, bool up_down) {
 	);
 }
 
-void Window::SetForeground(HWND window)
+void Window::SetClickthrough(HWND window, bool clickthrough)
 {
+	LONG_PTR style = GetWindowLongPtr(window, GWL_EXSTYLE);
+
+	style |= WS_EX_LAYERED;
+
+	if (clickthrough)
+		style |= WS_EX_TRANSPARENT;
+	else
+		style &= ~WS_EX_TRANSPARENT;
+
+	SetWindowLongPtr(window, GWL_EXSTYLE, style);
+}
+
+void Window::SetBounds(HWND window, RECT bounds) {
+	SetWindowPos(
+		window,
+		nullptr,
+		bounds.left, bounds.top,
+		bounds.right - bounds.left,
+		bounds.bottom - bounds.top,
+		SWP_NOZORDER | SWP_NOACTIVATE
+	);
+
+	bounds = bounds;
+	UpdateWindow(window);
+}
+
+bool Window::SetAffinity(HWND window, WindowAffinity afi) {
+	auto mode = WDA_NONE;
+	std::string mode_str = "Disabled";
+
+	switch (afi) {
+	case WindowAffinity::Black:
+		mode = WDA_MONITOR;
+		mode_str = "Black";
+		break;
+	case WindowAffinity::Invisible:
+		mode = WDA_EXCLUDEFROMCAPTURE;
+		mode_str = "Invisible";
+		break;
+	}
+
+	auto status = SetWindowDisplayAffinity(window, mode);
+
+	if (status)
+		LOGF(VERBOSE, "Set Window Affinity to " + mode_str);
+	else
+		LOGF(FATAL, "Failed to set Window Affinity to " + mode_str);
+
+	return status;
+}
+
+void Window::SetForeground(HWND window) {
 	if (!IsWindowInForeground(window))
 		BringToForeground(window);
 }
+
+void Window::SetVSync(bool enable) {
+	vsync = enable;
+	LOGF(VERBOSE, "VSync is now {}", (enable ? "Enabled" : "Disabled"));
+}
+
 
 // declaration of the ImGui_ImplWin32_WndProcHandler function
 // basically integrates ImGui with the Windows message loop so ImGui can process input and events
@@ -295,6 +350,16 @@ LRESULT CALLBACK window_procedure(HWND window, UINT msg, WPARAM wParam, LPARAM l
 		if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu (imgui uses it in their example :shrug:)
 			return 0;
 		break;
+	case WM_KEYUP:
+	{
+		bool toggle_key = wParam == VK_INSERT || wParam == VK_SHIFT && ((wParam >> 16) & 0xFF) == 0x36;
+
+		if (toggle_key) {
+			Window::renderMenu = !Window::renderMenu;
+			LOGF(VERBOSE, "Toggle key has been captured, toggling renderMenu state");
+		}
+		break;
+	}
 	case WM_DESTROY: // We dont handle this event
 		LOGF(VERBOSE, "Window procedure WM_DESTROY event triggered"); // We dont want to exit if a child window is closed, as they are when changing tabs
 		break;
@@ -329,7 +394,6 @@ LRESULT CALLBACK window_procedure(HWND window, UINT msg, WPARAM wParam, LPARAM l
 			}
 		}
 		return 0;
-
 	case WM_DPICHANGED:
 		LOGF(VERBOSE, "Window procedure WM_DPICHANGED event triggered");
 		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
