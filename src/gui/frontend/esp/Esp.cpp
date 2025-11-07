@@ -43,6 +43,46 @@ void Esp::RenderImpl() {
 			bounds.second,
 			IM_COL32(255, 255, 255, 255)
 		);
+
+		auto bone_count = player.bone_list.size();
+		for (const auto& bone : connections) {
+			int first = bone[0], second = bone[1];
+
+			if (bone_count <= first || bone_count <= second)
+				continue;
+
+			const auto& bone1 = player.bone_list[first];
+			const auto& bone2 = player.bone_list[second];
+
+			Vec2_t scb1;
+			if (!game.view_matrix.wts(bone1.pos, io.DisplaySize, scb1))
+				continue;
+
+			Vec2_t scb2;
+			if (!game.view_matrix.wts(bone2.pos, io.DisplaySize, scb2))
+				continue;
+
+			d->AddLine(
+				scb1,
+				scb2,
+				IM_COL32(255, 255, 255, 255),
+				1.5f
+			);
+		}
+
+		auto head = player.bone_list[bone_index::head];
+
+		Vec2_t scHead;
+		if (!game.view_matrix.wts(head.pos, io.DisplaySize, scHead))
+			continue;
+
+		d->AddCircle(
+			scHead,
+			(bounds.first.x - bounds.second.x) / 6,
+			IM_COL32(255, 0, 0, 255),
+			10
+		);
+
 	}
 
 	d->AddText(
@@ -50,7 +90,6 @@ void Esp::RenderImpl() {
 		IM_COL32(255, 255, 255, 255),
 		globals.map_name
 	);
-
 
 	d->AddText(
 		ImVec2(10, 10),

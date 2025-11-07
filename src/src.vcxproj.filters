@@ -344,5 +344,8 @@
     <ClInclude Include="gui\frontend\esp\Esp.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\engine\types\Bones.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

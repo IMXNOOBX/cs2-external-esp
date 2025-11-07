@@ -15,10 +15,9 @@ void Renderer::Thread() {
 
 void Renderer::Destroy() {
     return GetInstance().DestroyImpl();
-}
+}   
 
 bool Renderer::InitImpl() {
-    Window::SpawnWindow();
     if (!Window::SpawnWindow()) {
         LOGF(FATAL, "Failed to create window");
         return false;
@@ -34,13 +33,13 @@ bool Renderer::InitImpl() {
         return false;
     }
 
-    //if (!HandleWindowOrder()) {
-    //    LOGF(WARNING, "Failed to set window order, overlay will not control any states");
-    //}
-
     Menu::Init();
 
-    //std::thread(Thread).detach();
+    // Focus the game
+    SetForegroundWindow(Engine::GetProcess()->hwnd_);
+
+    // We want the main thread to call render
+    // std::thread(Thread).detach();
 
     LOGF(INFO, "Successfully initialized renderer...");
     return true;
@@ -55,7 +54,10 @@ void Renderer::ThreadImpl() {
     while (isRunning) {
         Render();
 
-        HandleState();
+        // If the game is not focused dont do states, 
+        // or will start focusing game & overlay
+        if (this->isFocused) HandleState();
+
         HandleWindowOrder();
     }
 
@@ -113,15 +115,15 @@ bool Renderer::HandleWindowOrder() {
     //LOGF(WARNING, "Setting {} as our parent window ({}), to follow their movements", (int)p->hwnd_, (int)Window::hwnd);
     
     static bool overlay_visible = true;
-    bool game_focused = (GetForegroundWindow() == Window::hwnd || GetForegroundWindow() == p->hwnd_);
+    this->isFocused = (GetForegroundWindow() == Window::hwnd || GetForegroundWindow() == p->hwnd_);
 
-    if (!game_focused && overlay_visible) {
+    if (!this->isFocused && overlay_visible) {
         ShowWindow(Window::hwnd, SW_HIDE);
         overlay_visible = false;
         return true;
     }
 
-    if (!overlay_visible && game_focused) {
+    if (!overlay_visible && this->isFocused) {
         ShowWindow(Window::hwnd, SW_SHOW);
         overlay_visible = true;
         return true;
@@ -129,24 +131,38 @@ bool Renderer::HandleWindowOrder() {
 
     static RECT last_rect = { 0, 0, 0, 0 };
 
-    RECT game_rect;
-    if (!GetWindowRect(p->hwnd_, &game_rect))
+    RECT window_rect;
+    if (!GetWindowRect(p->hwnd_, &window_rect))
         return false;
 
-    // Only update if it actually changed
-    if (memcmp(&game_rect, &last_rect, sizeof(RECT)) != 0) {
-        SetWindowPos(
-            Window::hwnd,
-            HWND_TOPMOST,
-            game_rect.left,
-            game_rect.top,
-            game_rect.right - game_rect.left,
-            game_rect.bottom - game_rect.top,
-            SWP_NOACTIVATE | SWP_SHOWWINDOW
-        );
+    // All good, no movements from the client
+    if (memcmp(&window_rect, &last_rect, sizeof(RECT)) == 0)
+        return true;
 
-        last_rect = game_rect;
-    }
+    RECT client_rect;
+    if (!GetClientRect(p->hwnd_, &client_rect))
+        return false;
+
+    POINT top_left = { client_rect.left, client_rect.top };
+    POINT bottom_right = { client_rect.right, client_rect.bottom };
+
+    ClientToScreen(p->hwnd_, &top_left);
+    ClientToScreen(p->hwnd_, &bottom_right);
+
+    RECT screen_rect = { top_left.x, top_left.y, bottom_right.x, bottom_right.y };
+
+    SetWindowPos(
+        Window::hwnd,
+        HWND_TOPMOST,
+        screen_rect.left,
+        screen_rect.top,
+        screen_rect.right - screen_rect.left,
+        screen_rect.bottom - screen_rect.top,
+        SWP_NOACTIVATE | SWP_SHOWWINDOW
+    );
+  
+
+    last_rect = window_rect;
 
     return true;
 }

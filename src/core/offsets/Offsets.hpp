@@ -20,6 +20,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_iszPlayerName = 0x6E8; // char[128]
 		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x778; // bool
 
+
 		//constexpr std::ptrdiff_t health = 0x32C;
 		//constexpr std::ptrdiff_t teamId = 0x3BF;
 		//constexpr std::ptrdiff_t isAlive = 0x7DC;
@@ -31,6 +32,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x15A0; // Vector
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
+		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 
 #if 0
 		constexpr std::ptrdiff_t maxHealth = 0x328;
@@ -51,6 +53,11 @@ namespace offsets
 		constexpr std::ptrdiff_t fFlags = 0x3C8;
 		constexpr std::ptrdiff_t bSpottedByMask = 0x1630 + 0xC; // entitySpottedState + bSpottedByMask
 #endif
+	}
+
+	namespace bone {
+		constexpr std::ptrdiff_t m_modelState = 0x190; // CModelState
+
 	}
 
 	namespace global {
