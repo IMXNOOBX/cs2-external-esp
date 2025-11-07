@@ -17,7 +17,7 @@ void Esp::RenderImpl() {
 
 	std::string player_list;
 	for (auto& player : players) {
-		player_list += std::format("{} ({})\n", player.name, player.steam_id);
+		//player_list += std::format("{} ({})\n", player.name, player.steam_id);
 
 		if (!player.alive)
 			continue;
@@ -29,6 +29,14 @@ void Esp::RenderImpl() {
 		// Out of view
 		if (!player.GetBounds(game.view_matrix, io.DisplaySize, bounds))
 			continue;
+
+		auto name_size = ImGui::CalcTextSize(player.name);
+
+		d->AddText(
+			bounds.second - Vec2_t((bounds.second.x - bounds.first.x) / 2 + name_size.x / 2, 20),
+			IM_COL32(255, 255, 255, 255),
+			player.name
+		);
 
 		d->AddRect(
 			bounds.first,

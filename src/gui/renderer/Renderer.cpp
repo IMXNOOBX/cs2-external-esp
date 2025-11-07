@@ -118,10 +118,13 @@ bool Renderer::HandleWindowOrder() {
     if (!game_focused && overlay_visible) {
         ShowWindow(Window::hwnd, SW_HIDE);
         overlay_visible = false;
+        return true;
     }
-    else if (!overlay_visible && game_focused) {
+
+    if (!overlay_visible && game_focused) {
         ShowWindow(Window::hwnd, SW_SHOW);
         overlay_visible = true;
+        return true;
     }
 
     static RECT last_rect = { 0, 0, 0, 0 };

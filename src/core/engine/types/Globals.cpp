@@ -25,8 +25,6 @@ bool Globals::Update() {
 	if (!p->read_raw(map_name_addr, this->map_name, sizeof(this->map_name)))
 		return false;
 
-	this->localplayer = p->read<uintptr_t>(client.base + offsets::localPlayerController);
-
 	return true;
 }
 

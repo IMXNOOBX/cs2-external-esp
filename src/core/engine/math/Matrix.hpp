@@ -16,7 +16,7 @@ struct view_matrix_t {
 		);
 
 		// A bit artificial, but its made by botikes 
-		static int margin = 250;
+		static int margin = 0;
 
 		float view = 0.f;
 		float SightX = (bounds.right / 2), SightY = (bounds.bottom / 2);
