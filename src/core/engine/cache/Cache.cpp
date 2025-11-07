@@ -1,10 +1,25 @@
 #include "Cache.hpp"
 
-#include "core/engine/Engine.hpp"
+#include "core/engine/Engine.hpp" // Circular dep
 #include "core/offsets/Dumper.hpp"
 
 bool Cache::Refresh() {
     return Get().RefreshImpl();
+}
+
+Game Cache::CopyGame() {
+    std::lock_guard<std::mutex> lock(Get().mtx);
+    return Get().game;
+}
+
+Globals Cache::CopyGlobals() {
+    std::lock_guard<std::mutex> lock(Get().mtx);
+    return Get().globals;
+}
+
+std::vector<Player> Cache::CopyPlayers() {
+    std::lock_guard<std::mutex> lock(Get().mtx);
+    return Get().players;
 }
 
 bool Cache::RefreshImpl() {
@@ -14,24 +29,39 @@ bool Cache::RefreshImpl() {
     if (!p)
         return false;
 
-    view_matrix_t view_matrix = p->read<view_matrix_t>(client.base + offsets::viewMatrix);
+    auto now = steady_clock::now();
+
+    // Without this, we are pointless :c
+    // And needs to be updated as fast as possible
+    if (!game.Update()) 
+        return false;
+
+    // Just refresh every 5ms
+    if (now - last < 5ms)
+        return true; // All good
 
     globals.Update();
+    //LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", globals.map_name, globals.max_clients, globals.current_time);
 
-    LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", globals.map_name, globals.max_clients, globals.current_time);
-
-    auto entity_list_entry = p->read<DWORD64>(client.base + offsets::entityList);
-         entity_list_entry = p->read<DWORD64>(entity_list_entry + 0x10);
-
-    players.clear();
+    std::vector<Player> scan;
+    scan.reserve(globals.max_clients);
     for (int i = 0; i < globals.max_clients; i++) {
-        auto player = Player(i, entity_list_entry);
+        auto player = Player(i, game.list_entry);
 
         if (!player.Update())
             continue;
 
-        LOGF(VERBOSE, "Player {} ({}) [{}] has {}hp in team {} at pos ({}x, {}y, {}z)", player.name, player.steam_id, i, player.health, player.team, player.pos.x, player.pos.y, player.pos.z);
+        //LOGF(VERBOSE, "Player {} ({}) [{}] has {}hp in team {} at pos ({}x, {}y, {}z)", player.name, player.steam_id, i, player.health, player.team, player.pos.x, player.pos.y, player.pos.z);
     
-        players.push_back(player);
+        scan.push_back(player);
     }
+
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        players = std::move(scan);
+        last = steady_clock::now();
+        duration = duration_cast<std::chrono::milliseconds>(last - now);
+    }
+
+    return true;
 }

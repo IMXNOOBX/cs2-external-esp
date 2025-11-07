@@ -18,6 +18,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_hPawn = 0x6B4; // CHandle<C_BasePlayerPawn>
 		constexpr std::ptrdiff_t m_steamID = 0x770; // uint64
 		constexpr std::ptrdiff_t m_iszPlayerName = 0x6E8; // char[128]
+		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x778; // bool
 
 		//constexpr std::ptrdiff_t health = 0x32C;
 		//constexpr std::ptrdiff_t teamId = 0x3BF;
