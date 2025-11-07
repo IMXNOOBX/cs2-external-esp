@@ -77,7 +77,6 @@ bool Player::UpdateController() {
 
 	this->localplayer = p->read<bool>(controller + offsets::controller::m_bIsLocalPlayerController);
 
-
 	return true;
 }
 
@@ -115,5 +114,5 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 
 	bounds = { origin, head };
 
-	return pt1/* || pt2*/;
+	return pt1 || pt2;
 }
