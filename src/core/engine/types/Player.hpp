@@ -2,11 +2,10 @@
 
 class Player {
 public:
-    Player() {}
     Player(int index, uintptr_t le) : index(index), le(le){}
-    Player(const Player& player) {}
 
     bool Update();
+    bool GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds);
 public:
     Vec3_t pos;
 
@@ -15,9 +14,11 @@ public:
     int armor = 0;
     int money = 0;
 
+    bool bot = true;
     bool alive = false;
     bool spotted = false;
     bool defusing = false;
+    bool localplayer = false;
 
     char name[32];
     //std::string name;

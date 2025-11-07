@@ -42,15 +42,12 @@ bool Engine::InitImpl() {
     LOGF(INFO, "Succesfully initialized engine...");
 }
 
-
 void Engine::Thread() {
     //uintptr_t number = process->read<uintptr_t>(base_engine.base + offsets::buildNumber);
     //LOGF(VERBOSE, "Build number is {}", number);
 
     while (true) {
         Cache::Refresh();
-
-        std::this_thread::sleep_for(1s);
     }
 }
 

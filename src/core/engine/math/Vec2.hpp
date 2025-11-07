@@ -1,79 +1,83 @@
 #pragma once
 #include <cmath>
 
-class vec2_t {
+class Vec2_t {
 public:
-	vec2_t() = default;
-	explicit vec2_t(float a) : x(a), y(a) {}
-	vec2_t(float a, float b) : x(a), y(b) {}
+	Vec2_t() = default;
+	explicit Vec2_t(float a) : x(a), y(a) {}
+	Vec2_t(float a, float b) : x(a), y(b) {}
+
+	// ImGui compatibility
+	operator ImVec2() const { return ImVec2(x, y); }
+	Vec2_t(const ImVec2& v) : x(v.x), y(v.y) {}
 
 	operator float* () {
 		return &x;
 	}
-	bool operator==(const vec2_t& o) const {
+	bool operator==(const Vec2_t& o) const {
 		return x == o.x && y == o.y;
 	}
 	bool operator==(const float o) const {
 		return x == y && y == o;
 	}
-	bool operator!=(const vec2_t& o) const {
+	bool operator!=(const Vec2_t& o) const {
 		return !(*this == o);
 	}
 	bool operator!=(const float o) const {
 		return!(*this == o);
 	}
-	bool operator>(const vec2_t& o) const {
+	bool operator>(const Vec2_t& o) const {
 		return x > o.x && y > o.y;
 	}
 	bool operator>(const float o) const {
 		return x > o && y > o;
 	}
-	bool operator<(const vec2_t& o) const {
+	bool operator<(const Vec2_t& o) const {
 		return o > *this;
 	}
 	bool operator<(const float o) const {
-		return vec2_t(o) > *this;
+		return Vec2_t(o) > *this;
 	}
-	bool operator>=(const vec2_t& o) const {
+	bool operator>=(const Vec2_t& o) const {
 		return x >= o.x && y >= o.y;
 	}
 	bool operator>=(const float o) const {
 		return x >= o && y >= o;
 	}
-	bool operator<=(const vec2_t& o) const {
+	bool operator<=(const Vec2_t& o) const {
 		return o >= *this;
 	}
 	bool operator<=(const float o) const {
-		return vec2_t(o, o) >= *this;
+		return Vec2_t(o, o) >= *this;
 	}
-	vec2_t operator+(const vec2_t& o) const {
-		return vec2_t(x + o.x, y + o.y);
+	Vec2_t operator+(const Vec2_t& o) const {
+		return Vec2_t(x + o.x, y + o.y);
 	}
-	vec2_t operator+(const float o) const {
-		return vec2_t(x + o, y + o);
+	Vec2_t operator+(const float o) const {
+		return Vec2_t(x + o, y + o);
 	}
-	vec2_t operator-() const {
-		return vec2_t(-x, -y);
+	Vec2_t operator-() const {
+		return Vec2_t(-x, -y);
 	}
-	vec2_t operator-(const vec2_t& o) const {
+	Vec2_t operator-(const Vec2_t& o) const {
 		return *this + (-o);
 	}
-	vec2_t operator-(const float o) const {
+	Vec2_t operator-(const float o) const {
 		return *this + (-o);
 	}
-	vec2_t operator*(const vec2_t& o) const {
-		return vec2_t(x * o.x, y * o.y);
+	Vec2_t operator*(const Vec2_t& o) const {
+		return Vec2_t(x * o.x, y * o.y);
 	}
-	vec2_t operator*(const float o) const {
-		return vec2_t(x * o, y * o);
+	Vec2_t operator*(const float o) const {
+		return Vec2_t(x * o, y * o);
 	}
-	vec2_t operator/(const vec2_t& o) const {
-		return vec2_t(x / o.x, y / o.y);
+	Vec2_t operator/(const Vec2_t& o) const {
+		return Vec2_t(x / o.x, y / o.y);
 	}
-	vec2_t operator/(const float o) const {
-		return vec2_t(x / o, y / o);
+	Vec2_t operator/(const float o) const {
+		return Vec2_t(x / o, y / o);
 	}
-	void operator+=(const vec2_t& o) {
+	void operator+=(const Vec2_t& o) {
 		x += o.x;
 		y += o.y;
 	}
@@ -81,7 +85,7 @@ public:
 		x += o;
 		y += o;
 	}
-	void operator-=(const vec2_t& o) {
+	void operator-=(const Vec2_t& o) {
 		x -= o.x;
 		y -= o.y;
 	}
@@ -89,7 +93,7 @@ public:
 		x -= o;
 		y -= o;
 	}
-	void operator*=(const vec2_t& o) {
+	void operator*=(const Vec2_t& o) {
 		x *= o.x;
 		y *= o.y;
 	}
@@ -97,7 +101,7 @@ public:
 		x *= o;
 		y *= o;
 	}
-	void operator/=(const vec2_t& o) {
+	void operator/=(const Vec2_t& o) {
 		x /= o.x;
 		y /= o.y;
 	}
@@ -106,26 +110,26 @@ public:
 		y /= o;
 	}
 
-	vec2_t floor() const {
-		return vec2_t(floorf(x), floorf(y));
+	Vec2_t floor() const {
+		return Vec2_t(floorf(x), floorf(y));
 	}
-	vec2_t ceil() const {
-		return vec2_t(ceilf(x), ceilf(y));
+	Vec2_t ceil() const {
+		return Vec2_t(ceilf(x), ceilf(y));
 	}
-	vec2_t round() const {
-		return vec2_t(roundf(x), roundf(y));
+	Vec2_t round() const {
+		return Vec2_t(roundf(x), roundf(y));
 	}
-	vec2_t& floor() {
+	Vec2_t& floor() {
 		x = floorf(x);
 		y = floorf(y);
 		return *this;
 	}
-	vec2_t& ceil() {
+	Vec2_t& ceil() {
 		x = ceilf(x);
 		y = ceilf(y);
 		return *this;
 	}
-	vec2_t& round() {
+	Vec2_t& round() {
 		x = roundf(x);
 		y = roundf(y);
 		return *this;
@@ -140,7 +144,7 @@ public:
 		return *this == 0.f;
 	}
 
-	float dist_to(const vec2_t& pos) {
+	float dist_to(const Vec2_t& pos) {
 		return sqrtf(powf(pos.x - x, 2) + powf(pos.y - y, 2));
 	}
 

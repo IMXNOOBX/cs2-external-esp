@@ -113,7 +113,7 @@ bool pProcess::AttachWindow(const char* WindowName)
 bool pProcess::UpdateHWND()
 {
 	hwnd_ = this->GetWindowHandleFromProcessId(pid_);
-	return hwnd_ == nullptr;
+	return hwnd_ != nullptr;
 }
 
 ProcessModule pProcess::GetModule(const char* lModule)
