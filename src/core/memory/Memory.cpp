@@ -57,7 +57,6 @@ HWND pProcess::GetWindowHandleFromProcessId(DWORD ProcessId) {
 	return NULL; // No main window found for the given process ID
 }
 
-
   bool pProcess::AttachProcess(const char* ProcessName)
 {
 	this->pid_ = this->FindProcessIdByProcessName(ProcessName);
