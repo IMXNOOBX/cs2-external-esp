@@ -11,6 +11,8 @@ int main()
 
     LogHelper::Init();
 
+    LOGF(INFO, "Compiled {}, Welcome to cs2-external-esp-recode!", __TIMESTAMP__);
+
     if (!Engine::Init()) {
         LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
         std::exit(1);

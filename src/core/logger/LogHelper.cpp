@@ -15,6 +15,13 @@ void LogHelper::Destroy()
     Logger::Destroy();
 }
 
+void LogHelper::Free() {
+    if (auto console = GetConsoleWindow()) {
+        FreeConsole(); // detach
+        PostMessage(console, WM_CLOSE, 0, 0);
+    }
+}
+
 bool LogHelper::InitImpl() {
     Logger::Init();
 

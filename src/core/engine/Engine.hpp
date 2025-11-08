@@ -29,6 +29,7 @@ private:
     bool AwaitModules();
 
     void Thread();
+
 private:
     std::shared_ptr<pProcess> process;
     ProcessModule base_client;

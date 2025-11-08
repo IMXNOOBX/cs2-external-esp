@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/engine/cache/Cache.hpp"
+
 class Esp {
 public:
     ~Esp() = default;
@@ -19,4 +21,9 @@ private:
     }
 
     void RenderImpl();
+
+    void RenderPlayer(Player players, view_matrix_t matrix);
+    void RenderPlayerBones(Player player, view_matrix_t matrix);
+    void RenderPlayerFalgs(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds);
+    void RenderPlayerTracker(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds);
 };
