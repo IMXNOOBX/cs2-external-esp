@@ -140,7 +140,8 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	head.x -= width / 2;
 	origin.x += width / 2;
 
-	bounds = { origin, head };
+	// Top to bottom
+	bounds = { head, origin };
 
 	return pt1 || pt2;
 }

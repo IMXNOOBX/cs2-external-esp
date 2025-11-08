@@ -25,6 +25,7 @@ using namespace al;
 
 #include "core/logger/LogHelper.hpp"
 #include "core/engine/math/Math.hpp"
+#include "config/Current.hpp"
 
 using namespace std::chrono_literals;
 using namespace std::string_literals;

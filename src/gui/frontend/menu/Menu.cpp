@@ -22,14 +22,93 @@ void Menu::RenderImpl() {
 	if (!isSetup)
 		return;
 
-	ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2(100, 100), ImGuiCond_FirstUseEver);
+	static auto io = ImGui::GetIO();
+	static auto screen = io.DisplaySize;
 
-	bool open; // dont really care
-	if (ImGui::Begin("cs2-external-esp", &open, ImGuiWindowFlags_NoCollapse)) {
-		ImGui::Text("Hello World!");
+	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
 
-		ImGui::Text("FPS %.1f", ImGui::GetIO().Framerate);
+	if (ImGui::Begin("cs2-external-esp", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+		ImGui::Checkbox("Enable", &cfg::enabled);
+
+		static int y_space_left;
+		auto space = ImGui::GetContentRegionAvail();
+
+		ImGui::BeginDisabled(!cfg::enabled);
+		if (ImGui::BeginChild("##top", ImVec2(0, space.y / 2 + y_space_left)))
+		{
+			if (ImGui::BeginChild("##leftside", ImVec2(space.x / 2 - 10, 0)))
+			{
+				ImGui::Text("Visuals");
+				ImGui::Separator();
+
+				ImGui::BeginGroup();
+				{
+					ImGui::Checkbox("Box", &cfg::esp::box);
+					ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
+					ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
+					ImGui::Checkbox("Show Team", &cfg::esp::team);
+				}
+				ImGui::EndGroup();
+
+				ImGui::SameLine();
+
+				ImGui::BeginGroup();
+				{
+					ImGui::Checkbox("Health", &cfg::esp::health);
+				}
+				ImGui::EndGroup();
+			}
+			ImGui::EndChild();
+
+			ImGui::SameLine();
+
+			if (ImGui::BeginChild("##rightside")) 
+			{
+				ImGui::Text("Flags");
+				ImGui::Separator();
+
+				ImGui::BeginGroup();
+				{
+					ImGui::Checkbox("Name", &cfg::esp::flags::name);
+					ImGui::Checkbox("Armor", &cfg::esp::flags::armor);
+					ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
+					ImGui::Checkbox("Money", &cfg::esp::flags::money);
+				}
+				ImGui::EndGroup();
+				
+				ImGui::SameLine();
+
+				ImGui::BeginGroup();
+				{
+					ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+				}
+				ImGui::EndGroup();
+			}
+			ImGui::EndChild();
+		}
+		ImGui::EndChild();
+		ImGui::EndDisabled();
+
+		if (ImGui::BeginChild("##bottom"))
+		{
+			ImGui::Text("Settings");
+			ImGui::Separator();
+
+			ImGui::Checkbox("Console", &cfg::settings::console);
+			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
+
+			ImGui::Checkbox("Streamproof", &cfg::settings::streamproof);
+			ImGui::SetItemTooltip("You need to restart the application to properly hide from capture");
+
+			//ImGui::Checkbox("Open Key", &cfg::settings::console);
+			if (ImGui::Button("Open Menu Key") && ImGui::IsItemHovered()) {
+				/*auto key = ImGui::KEY*/
+			}
+		}
+		ImGui::EndChild();
+
+		y_space_left = ImGui::GetContentRegionAvail().y;
 	}
 
 	ImGui::End();
@@ -107,5 +186,5 @@ void Menu::SetupStyles() {
     auto& io = ImGui::GetIO();
 
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
 }

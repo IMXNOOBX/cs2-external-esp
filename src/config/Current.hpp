@@ -7,12 +7,12 @@ namespace cfg {
 		inline bool team = false;
 
 		inline bool box = true;
+		inline bool health = true;
 		inline bool skeleton = true;
 		inline bool head_tracker = true;
 
 		namespace flags {
 			inline bool name = true;
-			inline bool health = true;
 			inline bool armor = true;
 			inline bool defusing = false;
 			inline bool money = false;
@@ -20,7 +20,7 @@ namespace cfg {
 		}
 	}
 
-	namespace utils {
+	namespace settings {
 		inline bool console = true;
 		inline bool streamproof = false;
 		inline int open_menu_key = false;

@@ -38,6 +38,12 @@ bool Renderer::InitImpl() {
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);
 
+    if (cfg::settings::streamproof)
+        Window::SetAffinity(Window::hwnd, WindowAffinity::Invisible);
+
+    if (!cfg::settings::console)
+        LogHelper::Free();
+
     // We want the main thread to call render
     // std::thread(Thread).detach();
 
@@ -88,7 +94,7 @@ void Renderer::HandleState() {
     if (
         !was_holding
         && (pressed_insert || pressed_rshift)
-        ) {
+    ) {
         this->isOpen = !isOpen;
 
         // Release cursor when opening the menu
@@ -99,6 +105,9 @@ void Renderer::HandleState() {
 
         Window::SetClickthrough(Window::hwnd, !this->isOpen);
         LOGF(VERBOSE, "Captured global VK_INSERT or VK_RSHIFT, toggling menu state to {}", this->isOpen);
+
+        // Not the best way, but wont bother the user
+       Config::Write();
     }
 
     was_holding = pressed_insert || pressed_rshift;
