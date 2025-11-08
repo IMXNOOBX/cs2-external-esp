@@ -36,6 +36,9 @@ bool Engine::InitImpl() {
         LOGF(FATAL, "Failed to dump game offsets");
         return false;
     }
+
+    if (!Config::Read()) 
+        LOGF(WARNING, "Failed to parse config, using default values");
     
     std::thread(&Engine::Thread, this).detach();
 

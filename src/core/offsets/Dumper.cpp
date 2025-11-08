@@ -92,7 +92,7 @@ bool Dumper::InitImpl() {
     offsets::buildNumber = temp - engine.base;
     LOGF(VERBOSE, "Found 'buildNumber' offset at 0x{:X}", offsets::buildNumber);
 
-    LOGF(INFO, "Successfully dumped Offsets...");
+    LOGF(INFO, "Successfully dumped offsets...");
 
     return true;
 }

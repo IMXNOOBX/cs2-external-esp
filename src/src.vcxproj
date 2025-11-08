@@ -170,6 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="config\Config.cpp" />
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
     <ClCompile Include="core\engine\types\Game.cpp" />
@@ -199,6 +200,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.hpp" />
+    <ClInclude Include="config\Config.hpp" />
+    <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\math\Math.hpp" />

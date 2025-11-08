@@ -36,6 +36,10 @@ bool LogHelper::InitImpl() {
     m_ConsoleOut.open("CONOUT$", std::ios_base::out | std::ios_base::app);
 
     Logger::AddSink([this](LogMessagePtr msg) {
+#ifndef _DEBUG
+        if (msg->Level() == eLogLevel::VERBOSE)
+            return;
+#endif
         std::string formatted = this->FormatConsole(msg);
 
         m_ConsoleOut << formatted;
@@ -48,15 +52,23 @@ bool LogHelper::InitImpl() {
 std::string LogHelper::FormatConsole(const LogMessagePtr msg) {
         std::stringstream out;
 
-		const auto timestamp = std::format("{0:%H:%M:%S}", msg->Timestamp());
+#ifdef _DEBUG
+        const auto timestamp = std::format("{0:%H:%M:%S}", msg->Timestamp());
+#else
+        const auto timestamp = std::format("{0:%H:%M:%S}", std::chrono::floor<std::chrono::seconds>(msg->Timestamp()));
+#endif
 		const auto& location = msg->Location();
 		const auto level     = msg->Level();
 		const auto color     = GetColor(level);
 
 		const auto file = std::filesystem::path(location.file_name()).filename().string();
 
+#ifdef _DEBUG
 		out << ADD_COLOR_TO_STREAM(LogColor::GRAY) << "[" << timestamp << "]" << ADD_COLOR_TO_STREAM(color) << "[" << GetLevelStr(level) << "/" << file << ":"
 		    << location.line() << "] " << RESET_STREAM_COLOR << msg->Message();
+#else
+        out << ADD_COLOR_TO_STREAM(LogColor::GRAY) << "[" << timestamp << "]" << ADD_COLOR_TO_STREAM(color) << "[" << GetLevelStr(level) << "] " << RESET_STREAM_COLOR << msg->Message();
+#endif
 
 		return out.str();
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "config/Config.hpp"
 #include "core/memory/Memory.hpp"
 
 class Engine {
