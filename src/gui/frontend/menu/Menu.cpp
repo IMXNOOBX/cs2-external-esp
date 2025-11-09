@@ -25,6 +25,8 @@ void Menu::RenderImpl() {
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
 
+	static auto color_flags = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_None;
+
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
 
@@ -45,8 +47,44 @@ void Menu::RenderImpl() {
 				ImGui::BeginGroup();
 				{
 					ImGui::Checkbox("Box", &cfg::esp::box);
+					ImGui::BeginDisabled(!cfg::esp::box);
+					{
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Team box color", cfg::esp::colors::box_team.data(), color_flags);
+						ImGui::SetItemTooltip("Team box color");
+
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
+						ImGui::SetItemTooltip("Enemy box color");
+					}
+					ImGui::EndDisabled();
+					
 					ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
+					ImGui::BeginDisabled(!cfg::esp::skeleton);
+					{
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Team skeleton color", cfg::esp::colors::skeleton_team.data(), color_flags);
+						ImGui::SetItemTooltip("Team skeleton color");
+
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Enemy skeleton color", cfg::esp::colors::skeleton_enemy.data(), color_flags);
+						ImGui::SetItemTooltip("Enemy skeleton color");
+					}
+					ImGui::EndDisabled();
+
 					ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
+					ImGui::BeginDisabled(!cfg::esp::head_tracker);
+					{
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Team head tracker color", cfg::esp::colors::tracker_team.data(), color_flags);
+						ImGui::SetItemTooltip("Team head tracker color");
+
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Enemy head tracker color", cfg::esp::colors::tracker_enemy.data(), color_flags);
+						ImGui::SetItemTooltip("Enemy head tracker color");
+					}
+					ImGui::EndDisabled();
+
 					ImGui::Checkbox("Show Team", &cfg::esp::team);
 				}
 				ImGui::EndGroup();

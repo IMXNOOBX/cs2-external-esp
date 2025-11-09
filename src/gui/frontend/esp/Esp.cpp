@@ -29,10 +29,12 @@ void Esp::RenderImpl() {
 			continue;
 		}
 
-		if (!cfg::esp::team && player.team == local_team)
+		bool mate = player.team == local_team;
+
+		if (!cfg::esp::team && mate)
 			continue;
 
-		RenderPlayer(player, game.view_matrix);
+		RenderPlayer(player, mate);
 	}
 
 	d->AddText(
@@ -49,9 +51,10 @@ void Esp::RenderImpl() {
 
 }
 
-void Esp::RenderPlayer(Player player, view_matrix_t matrix) {
-	auto d = ImGui::GetBackgroundDrawList();
+void Esp::RenderPlayer(Player player, bool mate) {
 	auto io = ImGui::GetIO();
+	auto d = ImGui::GetBackgroundDrawList();
+	auto matrix = Cache::CopyGame().view_matrix;
 
 	// Needed for flags & item sizing, so even if the box is not enabled
 	// Should be calculated
@@ -59,12 +62,15 @@ void Esp::RenderPlayer(Player player, view_matrix_t matrix) {
 	if (!player.GetBounds(matrix, io.DisplaySize, bounds))
 		return;
 
-	if (cfg::esp::box)
+	if (cfg::esp::box) {
+		auto color = mate ? cfg::esp::colors::box_team : cfg::esp::colors::box_enemy;
+
 		d->AddRect(
 			bounds.first,
 			bounds.second,
-			IM_COL32(255, 255, 255, 255)
+			ImColor(color)
 		);
+	}
 
 	if (cfg::esp::health) {
 		auto x_start = bounds.first.x -4; // -4 is padding
@@ -96,37 +102,20 @@ void Esp::RenderPlayer(Player player, view_matrix_t matrix) {
 	}
 
 	if (cfg::esp::skeleton)
-		RenderPlayerBones(player, matrix);
+		RenderPlayerBones(player, mate);
 
 	if (cfg::esp::head_tracker)
-		RenderPlayerTracker(player, matrix, bounds);
+		RenderPlayerTracker(player, bounds, mate);
 
-	RenderPlayerFalgs(player, matrix, bounds);
+	RenderPlayerFalgs(player, bounds, mate);
 }
 
-void Esp::RenderPlayerTracker(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds) {
-	auto d = ImGui::GetBackgroundDrawList();
+void Esp::RenderPlayerBones(Player player, bool mate) {
 	auto io = ImGui::GetIO();
-
-	auto head_bone = player.bone_list[bone_index::head];
-
-	Vec2_t head;
-	if (!matrix.wts(head_bone.pos, io.DisplaySize, head))
-		return;
-
-	auto width = bounds.first.x - bounds.second.x;
-
-	d->AddCircle(
-		head,
-		width / 6,
-		IM_COL32(255, 0, 0, 255),
-		15
-	);
-}
-
-void Esp::RenderPlayerBones(Player player, view_matrix_t matrix) {
 	auto d = ImGui::GetBackgroundDrawList();
-	auto io = ImGui::GetIO();
+	auto matrix = Cache::CopyGame().view_matrix;
+
+	auto color = mate ? cfg::esp::colors::skeleton_team : cfg::esp::colors::skeleton_enemy;
 
 	auto bone_count = player.bone_list.size();
 	for (const auto& bone : connections) {
@@ -149,15 +138,38 @@ void Esp::RenderPlayerBones(Player player, view_matrix_t matrix) {
 		d->AddLine(
 			scb1,
 			scb2,
-			IM_COL32(255, 255, 255, 255),
+			ImColor(color),
 			1.5f
 		);
 	}
 }
 
-void Esp::RenderPlayerFalgs(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds) {
-	auto d = ImGui::GetBackgroundDrawList();
+void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
 	auto io = ImGui::GetIO();
+	auto d = ImGui::GetBackgroundDrawList();
+	auto matrix = Cache::CopyGame().view_matrix;
+
+	auto head_bone = player.bone_list[bone_index::head];
+
+	Vec2_t head;
+	if (!matrix.wts(head_bone.pos, io.DisplaySize, head))
+		return;
+
+	auto width = bounds.second.x - bounds.first.x;
+	auto color = mate ? cfg::esp::colors::tracker_team : cfg::esp::colors::tracker_enemy;
+
+	d->AddCircle(
+		head,
+		width / 6,
+		ImColor(color),
+		15
+	);
+}
+
+void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
+	auto io = ImGui::GetIO();
+	auto d = ImGui::GetBackgroundDrawList();
+	auto matrix = Cache::CopyGame().view_matrix;
 
 	if (cfg::esp::flags::name) {
 		auto name_size = ImGui::CalcTextSize(player.name);
