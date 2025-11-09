@@ -131,8 +131,10 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	Vec2_t origin;
 	bool pt1 = matrix.wts(this->pos, size, origin);
 
+	auto head_bone = this->bone_list[bone_index::head];
+
 	Vec2_t head; // Use head bone whenever its implemented
-	bool pt2 = matrix.wts(this->pos + Vec3_t(0, 0, 75.f), size, head);
+	bool pt2 = matrix.wts(head_bone.pos, size, head);
 
 	float height = origin.y - head.y;
 	float width = height / 2.4f;

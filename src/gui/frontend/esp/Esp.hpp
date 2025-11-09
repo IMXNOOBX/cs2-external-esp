@@ -22,8 +22,8 @@ private:
 
     void RenderImpl();
 
-    void RenderPlayer(Player players, view_matrix_t matrix);
-    void RenderPlayerBones(Player player, view_matrix_t matrix);
-    void RenderPlayerFalgs(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds);
-    void RenderPlayerTracker(Player player, view_matrix_t matrix, std::pair<Vec2_t, Vec2_t> bounds);
+    void RenderPlayer(Player player, bool mate = false);
+    void RenderPlayerBones(Player player, bool mate = false);
+    void RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
+    void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
 };

@@ -25,4 +25,7 @@ private:
 
     bool ReadImpl();
     bool WriteImpl();
+
+    static color_t JsonToColor(const json& parent, const std::string& key, const color_t& def);
+    static void ColorToJson(json& parent, const std::string& key, const color_t& color);
 };

@@ -18,6 +18,17 @@ namespace cfg {
 			inline bool money = false;
 			inline bool flashed = false;
 		}
+
+		namespace colors {
+			inline color_t box_team{ 0.29f, 0.69f, 0.29f };
+			inline color_t box_enemy{ 0.88f, 0.29f, 0.29f };
+
+			inline color_t skeleton_team{ 0.29f, 0.69f, 0.29f };
+			inline color_t skeleton_enemy{ 0.88f, 0.29f, 0.29f };
+
+			inline color_t tracker_team{ 0.98f, 0.98f, 0.98f };
+			inline color_t tracker_enemy{ 0.98f, 0.98f, 0.98f };
+		}
 	}
 
 	namespace settings {

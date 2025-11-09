@@ -15,16 +15,17 @@ int main()
 
     if (!Engine::Init()) {
         LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
-        std::exit(1);
+        goto exit;
     }
 
     if (!Renderer::Init()) {
         LOGF(FATAL, "Renderer failed to initialize, cannot continue execution");
-        std::exit(1);
+        goto exit;
     }
 
     // Locking
     Renderer::Thread();
 
+exit:
     LogHelper::Destroy();
 }

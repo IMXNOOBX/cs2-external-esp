@@ -1,5 +1,5 @@
 #pragma once
-#include "core/engine/types/Bones.hpp"
+#include "core/engine/classes/Bones.hpp"
 
 class Player {
 public:
