@@ -54,7 +54,7 @@ void Esp::RenderImpl() {
 void Esp::RenderPlayer(Player player, bool mate) {
 	auto io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
-	auto matrix = Cache::CopyGame().view_matrix;
+	this->matrix = Cache::CopyGame().view_matrix;
 
 	// Needed for flags & item sizing, so even if the box is not enabled
 	// Should be calculated
@@ -113,7 +113,6 @@ void Esp::RenderPlayer(Player player, bool mate) {
 void Esp::RenderPlayerBones(Player player, bool mate) {
 	auto io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
-	auto matrix = Cache::CopyGame().view_matrix;
 
 	auto color = mate ? cfg::esp::colors::skeleton_team : cfg::esp::colors::skeleton_enemy;
 
@@ -147,7 +146,6 @@ void Esp::RenderPlayerBones(Player player, bool mate) {
 void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
 	auto io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
-	auto matrix = Cache::CopyGame().view_matrix;
 
 	auto head_bone = player.bone_list[bone_index::head];
 
@@ -169,7 +167,6 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
 	auto io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
-	auto matrix = Cache::CopyGame().view_matrix;
 
 	if (cfg::esp::flags::name) {
 		auto name_size = ImGui::CalcTextSize(player.name);
