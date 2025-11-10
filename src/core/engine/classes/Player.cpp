@@ -126,14 +126,14 @@ bool Player::UpdateSkeleton() {
 	return true;
 }
 
-
 bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds) {
 	Vec2_t origin;
 	bool pt1 = matrix.wts(this->pos, size, origin);
 
 	auto head_bone = this->bone_list[bone_index::head];
+	head_bone.pos.z /= 1.09; // little offset to cover the entire head
 
-	Vec2_t head; // Use head bone whenever its implemented
+	Vec2_t head;
 	bool pt2 = matrix.wts(head_bone.pos, size, head);
 
 	float height = origin.y - head.y;
