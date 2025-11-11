@@ -94,6 +94,7 @@ void Menu::RenderImpl() {
 				ImGui::BeginGroup();
 				{
 					ImGui::Checkbox("Health", &cfg::esp::health);
+					ImGui::Checkbox("Armor", &cfg::esp::armor);
 				}
 				ImGui::EndGroup();
 			}
@@ -109,7 +110,6 @@ void Menu::RenderImpl() {
 				ImGui::BeginGroup();
 				{
 					ImGui::Checkbox("Name", &cfg::esp::flags::name);
-					ImGui::Checkbox("Armor", &cfg::esp::flags::armor);
 					ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
 					ImGui::Checkbox("Money", &cfg::esp::flags::money);
 				}

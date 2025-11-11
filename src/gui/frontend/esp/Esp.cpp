@@ -72,41 +72,13 @@ void Esp::RenderPlayer(Player player, bool mate) {
 		);
 	}
 
-	if (cfg::esp::health) {
-		auto x_start = bounds.first.x -4; // -4 is padding
-		auto x_end = x_start -2; // -2 is the inner space of the rect
-
-		auto y_start = bounds.first.y;
-		auto y_end = bounds.second.y;
-
-		float height = y_end - y_start;
-		float filled_height = height * (player.health / 100.0f);
-
-		d->AddRectFilled(
-			ImVec2(x_start, y_end - filled_height),
-			ImVec2(x_end, y_end),
-			IM_COL32(100, 255, 100, 255)
-		);
-
-		d->AddRect(
-			ImVec2(x_start, y_start),
-			ImVec2(x_end, y_end),
-			IM_COL32(0, 0, 0, 50)
-		);
-
-		//d->AddText(
-		//	ImVec2(x_start - 10, y_end - filled_height - 4),
-		//	IM_COL32(0, 0, 0, 255),
-		//	std::format("{}hp", player.health).c_str()
-		//);
-	}
-
 	if (cfg::esp::skeleton)
 		RenderPlayerBones(player, mate);
 
 	if (cfg::esp::head_tracker)
 		RenderPlayerTracker(player, bounds, mate);
 
+	RenderPlayerBars(player, bounds);
 	RenderPlayerFalgs(player, bounds, mate);
 }
 
@@ -164,6 +136,59 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 	);
 }
 
+void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
+	auto io = ImGui::GetIO();
+	auto d = ImGui::GetBackgroundDrawList();
+
+	if (cfg::esp::health) {
+		auto x_start = bounds.first.x - 4; // -4 is padding
+		auto x_end = x_start - 2; // -2 is the inner space of the rect
+
+		auto y_start = bounds.first.y;
+		auto y_end = bounds.second.y;
+
+		float height = y_end - y_start;
+		float filled_height = height * (player.health / 100.0f);
+
+		d->AddRectFilled(
+			ImVec2(x_start, y_end - filled_height),
+			ImVec2(x_end, y_end),
+			IM_COL32(100, 255, 100, 255)
+		);
+
+		d->AddRect(
+			ImVec2(x_start, y_start),
+			ImVec2(x_end, y_end),
+			IM_COL32(0, 0, 0, 50)
+		);
+	}
+
+	if (cfg::esp::armor) {
+		player.armor = 50;
+
+		auto y_start = bounds.second.y + 4; // 4 is padding
+		auto y_end = y_start + 2; // 2 is the inner space of the rect
+
+		auto x_start = bounds.first.x;
+		auto x_end = bounds.second.x;
+
+		float width = x_end - x_start;
+		float filled_width = width * (player.armor / 100.0f);
+
+		d->AddRectFilled(
+			ImVec2(x_start, y_start),
+			ImVec2(x_start + filled_width, y_end),
+			IM_COL32(150, 150, 255, 255)
+		);
+
+		d->AddRect(
+			ImVec2(x_start, y_start),
+			ImVec2(x_end, y_end),
+			IM_COL32(0, 0, 0, 50)
+		);
+	}
+}
+
 void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
 	auto io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
@@ -173,8 +198,43 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) / 2 + name_size.x / 2, 20),
-			IM_COL32(255, 255, 255, 255),
+			IM_COL32(255, 255, 255, 255),																																																																																																																																																																																																																																																																																																																																																																																					
 			player.name
 		);
+	}
+
+	int offset = 0;
+	static int offset_mult = 15;
+
+	if (cfg::esp::flags::money && player.money) {
+		d->AddText(
+			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			IM_COL32(255, 255, 255, 255),
+			std::format("{}$", player.money).c_str()
+		);
+
+		offset += offset_mult;
+	}
+
+#if 0
+	if (cfg::esp::flags::flashed && player.flashed) {
+		d->AddText(
+			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			IM_COL32(100, 100, 255, 255),
+			"flashed"
+		);
+
+		offset += offset_mult;
+	}
+#endif
+
+	if (cfg::esp::flags::defusing && player.defusing) {
+		d->AddText(
+			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			IM_COL32(255, 100, 100, 255),
+			"defusing"
+		);
+
+		offset += offset_mult;
 	}
 }
