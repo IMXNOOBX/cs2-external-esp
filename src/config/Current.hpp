@@ -7,13 +7,13 @@ namespace cfg {
 		inline bool team = false;
 
 		inline bool box = true;
+		inline bool armor = true;
 		inline bool health = true;
 		inline bool skeleton = true;
 		inline bool head_tracker = true;
 
 		namespace flags {
 			inline bool name = true;
-			inline bool armor = true;
 			inline bool defusing = false;
 			inline bool money = false;
 			inline bool flashed = false;

@@ -37,13 +37,13 @@ bool Config::ReadImpl() {
 		// esp
 		cfg::esp::box = data["esp"].value("box", true);
 		cfg::esp::team = data["esp"].value("team", false);
+		cfg::esp::armor = data["esp"].value("armor", true);
+		cfg::esp::health = data["esp"].value("health", true);
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
-		cfg::esp::health = data["esp"]["flags"].value("health", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
-		cfg::esp::flags::armor = data["esp"]["flags"].value("armor", true);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
@@ -81,13 +81,13 @@ bool Config::WriteImpl() {
 	// esp
 	data["esp"]["box"] = cfg::esp::box;
 	data["esp"]["team"] = cfg::esp::team;
+	data["esp"]["armor"] = cfg::esp::armor;
+	data["esp"]["health"] = cfg::esp::health;
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
-	data["esp"]["flags"]["health"] = cfg::esp::health;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
 
 	// falgs
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
-	data["esp"]["flags"]["armor"] = cfg::esp::flags::armor;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
