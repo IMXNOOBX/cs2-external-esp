@@ -36,7 +36,7 @@ bool Config::ReadImpl() {
 
 		// esp
 		cfg::esp::box = data["esp"].value("box", true);
-		cfg::esp::team = data["esp"].value("team", false);
+		cfg::esp::team = data["esp"].value("team", true);
 		cfg::esp::armor = data["esp"].value("armor", true);
 		cfg::esp::health = data["esp"].value("health", true);
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
@@ -44,18 +44,19 @@ bool Config::ReadImpl() {
 
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
+		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
 
 		// colors
 		const auto& col = data["esp"]["colors"];
-		cfg::esp::colors::box_team = JsonToColor(col, "box_team", { 0.29f, 0.69f, 0.29f, 1.f });
-		cfg::esp::colors::box_enemy = JsonToColor(col, "box_enemy", { 0.88f, 0.29f, 0.29f, 1.f });
-		cfg::esp::colors::skeleton_team = JsonToColor(col, "skeleton_team", { 0.29f, 0.69f, 0.29f, 1.f });
-		cfg::esp::colors::skeleton_enemy = JsonToColor(col, "skeleton_enemy", { 0.88f, 0.29f, 0.29f, 1.f });
-		cfg::esp::colors::tracker_team = JsonToColor(col, "tracker_team", { 0.98f, 0.98f, 0.98f, 1.f });
-		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 0.98f, 0.98f, 0.98f, 1.f });
+		cfg::esp::colors::box_team = JsonToColor(col, "box_team", { 0.f, 1.f, 0.29f, 0.5f });
+		cfg::esp::colors::box_enemy = JsonToColor(col, "box_enemy", { 1.f, 0.f, 0.f, 0.5f });
+		cfg::esp::colors::skeleton_team = JsonToColor(col, "skeleton_team", { 0.f, 1.f, 0.f, 0.5f });
+		cfg::esp::colors::skeleton_enemy = JsonToColor(col, "skeleton_enemy", { 1.f, 0.f, 0.f, 0.5f });
+		cfg::esp::colors::tracker_team = JsonToColor(col, "tracker_team", { 1.f, 1.f, 1.f, 0.3f });
+		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 1.f, 1.f, 1.f, 0.3f });
 
 		// utils
 		cfg::settings::console = data["utils"].value("console", true);
@@ -88,6 +89,7 @@ bool Config::WriteImpl() {
 
 	// falgs
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
+	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;

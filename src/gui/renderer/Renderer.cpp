@@ -60,9 +60,11 @@ void Renderer::ThreadImpl() {
     while (isRunning) {
         Render();
 
+
         // If the game is not focused dont do states, 
         // or will start focusing game & overlay
-        if (this->isFocused) HandleState();
+        if (this->isFocused && HandleState())
+            continue; // It will cause flickering if we handle window order after window closes
 
         HandleWindowOrder();
     }
@@ -83,7 +85,7 @@ void Renderer::Render() {
     Window::EndRender();
 }
 
-void Renderer::HandleState() {
+bool Renderer::HandleState() {
     isRunning = Window::shouldRun; // From the window event handler
 
     static bool was_holding = false;
@@ -91,13 +93,14 @@ void Renderer::HandleState() {
     bool pressed_insert = (GetAsyncKeyState(VK_INSERT) & 0x8000);
     bool pressed_rshift = (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
 
-    if (
-        !was_holding
-        && (pressed_insert || pressed_rshift)
-    ) {
+
+    bool should_toggle = !was_holding && (pressed_insert || pressed_rshift);
+
+    if (should_toggle) {
         this->isOpen = !isOpen;
 
         // Release cursor when opening the menu
+        // Sometimes flashes the render as its handling the window order
         if (this->isOpen)
             SetForegroundWindow(Window::hwnd);
         else
@@ -107,10 +110,11 @@ void Renderer::HandleState() {
         LOGF(VERBOSE, "Captured global VK_INSERT or VK_RSHIFT, toggling menu state to {}", this->isOpen);
 
         // Not the best way, but wont bother the user
-       Config::Write();
+        std::thread(Config::Write).detach(); // Not needed, but just in case
     }
 
     was_holding = pressed_insert || pressed_rshift;
+    return should_toggle;
 }
 
 bool Renderer::HandleWindowOrder() {
@@ -169,7 +173,6 @@ bool Renderer::HandleWindowOrder() {
         screen_rect.bottom - screen_rect.top,
         SWP_NOACTIVATE | SWP_SHOWWINDOW
     );
-  
 
     last_rect = window_rect;
 

@@ -76,6 +76,12 @@ bool Player::UpdateController() {
 		return false;
 
 	this->localplayer = p->read<bool>(controller + offsets::controller::m_bIsLocalPlayerController);
+	this->ping = p->read<int>(controller + offsets::controller::m_iPing);
+
+	auto money_services = p->read<uintptr_t>(controller + offsets::controller::m_pInGameMoneyServices);
+
+	if (money_services)
+		this->money = p->read<int>(money_services + offsets::controller::m_iAccount);
 
 	return true;
 }
@@ -96,10 +102,22 @@ bool Player::UpdatePawn() {
 
 	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
+	this->armor = p->read<int>(pawn + offsets::pawn::m_ArmorValue);
+	this->defusing = p->read<bool>(pawn + offsets::pawn::m_bIsDefusing);
+	this->spotted = p->read<bool>(pawn + offsets::pawn::m_entitySpottedState + offsets::pawn::m_bSpottedByMask);
+	this->flashed = p->read<float>(pawn + offsets::pawn::m_flFlashOverlayAlpha) > 0;
+
 	if (!UpdateSkeleton()) {
 		LOGF(FATAL, "Failed to update skeleton");
 		return false;
 	}
+
+	// Shows errors when player just respawned
+	//if (!UpdateWeapon()) {
+	//	LOGF(FATAL, "Failed to update weapon"); // too verbose
+	//	return false;
+	//}
+	UpdateWeapon(); // Its not that important
 
 	return true;
 }
@@ -126,12 +144,40 @@ bool Player::UpdateSkeleton() {
 	return true;
 }
 
+bool Player::UpdateWeapon() {
+	auto p = Engine::GetProcess();
+
+	auto clipping_weapon = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pClippingWeapon);
+
+	if (!clipping_weapon)
+		return false;
+
+	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x10);
+
+	if (!clipping_weapon)
+		return false;
+
+	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x20);
+
+	if (!clipping_weapon)
+		return false;
+
+	if (!p->read_raw(clipping_weapon, this->weapon, sizeof(this->weapon)))
+		return false;
+
+	this->clean_weapon = this->weapon;
+	this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
+
+	return true;
+}
+
+
 bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds) {
 	Vec2_t origin;
 	bool pt1 = matrix.wts(this->pos, size, origin);
 
 	auto head_bone = this->bone_list[bone_index::head];
-	head_bone.pos.z /= 1.09; // little offset to cover the entire head
+	//head_bone.pos.z *= 1.09; // little offset to cover the entire head
 
 	Vec2_t head;
 	bool pt2 = matrix.wts(head_bone.pos, size, head);
@@ -141,6 +187,8 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 
 	head.x -= width / 2;
 	origin.x += width / 2;
+
+	head.y -= width / 4;
 
 	// Top to bottom
 	bounds = { head, origin };
