@@ -40,6 +40,16 @@ bool Cache::RefreshImpl() {
     if (now - last < 5ms)
         return true; // All good
 
+#ifdef _DEBUG
+    // Testing performance
+    if (now - last < (cfg::dev::cache_refresh_rate * 1ms))
+        return true;
+#else
+    // Just refresh every 5ms good for most people
+    if (now - last < 5ms)
+        return true; // All good
+#endif
+
     globals.Update();
     //LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", globals.map_name, globals.max_clients, globals.current_time);
 

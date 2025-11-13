@@ -14,6 +14,7 @@ namespace cfg {
 
 		namespace flags {
 			inline bool name = true;
+			inline bool ping = true;
 			inline bool weapon = false;
 			inline bool defusing = false;
 			inline bool money = false;
@@ -30,6 +31,7 @@ namespace cfg {
 			inline color_t tracker_team{ 1.f, 1.f, 1.f, 0.3f };
 			inline color_t tracker_enemy{ 1.f, 1.f, 1.f, 0.3f };
 		}
+
 	}
 
 	namespace settings {
@@ -37,4 +39,11 @@ namespace cfg {
 		inline bool streamproof = false;
 		inline int open_menu_key = false;
 	}
+
+#ifdef _DEBUG
+	// Not stored, just for testing
+	namespace dev {
+		inline int cache_refresh_rate = 5;
+	}
+#endif
 }

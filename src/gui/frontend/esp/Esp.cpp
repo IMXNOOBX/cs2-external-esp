@@ -16,11 +16,8 @@ void Esp::RenderImpl() {
 
 	auto io = ImGui::GetIO();
 
-	std::string player_list;
 	static int local_team = 0;
 	for (auto& player : players) {
-		player_list += std::format("{} ({})\n", player.name, player.steam_id);
-
 		if (!player.alive)
 			continue;
 
@@ -37,17 +34,25 @@ void Esp::RenderImpl() {
 		RenderPlayer(player, mate);
 	}
 
+#ifdef _DEBUG
+	std::string player_list;
+	for (auto& player : players) 
+		if (player.health || player.ping)
+			player_list += std::format("{} ({}) {}hp {}ms\n", player.name, player.steam_id, player.health, player.ping);
+
 	d->AddText(
 		ImVec2(io.DisplaySize.x - 100, 10),
 		IM_COL32(255, 255, 255, 255),
 		globals.map_name
 	);
 
-	d->AddText(
-		ImVec2(10, 10),
-		IM_COL32(255, 255, 255, 255),
-		player_list.c_str()
-	);
+	if (!player_list.empty())
+		d->AddText(
+			ImVec2(10, 10),
+			IM_COL32(255, 255, 255, 255),
+			player_list.c_str()
+		);
+#endif
 }
 
 void Esp::RenderPlayer(Player player, bool mate) {
@@ -233,9 +238,19 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		offset += offset_mult;
 	}
 
+	if (cfg::esp::flags::ping && player.ping) {
+		d->AddText(
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
+			IM_COL32(255, 255, 255, 255),
+			std::format("{}ms", player.ping).c_str()
+		);
+
+		offset += offset_mult;
+	}
+
 	if (cfg::esp::flags::flashed && player.flashed) {
 		d->AddText(
-			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
 			IM_COL32(100, 100, 255, 255),
 			"flashed"
 		);
@@ -245,7 +260,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 	if (cfg::esp::flags::defusing && player.defusing) {
 		d->AddText(
-			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
 			IM_COL32(255, 100, 100, 255),
 			"defusing"
 		);

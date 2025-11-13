@@ -25,13 +25,18 @@ void Menu::RenderImpl() {
 
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
-
 	static auto color_flags = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_None;
+
+#ifdef _DEBUG
+	static auto title = "github.com/IMXNOOBX/cs2-external-esp (recode) [DEV]";
+#else
+	static auto title = "cs2-external-esp (recode)";
+#endif
 
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
 
-	if (ImGui::Begin("github.com/IMXNOOBX/cs2-external-esp (recode)", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+	if (ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
 		ImGui::Checkbox("Enable", &cfg::enabled);
 
 		static int y_space_left;
@@ -122,6 +127,7 @@ void Menu::RenderImpl() {
 				{
 					ImGui::Checkbox("Money", &cfg::esp::flags::money);
 					ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+					ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
 				}
 				ImGui::EndGroup();
 			}
@@ -145,10 +151,17 @@ void Menu::RenderImpl() {
 				);
 			}
 
+#ifdef _DEBUG
+			ImGui::Text("Dev");
+			ImGui::Separator();
+
+			ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
+
 			//ImGui::Checkbox("Open Key", &cfg::settings::console);
 			//if (ImGui::Button("Open Menu Key") && ImGui::IsItemHovered()) {
 			//	/*auto key = ImGui::KEY*/
 			//}
+#endif
 		}
 		ImGui::EndChild();
 
