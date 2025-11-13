@@ -1,5 +1,5 @@
 {
-    "build_number": 14121,
+    "build_number": 14124,
     "dwBuildNumber": 6226932,
     "dwEntityList": 30477560,
     "dwLocalPlayer": 29278008,
@@ -22,7 +22,7 @@
     "m_szName": 1824,
     "m_vOldOrigin": 5536,
     "m_vecAbsOrigin": 208,
-    "dwLocalPlayerController": 31566824,
+    "dwLocalPlayerController": 31566808,
     "m_hController": 5560,
     "m_iszPlayerName": 1768
 }
