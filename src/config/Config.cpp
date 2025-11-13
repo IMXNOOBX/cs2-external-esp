@@ -44,9 +44,10 @@ bool Config::ReadImpl() {
 
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
+		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
+		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
-		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
 
 		// colors
@@ -89,10 +90,11 @@ bool Config::WriteImpl() {
 
 	// falgs
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
-	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
-	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
+	data["esp"]["flags"]["ping"] = cfg::esp::flags::ping;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
+	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
+	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
 
 	// colors
 	auto& col = data["esp"]["colors"];

@@ -113,11 +113,10 @@ bool Player::UpdatePawn() {
 	}
 
 	// Shows errors when player just respawned
-	//if (!UpdateWeapon()) {
-	//	LOGF(FATAL, "Failed to update weapon"); // too verbose
-	//	return false;
-	//}
-	UpdateWeapon(); // Its not that important
+	if (!UpdateWeapon()) {
+		//LOGF(FATAL, "Failed to update weapon"); // too verbose
+		return false;
+	}
 
 	return true;
 }
@@ -166,11 +165,12 @@ bool Player::UpdateWeapon() {
 		return false;
 
 	this->clean_weapon = this->weapon;
-	this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
+
+	if (this->clean_weapon.compare(0, 7, "weapon_") == 0)
+		this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
 
 	return true;
 }
-
 
 bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds) {
 	Vec2_t origin;
