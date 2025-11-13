@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include "core/engine/cache/Cache.hpp"
+#include "gui/renderer/window/Window.hpp" // Circular dependency
 
 
 bool Menu::Init() {
@@ -30,7 +31,7 @@ void Menu::RenderImpl() {
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
 
-	if (ImGui::Begin("cs2-external-esp", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+	if (ImGui::Begin("github.com/IMXNOOBX/cs2-external-esp (recode)", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
 		ImGui::Checkbox("Enable", &cfg::enabled);
 
 		static int y_space_left;
@@ -110,8 +111,8 @@ void Menu::RenderImpl() {
 				ImGui::BeginGroup();
 				{
 					ImGui::Checkbox("Name", &cfg::esp::flags::name);
+					ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
 					ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-					ImGui::Checkbox("Money", &cfg::esp::flags::money);
 				}
 				ImGui::EndGroup();
 				
@@ -119,6 +120,7 @@ void Menu::RenderImpl() {
 
 				ImGui::BeginGroup();
 				{
+					ImGui::Checkbox("Money", &cfg::esp::flags::money);
 					ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
 				}
 				ImGui::EndGroup();
@@ -136,13 +138,17 @@ void Menu::RenderImpl() {
 			ImGui::Checkbox("Console", &cfg::settings::console);
 			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
 
-			ImGui::Checkbox("Streamproof", &cfg::settings::streamproof);
-			ImGui::SetItemTooltip("You need to restart the application to properly hide from capture");
+			if (ImGui::Checkbox("Streamproof", &cfg::settings::streamproof)) {
+				Window::SetAffinity(
+					Window::hwnd, 
+					cfg::settings::streamproof ? WindowAffinity::Invisible : WindowAffinity::Disabled
+				);
+			}
 
 			//ImGui::Checkbox("Open Key", &cfg::settings::console);
-			if (ImGui::Button("Open Menu Key") && ImGui::IsItemHovered()) {
-				/*auto key = ImGui::KEY*/
-			}
+			//if (ImGui::Button("Open Menu Key") && ImGui::IsItemHovered()) {
+			//	/*auto key = ImGui::KEY*/
+			//}
 		}
 		ImGui::EndChild();
 

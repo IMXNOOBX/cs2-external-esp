@@ -10,6 +10,7 @@ public:
 public:
     Vec3_t pos;
 
+    int ping = 0;
     int team = 0;
     int health = 0;
     int armor = 0;
@@ -17,6 +18,7 @@ public:
 
     bool bot = true;
     bool alive = false;
+    bool flashed = false;
     bool spotted = false;
     bool defusing = false;
     bool localplayer = false;
@@ -26,7 +28,7 @@ public:
     uint64_t steam_id{};
 
     char weapon[32];
-    //std::string weapon;
+    std::string clean_weapon;
 
     std::vector<bone_pos> bone_list;
 private:
@@ -42,6 +44,7 @@ private:
     bool GetController();
 
     bool UpdatePawn();
+    bool UpdateWeapon();
     bool UpdateSkeleton();
     bool UpdateController();
 };

@@ -48,7 +48,6 @@ void Esp::RenderImpl() {
 		IM_COL32(255, 255, 255, 255),
 		player_list.c_str()
 	);
-
 }
 
 void Esp::RenderPlayer(Player player, bool mate) {
@@ -60,6 +59,10 @@ void Esp::RenderPlayer(Player player, bool mate) {
 	// Should be calculated
 	std::pair<Vec2_t, Vec2_t> bounds;
 	if (!player.GetBounds(matrix, io.DisplaySize, bounds))
+		return;
+
+	// Causes hp bars across the screen when they respawn
+	if (!player.alive)
 		return;
 
 	if (cfg::esp::box) {
@@ -164,8 +167,6 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 	}
 
 	if (cfg::esp::armor) {
-		player.armor = 50;
-
 		auto y_start = bounds.second.y + 4; // 4 is padding
 		auto y_end = y_start + 2; // 2 is the inner space of the rect
 
@@ -197,9 +198,25 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		auto name_size = ImGui::CalcTextSize(player.name);
 
 		d->AddText(
-			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) / 2 + name_size.x / 2, 20),
-			IM_COL32(255, 255, 255, 255),																																																																																																																																																																																																																																																																																																																																																																																					
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - name_size.x / 2,
+				bounds.first.y - 20
+			), 
+			IM_COL32(255, 255, 255, 255),
 			player.name
+		);
+	}
+
+	if (cfg::esp::flags::weapon) {
+		auto weapon_size = ImGui::CalcTextSize(player.clean_weapon.data());
+
+		d->AddText(
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - weapon_size.x / 2,
+				bounds.second.y + 5
+			), 
+			IM_COL32(255, 255, 255, 255),
+			player.clean_weapon.data()
 		);
 	}
 
@@ -208,7 +225,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 	if (cfg::esp::flags::money && player.money) {
 		d->AddText(
-			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
 			IM_COL32(255, 255, 255, 255),
 			std::format("{}$", player.money).c_str()
 		);
@@ -216,7 +233,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		offset += offset_mult;
 	}
 
-#if 0
 	if (cfg::esp::flags::flashed && player.flashed) {
 		d->AddText(
 			bounds.first + Vec2_t((bounds.first.x - bounds.second.x), offset),
@@ -226,7 +242,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset += offset_mult;
 	}
-#endif
 
 	if (cfg::esp::flags::defusing && player.defusing) {
 		d->AddText(
