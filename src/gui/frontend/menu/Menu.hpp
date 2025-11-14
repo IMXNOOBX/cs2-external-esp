@@ -26,5 +26,4 @@ private:
 private:
     bool isSetup = true;
     bool isMenuOpen = true;
-
 };

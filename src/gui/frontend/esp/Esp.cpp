@@ -1,7 +1,22 @@
 #include "Esp.hpp"
 
+bool Esp::Init() {
+	return GetInstance().InitImpl();
+}
+
 void Esp::Render() {
     return GetInstance().RenderImpl();
+}
+
+bool Esp::InitImpl() {
+	auto& io = ImGui::GetIO();
+
+	ImFontConfig cfg{};
+	cfg.FontDataOwnedByAtlas = false;
+
+	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
+
+	return true;
 }
 
 void Esp::RenderImpl() {
@@ -15,6 +30,8 @@ void Esp::RenderImpl() {
 	auto players = Cache::CopyPlayers();
 
 	auto io = ImGui::GetIO();
+
+	ImGui::PushFont(this->font);
 
 	static int local_team = 0;
 	for (auto& player : players) {
@@ -35,24 +52,43 @@ void Esp::RenderImpl() {
 	}
 
 #ifdef _DEBUG
-	std::string player_list;
-	for (auto& player : players) 
-		if (player.health || player.ping)
-			player_list += std::format("{} ({}) {}hp {}ms\n", player.name, player.steam_id, player.health, player.ping);
+	static int margin = 10;
+	static int padding = 10;
+	std::string debug_string = "> Debug Window\n";
 
-	d->AddText(
-		ImVec2(io.DisplaySize.x - 100, 10),
-		IM_COL32(255, 255, 255, 255),
-		globals.map_name
+	debug_string += std::format("Map: {}\n", globals.map_name);
+	debug_string += std::format("Timestamp: {}\n", globals.current_time);
+
+	if (!players.empty())
+		debug_string += "Players:\n";
+
+	for (auto& player : players) 
+		debug_string += std::format("- {} ({}) {}hp {}ms\n", player.name, player.steam_id, player.health, player.ping);
+
+	auto size = ImGui::CalcTextSize(debug_string.data());
+
+	d->AddRectFilled(
+		ImVec2(10 + margin - padding, io.DisplaySize.y - size.y - 20 - margin - padding),
+		ImVec2(10 + size.x + margin + padding, io.DisplaySize.y - 20 - margin + padding),
+		IM_COL32(0, 0, 0, 200),
+		10.f
 	);
 
-	if (!player_list.empty())
-		d->AddText(
-			ImVec2(10, 10),
-			IM_COL32(255, 255, 255, 255),
-			player_list.c_str()
-		);
+	d->AddRect(
+		ImVec2(10 + margin - padding, io.DisplaySize.y - size.y - 20 - margin - padding),
+		ImVec2(10 + size.x + margin + padding, io.DisplaySize.y - 20 - margin + padding),
+		IM_COL32(100, 100, 100, 200),
+		10.f
+	);
+
+	d->AddText(
+		ImVec2(10 + margin, io.DisplaySize.y - size.y - 20 - margin),
+		IM_COL32(255, 255, 255, 255),
+		debug_string.data()
+	);
 #endif
+
+	ImGui::PopFont();
 }
 
 void Esp::RenderPlayer(Player player, bool mate) {
