@@ -34,6 +34,7 @@ bool Renderer::InitImpl() {
     }
 
     Menu::Init();
+    Esp::Init();
 
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);

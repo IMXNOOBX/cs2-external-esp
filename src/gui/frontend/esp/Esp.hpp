@@ -10,6 +10,7 @@ public:
     Esp& operator=(const Esp&) = delete;
     Esp& operator=(Esp&&) = delete;
 
+    static bool Init();
     static void Render();
 private:
     Esp() {};
@@ -20,9 +21,11 @@ private:
         return i;
     }
 
+    bool InitImpl();
     void RenderImpl();
 
     view_matrix_t matrix;
+    ImFont* font;
 
     void RenderPlayer(Player player, bool mate = false);
     void RenderPlayerBones(Player player, bool mate = false);
