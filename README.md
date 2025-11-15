@@ -26,6 +26,11 @@ Simple external ESP for Counter-Strike 2, after many years, the codebase has bee
 git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 ```
 
+	- If you cloned the repository before submodules were added, run this command
+		```sh
+		git submodule update --init --recursive
+		```
+
 2. Build the app using **Visual Studio 2022** (or later)
 	- Build: **`x64 - Release`**
 
