@@ -32,6 +32,6 @@ private:
 
 private:
     std::shared_ptr<pProcess> process;
-    ProcessModule base_client;
-    ProcessModule base_engine;
+    ProcessModule client;
+    ProcessModule engine;
 };
