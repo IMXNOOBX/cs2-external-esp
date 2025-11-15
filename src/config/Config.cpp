@@ -41,6 +41,7 @@ bool Config::ReadImpl() {
 		cfg::esp::health = data["esp"].value("health", true);
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
+		cfg::esp::spotted = data["esp"].value("spotted", false);
 
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
@@ -87,6 +88,7 @@ bool Config::WriteImpl() {
 	data["esp"]["health"] = cfg::esp::health;
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
+	data["esp"]["spotted"] = cfg::esp::spotted;
 
 	// falgs
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
