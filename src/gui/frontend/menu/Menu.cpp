@@ -38,6 +38,10 @@ void Menu::RenderImpl() {
 
 	if (ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
 		ImGui::Checkbox("Enable", &cfg::enabled);
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(390, 0));
+		ImGui::SameLine();
+		ImGui::TextLinkOpenURL("Source/Support", "https://github.com/IMXNOOBX/cs2-external-esp");
 
 		static int y_space_left;
 		auto space = ImGui::GetContentRegionAvail();
