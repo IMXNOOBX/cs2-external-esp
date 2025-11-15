@@ -4,7 +4,7 @@ Simple external ESP for Counter-Strike 2, after many years, the codebase has bee
 
 ## Showcase
 
-> ! Click to go to the video
+> Click the picture below to go to the showcase video
 
 [![Cs2ESP](.github/showcase.png)](https://youtu.be/3WHHLUyHyzA)
 
@@ -20,10 +20,16 @@ Simple external ESP for Counter-Strike 2, after many years, the codebase has bee
 
 ## 📘 Developer Instructions
 
-1. Build the program using **Visual Studio 2022** (or later)
+1. Clone repository. Make sure you copy the command below to clone dependencies too
+
+```sh
+git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
+```
+
+2. Build the app using **Visual Studio 2022** (or later)
 	- Build: **`x64 - Release`**
 
-2. Locate your binary file in the folder `<arch>/<configuration>`, e.g., `x64/Release`.
+3. Locate your binary file in the folder `<arch>/<configuration>`, e.g., `x64/Release`.
 
 
 ## 💫 Credits
