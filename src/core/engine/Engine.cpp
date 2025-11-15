@@ -8,11 +8,11 @@ bool Engine::Init() {
 }
 
 ProcessModule Engine::GetClient() {
-    return GetInstance().base_client;
+    return GetInstance().client;
 }
 
 ProcessModule Engine::GetEngine() {
-    return GetInstance().base_engine;
+    return GetInstance().engine;
 }
 
 std::shared_ptr<pProcess> Engine::GetProcess() {
@@ -78,10 +78,10 @@ bool Engine::AwaitModules() {
         return false;
 
     do {
-        this->base_client = process->GetModule("client.dll");
-        this->base_engine = process->GetModule("engine2.dll");
+        this->client = process->GetModule("client.dll");
+        this->engine = process->GetModule("engine2.dll");
 
-        if (this->base_client.base && this->base_engine.base)
+        if (this->client.base && this->engine.base)
             break;
 
         static int attempts = 0;
@@ -94,4 +94,4 @@ bool Engine::AwaitModules() {
 
 
     return true;
-}
+}   
