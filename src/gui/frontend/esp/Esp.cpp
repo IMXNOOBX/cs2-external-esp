@@ -60,10 +60,10 @@ void Esp::RenderImpl() {
 	std::string debug_string = "> Debug Window\n";
 
 	debug_string += std::format("Map: {}\n", globals.map_name);
-	debug_string += std::format("Timestamp: {}\n", globals.current_time);
+	debug_string += std::format("Cache Refresh: {}ms\n", cfg::dev::cache_refresh_rate);
 
 	if (!players.empty())
-		debug_string += "Players:\n";
+		debug_string += std::format("Players ({}):\n", players.size());
 
 	for (auto& player : players) 
 		debug_string += std::format("- {} ({}) {}hp {}ms\n", player.name, player.steam_id, player.health, player.ping);
