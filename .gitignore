@@ -7,6 +7,7 @@
 offsets.json
 config.json
 !offsets/offsets.json 
+.vscode
 typos
 
 # User-specific files
