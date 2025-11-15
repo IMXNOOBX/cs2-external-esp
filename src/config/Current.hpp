@@ -12,6 +12,8 @@ namespace cfg {
 		inline bool skeleton = true;
 		inline bool head_tracker = true;
 
+		inline bool spotted = false;
+
 		namespace flags {
 			inline bool name = true;
 			inline bool ping = true;

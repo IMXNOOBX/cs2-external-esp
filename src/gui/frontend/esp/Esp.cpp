@@ -48,6 +48,9 @@ void Esp::RenderImpl() {
 		if (!cfg::esp::team && mate)
 			continue;
 
+		if (cfg::esp::spotted && !player.spotted)
+			continue;
+
 		RenderPlayer(player, mate);
 	}
 
@@ -236,7 +239,8 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	auto d = ImGui::GetBackgroundDrawList();
 
 	if (cfg::esp::flags::name) {
-		auto name_size = ImGui::CalcTextSize(player.name);
+		auto sanitized_name = std::format("{}{}", player.name, (player.bot ? " (Bot)" : ""));
+		auto name_size = ImGui::CalcTextSize(sanitized_name.data());
 
 		d->AddText(
 			Vec2_t(
@@ -244,7 +248,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 				bounds.first.y - 20
 			), 
 			IM_COL32(255, 255, 255, 255),
-			player.name
+			sanitized_name.data()
 		);
 	}
 
