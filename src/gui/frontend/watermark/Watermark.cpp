@@ -32,7 +32,7 @@ void Watermark::RenderImpl() {
 
 	static int margin = 10;
 	static int padding = 10;
-	std::string watermark_string = "cs2-external-esp";
+	std::string watermark_string = "cs2-external-esp (PTB)";
 
 	watermark_string += std::format(" | {}fps", (int)io.Framerate);
 	watermark_string += std::format(" | {}", globals.map_name);

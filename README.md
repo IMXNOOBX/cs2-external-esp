@@ -1,4 +1,5 @@
-# 🕹️ CS2 External ESP (Recode)
+# 🕹️ CS2 External ESP | Recode (PTB)
+> PTB stands for Public Test Build, this branch is under development
 
 Simple external ESP for Counter-Strike 2, after many years, the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, and several new quality-of-life features. It also includes automatic offset scanning to help maintain compatibility through game updates.
 

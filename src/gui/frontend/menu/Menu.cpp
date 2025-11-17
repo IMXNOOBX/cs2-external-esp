@@ -35,7 +35,7 @@ void Menu::RenderImpl() {
 #ifdef _DEBUG
 	static auto title = "github.com/IMXNOOBX/cs2-external-esp (recode) [DEV]";
 #else
-	static auto title = "cs2-external-esp (recode)";
+	static auto title = "cs2-external-esp | recode (PTB)";
 #endif
 
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
