@@ -1,6 +1,11 @@
 #pragma once
 
+#define CURL_STATICLIB
 #include <curl/curl.h>
+#pragma comment(lib, "libcurl.lib")
+#pragma comment(lib, "zlib.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "crypt32.lib")
 
 using json = nlohmann::json;
 
