@@ -102,6 +102,12 @@
     <ClCompile Include="gui\frontend\watermark\Watermark.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="updater\Updater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="updater\http\HttpHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\logger\LogHelper.hpp">
@@ -363,6 +369,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\frontend\watermark\Watermark.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updater\Updater.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="updater\http\HttpHelper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

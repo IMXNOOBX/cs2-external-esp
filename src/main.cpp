@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "updater/Updater.hpp"
 #include "core/engine/Engine.hpp"
 #include "gui/renderer/Renderer.hpp"
 
@@ -15,6 +16,11 @@ int main()
 
     if (!Engine::Init()) {
         LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
+        goto exit;
+    }
+
+    if (!Updater::Init()) {
+        LOGF(FATAL, "Updater failed to run, cannot continue execution");
         goto exit;
     }
 
