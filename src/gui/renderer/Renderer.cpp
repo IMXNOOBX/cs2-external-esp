@@ -61,7 +61,6 @@ void Renderer::ThreadImpl() {
     while (isRunning) {
         Render();
 
-
         // If the game is not focused dont do states, 
         // or will start focusing game & overlay
         if (this->isFocused && HandleState())
@@ -94,7 +93,6 @@ bool Renderer::HandleState() {
     bool pressed_insert = (GetAsyncKeyState(VK_INSERT) & 0x8000);
     bool pressed_rshift = (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
 
-
     bool should_toggle = !was_holding && (pressed_insert || pressed_rshift);
 
     if (should_toggle) {
@@ -124,12 +122,13 @@ bool Renderer::HandleWindowOrder() {
     if (!p || (!p->hwnd_ && !p->UpdateHWND()))
         return false;
 
-    // Makes our overlay dissapepar as it clears the transparency or something :1
-    //SetParent(Window::hwnd, p->hwnd_);
-    //LOGF(WARNING, "Setting {} as our parent window ({}), to follow their movements", (int)p->hwnd_, (int)Window::hwnd);
-    
+    // Check if game window is still valid, if not, most likely game closed
+    if (!IsWindow(p->hwnd_))
+        this->isRunning = false;
+
     static bool overlay_visible = true;
-    this->isFocused = (GetForegroundWindow() == Window::hwnd || GetForegroundWindow() == p->hwnd_);
+    auto foreground = GetForegroundWindow();
+    this->isFocused = (foreground == Window::hwnd || foreground == p->hwnd_);
 
     if (!this->isFocused && overlay_visible) {
         ShowWindow(Window::hwnd, SW_HIDE);
