@@ -48,8 +48,10 @@ bool Renderer::InitImpl() {
     if (cfg::settings::streamproof)
         Window::SetAffinity(Window::hwnd, WindowAffinity::Invisible);
 
+#ifdef _DEBUG
     if (!cfg::dev::console)
         LogHelper::Free();
+#endif
 
     // We want the main thread to call render
     // std::thread(Thread).detach();

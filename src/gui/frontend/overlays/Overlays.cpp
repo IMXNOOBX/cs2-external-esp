@@ -140,6 +140,7 @@ void Overlays::RenderNotice() {
 }
 
 void Overlays::RenderDebugWindow() {
+#ifdef _DEBUG
 	auto& io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
 
@@ -181,4 +182,5 @@ void Overlays::RenderDebugWindow() {
 		IM_COL32(255, 255, 255, 255),
 		debug_string.data()
 	);
+#endif
 }
