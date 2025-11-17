@@ -35,7 +35,9 @@ void Watermark::RenderImpl() {
 	std::string watermark_string = "cs2-external-esp (PTB)";
 
 	watermark_string += std::format(" | {}fps", (int)io.Framerate);
-	watermark_string += std::format(" | {}", globals.map_name);
+	
+	if (globals.in_match)
+		watermark_string += std::format(" | {}", globals.map_name);
 
 	auto size = ImGui::CalcTextSize(watermark_string.data());
 
@@ -47,14 +49,14 @@ void Watermark::RenderImpl() {
 		rect_start,
 		rect_end,
 		IM_COL32(0, 0, 0, 200),
-		10.f
+		8.f
 	);
 
 	d->AddRect(
 		rect_start,
 		rect_end,
 		IM_COL32(100, 100, 100, 200),
-		10.f
+		8.f
 	);
 
 	d->AddText(

@@ -18,7 +18,7 @@ bool Globals::Update() {
 	this->current_time = p->read<long>(this->address + offsets::global::currentTime);
 
 	this->max_clients = p->read<int>(this->address + offsets::global::maxClients);
-	this->in_match = this->max_clients <= 1; // In the lobby, it seems that it still counts one
+	this->in_match = this->max_clients > 1; // In the lobby, it seems that it still counts one
 
 	auto map_name_addr = p->read<DWORD64>(this->address + offsets::global::currentMapName);
 

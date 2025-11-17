@@ -274,13 +274,12 @@ void Menu::RenderStartupHelpImpl() {
 	if (Renderer::IsOpen())
 		has_opened_menu = true;
 
-	auto help = "Use Insert or Right Shift keys to open the menu";
-
+	auto help = "To open the menu, Use Insert or Right Shift keys";
 	auto size = ImGui::CalcTextSize(help);
 
 	d->AddText(
-		ImVec2(screen.x / 2 - size.x / 2, screen.y / 2 - size.y / 2),
+		ImVec2(screen.x / 2 - size.x / 2, 80),
 		IM_COL32(255, 255, 255, 255),
-		"Use Insert or Right Shift to open the menu"
+		help
 	);
 }

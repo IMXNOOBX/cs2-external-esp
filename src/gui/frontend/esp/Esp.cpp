@@ -60,6 +60,7 @@ void Esp::RenderImpl() {
 	std::string debug_string = "> Game Debug Window\n";
 
 	debug_string += std::format("Map: {}\n", globals.map_name);
+	debug_string += std::format("Max Clients: {}\n", globals.max_clients);
 	debug_string += std::format("Cache Refresh: {}ms\n", cfg::dev::cache_refresh_rate);
 
 	if (!players.empty())
