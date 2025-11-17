@@ -7,3 +7,6 @@
 [submodule "src/external/AsyncLogger"]
 	path = src/external/AsyncLogger
 	url = https://github.com/Yimura/AsyncLogger
+[submodule "src/external/curl"]
+	path = src/external/curl
+	url = https://github.com/curl/curl
