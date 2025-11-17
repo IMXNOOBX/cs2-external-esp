@@ -29,7 +29,7 @@ void Esp::RenderImpl() {
 	auto globals = Cache::CopyGlobals();
 	auto players = Cache::CopyPlayers();
 
-	auto io = ImGui::GetIO();
+	auto& io = ImGui::GetIO();
 
 	ImGui::PushFont(this->font);
 
@@ -57,7 +57,7 @@ void Esp::RenderImpl() {
 #ifdef _DEBUG
 	static int margin = 10;
 	static int padding = 10;
-	std::string debug_string = "> Debug Window\n";
+	std::string debug_string = "> Game Debug Window\n";
 
 	debug_string += std::format("Map: {}\n", globals.map_name);
 	debug_string += std::format("Cache Refresh: {}ms\n", cfg::dev::cache_refresh_rate);

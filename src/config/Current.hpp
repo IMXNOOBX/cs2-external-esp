@@ -37,14 +37,15 @@ namespace cfg {
 	}
 
 	namespace settings {
-		inline bool console = true;
+		inline bool watermark = true;
 		inline bool streamproof = false;
-		inline int open_menu_key = false;
 	}
 
 #ifdef _DEBUG
 	// Not stored, just for testing
 	namespace dev {
+		inline bool console = true;
+		inline int open_menu_key = false;
 		inline int cache_refresh_rate = 5;
 	}
 #endif

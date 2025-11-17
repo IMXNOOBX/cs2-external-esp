@@ -11,6 +11,8 @@ public:
     static bool Init();
     static void Destroy();
     static void Thread();
+
+    static bool IsOpen();
 private:
     Renderer() {};
 

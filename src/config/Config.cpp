@@ -61,9 +61,10 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 1.f, 1.f, 1.f, 0.3f });
 
 		// utils
-		cfg::settings::console = data["utils"].value("console", true);
+		//cfg::settings::console = data["utils"].value("console", true);
+		cfg::settings::watermark = data["utils"].value("watermark", true);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
-		cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
+		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
 	} catch (const std::exception& e) {
 		LOGF(FATAL, "Failed to parse configuration");
 		WriteImpl();
@@ -108,9 +109,10 @@ bool Config::WriteImpl() {
 	ColorToJson(col, "tracker_enemy", cfg::esp::colors::tracker_enemy);
 
 	// utils
-	data["utils"]["console"] = cfg::settings::console;
+	//data["utils"]["console"] = cfg::settings::console;
+	data["utils"]["watermark"] = cfg::settings::watermark;
 	data["utils"]["streamproof"] = cfg::settings::streamproof;
-	data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
+	//data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
 
 	f << std::setw(4) << data << std::endl;
 	f.close();

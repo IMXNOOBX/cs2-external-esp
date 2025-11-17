@@ -10,6 +10,8 @@ public:
 
     static bool Init();
     static void Render();
+
+    static void RenderStartupHelp();
 private:
     Menu() {};
 
@@ -21,9 +23,9 @@ private:
 
     bool InitImpl();
     void RenderImpl();
+    void RenderStartupHelpImpl();
 
     void SetupStyles();
 private:
     bool isSetup = true;
-    bool isMenuOpen = true;
 };

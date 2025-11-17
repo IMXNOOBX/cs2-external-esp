@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include "core/engine/cache/Cache.hpp"
+#include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
 
 
@@ -10,6 +11,10 @@ bool Menu::Init() {
 
 void Menu::Render() {
     return GetInstance().RenderImpl();
+}
+
+void Menu::RenderStartupHelp() {
+	return GetInstance().RenderStartupHelpImpl();
 }
 
 bool Menu::InitImpl() {
@@ -39,9 +44,11 @@ void Menu::RenderImpl() {
 	if (ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
 		ImGui::Checkbox("Enable", &cfg::enabled);
 		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(390, 0));
+		ImGui::Dummy(ImVec2(340, 0));
 		ImGui::SameLine();
 		ImGui::TextLinkOpenURL("Source/Support", "https://github.com/IMXNOOBX/cs2-external-esp");
+		ImGui::SameLine();
+		ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
 
 		static int y_space_left;
 		auto space = ImGui::GetContentRegionAvail();
@@ -147,9 +154,6 @@ void Menu::RenderImpl() {
 			ImGui::Text("Settings");
 			ImGui::Separator();
 
-			ImGui::Checkbox("Console", &cfg::settings::console);
-			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
-
 			if (ImGui::Checkbox("Streamproof", &cfg::settings::streamproof)) {
 				Window::SetAffinity(
 					Window::hwnd, 
@@ -157,16 +161,21 @@ void Menu::RenderImpl() {
 				);
 			}
 
+			ImGui::Checkbox("Watermark", &cfg::settings::watermark);
+
 #ifdef _DEBUG
 			ImGui::Text("Dev");
 			ImGui::Separator();
 
-			ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
+			ImGui::Checkbox("Console", &cfg::dev::console);
+			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
 
-			//ImGui::Checkbox("Open Key", &cfg::settings::console);
-			//if (ImGui::Button("Open Menu Key") && ImGui::IsItemHovered()) {
-			//	/*auto key = ImGui::KEY*/
-			//}
+			char key[2];
+			if (ImGui::InputText("Open Menu Key", key, sizeof(key), ImGuiInputTextFlags_CharsHexadecimal)) {
+				cfg::dev::open_menu_key = (int)key;
+			}
+
+			ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
 #endif
 		}
 		ImGui::EndChild();
@@ -250,4 +259,28 @@ void Menu::SetupStyles() {
 
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
+}
+
+void Menu::RenderStartupHelpImpl() {
+	static bool has_opened_menu = false;
+
+	if (has_opened_menu)
+		return;
+
+	auto& io = ImGui::GetIO();
+	auto screen = io.DisplaySize;
+	auto d = ImGui::GetBackgroundDrawList();
+
+	if (Renderer::IsOpen())
+		has_opened_menu = true;
+
+	auto help = "Use Insert or Right Shift keys to open the menu";
+
+	auto size = ImGui::CalcTextSize(help);
+
+	d->AddText(
+		ImVec2(screen.x / 2 - size.x / 2, screen.y / 2 - size.y / 2),
+		IM_COL32(255, 255, 255, 255),
+		"Use Insert or Right Shift to open the menu"
+	);
 }

@@ -4,6 +4,7 @@
 #include "core/engine/Engine.hpp"
 #include "gui/frontend/esp/Esp.hpp"
 #include "gui/frontend/menu/Menu.hpp"
+#include "gui/frontend/watermark/Watermark.hpp"
 
 bool Renderer::Init() {
     return GetInstance().InitImpl();
@@ -16,6 +17,10 @@ void Renderer::Thread() {
 void Renderer::Destroy() {
     return GetInstance().DestroyImpl();
 }   
+
+bool Renderer::IsOpen() {
+    return GetInstance().isOpen;
+}
 
 bool Renderer::InitImpl() {
     if (!Window::SpawnWindow()) {
@@ -35,6 +40,7 @@ bool Renderer::InitImpl() {
 
     Menu::Init();
     Esp::Init();
+    Watermark::Init();
 
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);
@@ -42,7 +48,7 @@ bool Renderer::InitImpl() {
     if (cfg::settings::streamproof)
         Window::SetAffinity(Window::hwnd, WindowAffinity::Invisible);
 
-    if (!cfg::settings::console)
+    if (!cfg::dev::console)
         LogHelper::Free();
 
     // We want the main thread to call render
@@ -79,7 +85,9 @@ void Renderer::Render() {
     Window::StartRender();
 
     Esp::Render();
-    
+    Watermark::Render();
+
+    Menu::RenderStartupHelp();
     if (isOpen) Menu::Render();
 
     Window::EndRender();
@@ -136,7 +144,7 @@ bool Renderer::HandleWindowOrder() {
         return true;
     }
 
-    if (!overlay_visible && this->isFocused) {
+    if (!overlay_visible && this->isFocused) {  
         ShowWindow(Window::hwnd, SW_SHOW);
         overlay_visible = true;
         return true;

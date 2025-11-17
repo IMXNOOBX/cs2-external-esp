@@ -99,6 +99,9 @@
     <ClCompile Include="config\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gui\frontend\watermark\Watermark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\logger\LogHelper.hpp">
@@ -357,6 +360,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="core\engine\types\Color.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\frontend\watermark\Watermark.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
