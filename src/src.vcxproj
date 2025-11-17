@@ -194,7 +194,7 @@
     <ClCompile Include="external\timer\timer.cpp" />
     <ClCompile Include="gui\frontend\esp\Esp.cpp" />
     <ClCompile Include="gui\frontend\menu\Menu.cpp" />
-    <ClCompile Include="gui\frontend\watermark\Watermark.cpp" />
+    <ClCompile Include="gui\frontend\overlays\Overlays.cpp" />
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
@@ -286,7 +286,7 @@
     <ClInclude Include="external\timer\timer.hpp" />
     <ClInclude Include="gui\frontend\esp\Esp.hpp" />
     <ClInclude Include="gui\frontend\menu\Menu.hpp" />
-    <ClInclude Include="gui\frontend\watermark\Watermark.hpp" />
+    <ClInclude Include="gui\frontend\overlays\Overlays.hpp" />
     <ClInclude Include="gui\renderer\Renderer.hpp" />
     <ClInclude Include="gui\renderer\window\Window.hpp" />
     <ClInclude Include="updater\http\HttpHelper.hpp" />

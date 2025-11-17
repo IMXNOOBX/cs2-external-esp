@@ -99,7 +99,7 @@
     <ClCompile Include="config\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\frontend\watermark\Watermark.cpp">
+    <ClCompile Include="gui\frontend\overlays\Overlays.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="updater\Updater.cpp">
@@ -368,7 +368,7 @@
     <ClInclude Include="core\engine\types\Color.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\frontend\watermark\Watermark.hpp">
+    <ClInclude Include="gui\frontend\overlays\Overlays.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="updater\Updater.hpp">

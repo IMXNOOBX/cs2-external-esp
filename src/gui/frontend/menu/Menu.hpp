@@ -12,6 +12,9 @@ public:
     static void Render();
 
     static void RenderStartupHelp();
+
+    static ImVec2 GetPos();
+    static ImVec2 GetSize();
 private:
     Menu() {};
 
@@ -28,4 +31,7 @@ private:
     void SetupStyles();
 private:
     bool isSetup = true;
+
+    ImVec2 pos;
+    ImVec2 size;
 };

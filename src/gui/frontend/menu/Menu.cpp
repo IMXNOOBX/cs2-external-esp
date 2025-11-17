@@ -17,6 +17,14 @@ void Menu::RenderStartupHelp() {
 	return GetInstance().RenderStartupHelpImpl();
 }
 
+ImVec2 Menu::GetPos() {
+	return GetInstance().pos;
+}
+
+ImVec2 Menu::GetSize() {
+	return GetInstance().size;
+}
+
 bool Menu::InitImpl() {
 	SetupStyles();
 
@@ -41,7 +49,11 @@ void Menu::RenderImpl() {
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
 
+	ImGui::GetWindowPos();
 	if (ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
+		this->pos = ImGui::GetWindowPos();
+		this->size = ImGui::GetWindowSize();
+
 		ImGui::Checkbox("Enable", &cfg::enabled);
 		ImGui::SameLine();
 		ImGui::Dummy(ImVec2(340, 0));
@@ -170,9 +182,15 @@ void Menu::RenderImpl() {
 			ImGui::Checkbox("Console", &cfg::dev::console);
 			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
 
-			char key[2];
-			if (ImGui::InputText("Open Menu Key", key, sizeof(key), ImGuiInputTextFlags_CharsHexadecimal)) {
-				cfg::dev::open_menu_key = (int)key;
+			static int key_out;
+			if (ImGui::Button("Open Menu Key")) {
+				for (int i = ImGuiKey_NamedKey_BEGIN; i < ImGuiKey_NamedKey_END; i++) {
+					if (ImGui::IsKeyPressed((ImGuiKey)i)) {
+						key_out = i;
+						LOGF(VERBOSE, "Changed the open menu key to {}", key_out);
+						break;
+					}
+				}
 			}
 
 			ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");

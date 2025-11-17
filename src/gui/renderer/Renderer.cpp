@@ -4,7 +4,7 @@
 #include "core/engine/Engine.hpp"
 #include "gui/frontend/esp/Esp.hpp"
 #include "gui/frontend/menu/Menu.hpp"
-#include "gui/frontend/watermark/Watermark.hpp"
+#include "gui/frontend/overlays/Overlays.hpp"
 
 bool Renderer::Init() {
     return GetInstance().InitImpl();
@@ -40,7 +40,7 @@ bool Renderer::InitImpl() {
 
     Menu::Init();
     Esp::Init();
-    Watermark::Init();
+    Overlays::Init();
 
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);
@@ -85,7 +85,7 @@ void Renderer::Render() {
     Window::StartRender();
 
     Esp::Render();
-    Watermark::Render();
+    Overlays::Render();
 
     Menu::RenderStartupHelp();
     if (isOpen) Menu::Render();

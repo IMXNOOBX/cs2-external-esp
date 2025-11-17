@@ -14,13 +14,13 @@ int main()
 
     LOGF(INFO, "Compiled {}, Welcome to cs2-external-esp-recode!", __TIMESTAMP__);
 
-    if (!Engine::Init()) {
-        LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
+    if (!Updater::Init() || !Updater::Process()) {
+        LOGF(FATAL, "Updater failed to run, cannot continue execution");
         goto exit;
     }
 
-    if (!Updater::Init()) {
-        LOGF(FATAL, "Updater failed to run, cannot continue execution");
+    if (!Engine::Init()) {
+        LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
         goto exit;
     }
 

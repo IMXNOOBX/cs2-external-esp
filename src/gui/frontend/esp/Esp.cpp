@@ -54,44 +54,6 @@ void Esp::RenderImpl() {
 		RenderPlayer(player, mate);
 	}
 
-#ifdef _DEBUG
-	static int margin = 10;
-	static int padding = 10;
-	std::string debug_string = "> Game Debug Window\n";
-
-	debug_string += std::format("Map: {}\n", globals.map_name);
-	debug_string += std::format("Max Clients: {}\n", globals.max_clients);
-	debug_string += std::format("Cache Refresh: {}ms\n", cfg::dev::cache_refresh_rate);
-
-	if (!players.empty())
-		debug_string += std::format("Players ({}):\n", players.size());
-
-	for (auto& player : players) 
-		debug_string += std::format("- {} ({}) {}hp {}ms\n", player.name, player.steam_id, player.health, player.ping);
-
-	auto size = ImGui::CalcTextSize(debug_string.data());
-
-	d->AddRectFilled(
-		ImVec2(10 + margin - padding, io.DisplaySize.y - size.y - 20 - margin - padding),
-		ImVec2(10 + size.x + margin + padding, io.DisplaySize.y - 20 - margin + padding),
-		IM_COL32(0, 0, 0, 200),
-		10.f
-	);
-
-	d->AddRect(
-		ImVec2(10 + margin - padding, io.DisplaySize.y - size.y - 20 - margin - padding),
-		ImVec2(10 + size.x + margin + padding, io.DisplaySize.y - 20 - margin + padding),
-		IM_COL32(100, 100, 100, 200),
-		10.f
-	);
-
-	d->AddText(
-		ImVec2(10 + margin, io.DisplaySize.y - size.y - 20 - margin),
-		IM_COL32(255, 255, 255, 255),
-		debug_string.data()
-	);
-#endif
-
 	ImGui::PopFont();
 }
 
