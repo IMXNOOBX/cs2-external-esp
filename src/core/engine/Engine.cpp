@@ -62,6 +62,11 @@ bool Engine::AwaitProcess() {
         if (process->AttachProcess("cs2.exe"))
             break;
 
+        if (process->pid_ && !process->handle_) {
+            LOGF(FATAL, "Insufficient permissions to open a handle to the process. Try running as Administrator.");
+            return false;
+        }
+
         static int attempts = 0;
         if (attempts > 10)
             return false;

@@ -67,8 +67,11 @@ HWND pProcess::GetWindowHandleFromProcessId(DWORD ProcessId) {
 		MODULEINFO module_info;
 		DWORD _;
 
-		handle_ = OpenProcess(PROCESS_QUERY_INFORMATION |PROCESS_VM_OPERATION |
-                                PROCESS_VM_READ,FALSE, pid_);
+		handle_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION |
+                                PROCESS_VM_READ, FALSE, pid_);
+
+		if (!handle_)
+			return false;
 
 		EnumProcessModulesEx(this->handle_, modules, sizeof(modules), &_, LIST_MODULES_64BIT);
 		base_client_.base = (uintptr_t)modules[0];
