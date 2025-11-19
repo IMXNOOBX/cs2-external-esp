@@ -182,6 +182,9 @@ void Menu::RenderImpl() {
 			ImGui::Checkbox("Console", &cfg::dev::console);
 			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
 
+			if (ImGui::Checkbox("VSync", &cfg::dev::vsync))
+				Window::vsync = cfg::dev::vsync;
+
 			static int key_out;
 			if (ImGui::Button("Open Menu Key")) {
 				for (int i = ImGuiKey_NamedKey_BEGIN; i < ImGuiKey_NamedKey_END; i++) {

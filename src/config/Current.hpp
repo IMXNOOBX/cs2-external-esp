@@ -44,6 +44,7 @@ namespace cfg {
 #ifdef _DEBUG
 	// Not stored, just for testing
 	namespace dev {
+		inline bool vsync = false;
 		inline bool console = true;
 		inline int open_menu_key = false;
 		inline int cache_refresh_rate = 5;

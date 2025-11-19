@@ -54,5 +54,3 @@ public:
 	inline static bool shouldRun = true;
 
 };
-
- inline Window window;
