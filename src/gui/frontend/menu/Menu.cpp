@@ -175,16 +175,17 @@ void Menu::RenderImpl() {
 
 			ImGui::Checkbox("Watermark", &cfg::settings::watermark);
 
+			if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
+				Window::vsync = cfg::settings::vsync;
+			ImGui::SetItemTooltip("VSync, matches render speed with screen refresh rate, improving performance");
+
 #ifdef _DEBUG
 			ImGui::Text("Dev");
 			ImGui::Separator();
 
-			ImGui::Checkbox("Console", &cfg::dev::console);
-			ImGui::SetItemTooltip("You need to restart the application to properly hide the console");
-
-			if (ImGui::Checkbox("VSync", &cfg::dev::vsync))
-				Window::vsync = cfg::dev::vsync;
-
+			if (ImGui::Checkbox("Console", &cfg::dev::console)) 
+				if (!cfg::dev::console) LogHelper::Free();
+			
 			static int key_out;
 			if (ImGui::Button("Open Menu Key")) {
 				for (int i = ImGuiKey_NamedKey_BEGIN; i < ImGuiKey_NamedKey_END; i++) {
@@ -295,7 +296,8 @@ void Menu::RenderStartupHelpImpl() {
 	if (Renderer::IsOpen())
 		has_opened_menu = true;
 
-	auto help = "To open the menu, Use Insert or Right Shift keys";
+	auto help = "To OPEN the menu, Use Insert or Right Shift keys"
+		"\n\t\t\t\tTo CLOSE, press the End key";
 	auto size = ImGui::CalcTextSize(help);
 
 	d->AddText(

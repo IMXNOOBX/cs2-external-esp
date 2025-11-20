@@ -33,5 +33,6 @@ int main()
     Renderer::Thread();
 
 exit:
+    LOGF(INFO, "Thats it, im done, hope you had a great time!");
     LogHelper::Destroy();
 }

@@ -16,8 +16,8 @@ void LogHelper::Destroy()
 }
 
 void LogHelper::Free() {
-    if (auto console = GetConsoleWindow()) {
-        FreeConsole(); // detach
+    if (HWND console = GetConsoleWindow()) {
+        FreeConsole();
         PostMessage(console, WM_CLOSE, 0, 0);
     }
 }

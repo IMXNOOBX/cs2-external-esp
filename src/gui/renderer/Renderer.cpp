@@ -48,12 +48,11 @@ bool Renderer::InitImpl() {
     if (cfg::settings::streamproof)
         Window::SetAffinity(Window::hwnd, WindowAffinity::Invisible);
 
-#ifdef _DEBUG
-    if (!cfg::dev::console)
-        LogHelper::Free();
-#endif
+    if (cfg::settings::vsync)
+        Window::vsync = true;
 
     // We want the main thread to call render
+    // And lock it
     // std::thread(Thread).detach();
 
     LOGF(INFO, "Successfully initialized renderer...");
@@ -103,9 +102,11 @@ bool Renderer::HandleState() {
     bool pressed_insert = (GetAsyncKeyState(VK_INSERT) & 0x8000);
     bool pressed_rshift = (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
 
+    bool pressed_end = (GetAsyncKeyState(VK_END) & 0x8000);
+
     bool should_toggle = !was_holding && (pressed_insert || pressed_rshift);
 
-    if (should_toggle) {
+    if (should_toggle || pressed_end) { // Toggle when pressing end to trigger the config save :v
         this->isOpen = !isOpen;
 
         // Release cursor when opening the menu
@@ -121,6 +122,9 @@ bool Renderer::HandleState() {
         // Not the best way, but wont bother the user
         std::thread(Config::Write).detach(); // Not needed, but just in case
     }
+
+    if (pressed_end)
+        this->isRunning = false;
 
     was_holding = pressed_insert || pressed_rshift;
     return should_toggle;

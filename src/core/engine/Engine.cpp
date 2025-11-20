@@ -39,6 +39,11 @@ bool Engine::InitImpl() {
 
     if (!Config::Read()) 
         LOGF(WARNING, "Failed to parse config, using default values");
+
+#ifdef _DEBUG
+    if (!cfg::dev::console)
+        LogHelper::Free();
+#endif
     
     std::thread(&Engine::Thread, this).detach();
 
