@@ -1,25 +1,20 @@
-import sys
-import requests
-import json
-import re
 import os
+import json
+import requests
 
 urls = {
-    "commits": "https://api.github.com/repos/a2x/cs2-dumper/commits",
-    "offsets": "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json",
+    "info": "https://github.com/a2x/cs2-dumper/raw/refs/heads/main/output/info.json",
+    "offsets": "https://github.com/a2x/cs2-dumper/raw/refs/heads/main/output/offsets.json",
     "client_dll": "https://github.com/a2x/cs2-dumper/raw/refs/heads/main/output/client_dll.json",
 }
 
 def get_build_number():
-    response = requests.get(urls["commits"])
+    response = requests.get(urls["info"])
     if response.status_code == 200:
-        commit_data = response.json()
-        if commit_data:
-            for commit in commit_data:
-                commit_message = commit['commit']['message']
-                build_match = re.search(r'\bGame [Uu]pdate \((\d+)(?: \(\d+\))?\b', commit_message)
-                if build_match:
-                    return int(build_match.group(1))
+        game_info = response.json()
+        if game_info:
+            version = game_info['build_number']
+            return int(version)
     return 0
 
 def get_raw_file(url):
