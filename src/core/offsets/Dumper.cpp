@@ -16,7 +16,7 @@ bool Dumper::InitImpl() {
     // client.dll
 
     // View Matrix
-    if (temp = Scan(offsets::signatures::viewMatrix, client); !temp) {
+    if (!(temp = Scan(offsets::signatures::viewMatrix, client))) {
         LOGF(FATAL, "Could not find offset for 'viewMatrix'");
         return false;
     }
@@ -25,7 +25,7 @@ bool Dumper::InitImpl() {
     LOGF(VERBOSE, "Found 'viewMatrix' offset at 0x{:X}", offsets::viewMatrix);
 
     // Global Variables
-    if (temp = Scan(offsets::signatures::globalVars, client); !temp) {
+    if (!(temp = Scan(offsets::signatures::globalVars, client))) {
         LOGF(FATAL, "Could not find offset for 'globalVars'");
         return false;
     }
@@ -34,7 +34,7 @@ bool Dumper::InitImpl() {
     LOGF(VERBOSE, "Found 'globalVars' offset at 0x{:X}", offsets::globalVars);
 
     // Entity List
-    if (temp = Scan(offsets::signatures::entityList, client); !temp) {
+    if (!(temp = Scan(offsets::signatures::entityList, client))) {
         LOGF(FATAL, "Could not find offset for 'entityList'");
         return false;
     }
@@ -43,7 +43,7 @@ bool Dumper::InitImpl() {
     LOGF(VERBOSE, "Found 'entityList' offset at 0x{:X}", offsets::entityList);
 
     // Local Player Controller
-    if (temp = Scan(offsets::signatures::localPlayerController, client); !temp) {
+    if (!(temp = Scan(offsets::signatures::localPlayerController, client))) {
         LOGF(FATAL, "Could not find offset for 'localPlayerController'");
         return false;
     }
@@ -52,13 +52,13 @@ bool Dumper::InitImpl() {
     LOGF(VERBOSE, "Found 'localPlayerController' offset at 0x{:X}", offsets::localPlayerController);
 
     // C4
-    if (temp = Scan(offsets::signatures::weaponC4, client); !temp) {
+    if (!(temp = Scan(offsets::signatures::plantedC4, client))) {
         LOGF(FATAL, "Could not find offset for 'weaponC4'");
         return false;
     }
 
-    offsets::weaponC4 = temp - client.base;
-    LOGF(VERBOSE, "Found 'weaponC4' offset at 0x{:X}", offsets::weaponC4);
+    offsets::plantedC4 = temp - client.base;
+    LOGF(VERBOSE, "Found 'weaponC4' offset at 0x{:X}", offsets::plantedC4);
 
 #if 0
     // Local Player Pawn (tbh idk how to read it :1)
@@ -84,7 +84,7 @@ bool Dumper::InitImpl() {
     // engine2.dll
 
     // Build Number
-    if (temp = Scan(offsets::signatures::buildNumber, engine); !temp) {
+    if (!(temp = Scan(offsets::signatures::buildNumber, engine))) {
         LOGF(FATAL, "Could not find offset for 'buildNumber'");
         return false;
     }

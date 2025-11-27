@@ -1,5 +1,6 @@
 #pragma once
 #include "core/engine/classes/Game.hpp"
+#include "core/engine/classes/Bomb.hpp"
 #include "core/engine/classes/Player.hpp"
 #include "core/engine/classes/Globals.hpp"
 
@@ -11,6 +12,7 @@ using namespace std::chrono;
 class Cache {
 public:
 	Game game;
+	Bomb bomb;
 	Globals globals;
 	std::vector<Player> players;
 public:
@@ -21,6 +23,7 @@ public:
 	}
 
 	static Game CopyGame();
+	static Bomb CopyBomb();
 	static Globals CopyGlobals();
 	static std::vector<Player> CopyPlayers();
 

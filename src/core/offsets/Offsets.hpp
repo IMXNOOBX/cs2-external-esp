@@ -5,7 +5,7 @@ namespace offsets
 	inline DWORD viewMatrix;
 	inline DWORD localPlayerController;
 	inline DWORD globalVars;
-	inline DWORD weaponC4;
+	inline DWORD plantedC4;
 
 	//inline DWORD viewAngles;
 	//inline DWORD localPlayerPawn;
@@ -64,9 +64,14 @@ namespace offsets
 #endif
 	}
 
+	namespace bomb {
+		constexpr std::ptrdiff_t m_isPlanted = 0x8; // unk
+		constexpr std::ptrdiff_t m_bC4Activated = 0x11A8; // bool
+		constexpr std::ptrdiff_t m_nBombSite = 0x1164; // int32
+	}
+
 	namespace bone {
 		constexpr std::ptrdiff_t m_modelState = 0x190; // CModelState
-
 	}
 
 	namespace global {
@@ -81,7 +86,7 @@ namespace offsets
 		const std::string globalVars = "48 89 15 ?? ?? ?? ?? 48 89 42";
 		const std::string entityList = "48 8B 0D ?? ?? ?? ?? 48 89 7C 24 ?? 8B FA C1 EB";
 		const std::string localPlayerController = "48 8B 05 ?? ?? ?? ?? 41 89 BE";
-		const std::string weaponC4 =
+		const std::string plantedC4 =
 			"48 89 05 ?? ?? ?? ?? "
 			"F7 C1 ?? ?? ?? ?? "
 			"74 ?? "

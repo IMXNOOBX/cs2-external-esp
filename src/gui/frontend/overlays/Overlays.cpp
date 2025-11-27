@@ -144,6 +144,7 @@ void Overlays::RenderDebugWindow() {
 	auto& io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
 
+	auto bomb = Cache::CopyBomb();
 	auto globals = Cache::CopyGlobals();
 	auto players = Cache::CopyPlayers();
 
@@ -154,6 +155,11 @@ void Overlays::RenderDebugWindow() {
 	debug_string += std::format("Map: {}\n", globals.map_name);
 	debug_string += std::format("Max Clients: {}\n", globals.max_clients);
 	debug_string += std::format("Cache Refresh: {}ms\n", cfg::dev::cache_refresh_rate);
+
+	if (bomb.is_planted) {
+		debug_string += "Bomb:\n";
+		debug_string += std::format("- Planted Site: {}\n", bomb.site == BombSite::A ? "A" : "B");
+	}
 
 	if (!players.empty())
 		debug_string += std::format("Players ({}):\n", players.size());

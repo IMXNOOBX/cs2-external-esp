@@ -183,6 +183,7 @@
     </ClCompile>
     <ClCompile Include="config\Config.cpp" />
     <ClCompile Include="core\engine\cache\Cache.cpp" />
+    <ClCompile Include="core\engine\classes\Bomb.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
     <ClCompile Include="core\engine\classes\Game.cpp" />
     <ClCompile Include="core\engine\classes\Globals.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="config\Config.hpp" />
     <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
+    <ClInclude Include="core\engine\classes\Bomb.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\types\Color.hpp" />
     <ClInclude Include="core\engine\types\Types.hpp" />

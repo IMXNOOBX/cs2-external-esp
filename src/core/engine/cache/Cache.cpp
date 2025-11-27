@@ -12,6 +12,11 @@ Game Cache::CopyGame() {
     return Get().game;
 }
 
+Bomb Cache::CopyBomb() {
+    std::lock_guard<std::mutex> lock(Get().mtx);
+    return Get().bomb;
+}
+
 Globals Cache::CopyGlobals() {
     std::lock_guard<std::mutex> lock(Get().mtx);
     return Get().globals;
@@ -52,6 +57,8 @@ bool Cache::RefreshImpl() {
 
     globals.Update();
     //LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", globals.map_name, globals.max_clients, globals.current_time);
+
+    bomb.Update();
 
     std::vector<Player> scan;
     scan.reserve(globals.max_clients);
