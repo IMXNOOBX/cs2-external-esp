@@ -9,6 +9,13 @@
 
 using namespace std::chrono;
 
+struct Snapshot {
+	Game game;
+	Bomb bomb;
+	Globals globals;
+	std::vector<Player> players;
+};
+
 class Cache {
 public:
 	Game game;
@@ -26,6 +33,8 @@ public:
 	static Bomb CopyBomb();
 	static Globals CopyGlobals();
 	static std::vector<Player> CopyPlayers();
+
+	static Snapshot CopySnapshot();
 
 	static bool Refresh();
 private:

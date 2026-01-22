@@ -2,7 +2,7 @@
     "unsafe": false,
     "notice": "You are using a Public Test Build (PTB). Bugs and instability are expected.",
     "version": {
-        "current": 100,
+        "current": 101,
         "minimum": 100
     }
 }

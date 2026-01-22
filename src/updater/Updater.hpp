@@ -37,7 +37,7 @@ private:
 private:
     Status status;
     bool isSetup = false;
-    int current_version = 100;
+    int current_version = 101;
     // TODO: Update to main once released
     std::string status_url = "https://github.com/IMXNOOBX/cs2-external-esp/raw/refs/heads/cs2-recode/.github/status.json";
 };

@@ -68,6 +68,8 @@ namespace offsets
 		constexpr std::ptrdiff_t m_isPlanted = 0x8; // unk
 		constexpr std::ptrdiff_t m_bC4Activated = 0x11B8; // bool
 		constexpr std::ptrdiff_t m_nBombSite = 0x1174; // int32
+
+		constexpr std::ptrdiff_t m_vecAbsOrigin = 0xD0; // VectorWS - CGameSceneNode 
 	}
 
 	namespace bone {
@@ -86,7 +88,8 @@ namespace offsets
 		const std::string globalVars = "48 89 15 ?? ?? ?? ?? 48 89 42";
 		const std::string entityList = "48 8B 0D ?? ?? ?? ?? 48 89 7C 24 ?? 8B FA C1 EB";
 		const std::string localPlayerController = "48 8B 05 ?? ?? ?? ?? 41 89 BE";
-		const std::string plantedC4 =
+		const std::string plantedC4 = "48 8b 15 ?? ?? ?? ?? 41 FF C0 48 8D 4C 24 ?? 44 89 05 ?? ?? ?? ??"; // 488b15${'} 41ffc0 488d4c24? 448905[4]
+		const std::string weaponC4 = // 488b15${'} 41ffc0 488d4c24? 448905[4]
 			"48 89 05 ?? ?? ?? ?? "
 			"F7 C1 ?? ?? ?? ?? "
 			"74 ?? "

@@ -23,15 +23,18 @@ void Esp::RenderImpl() {
 	if (!cfg::enabled)
 		return;
 
-	auto d = ImGui::GetBackgroundDrawList();
-
-	auto game = Cache::CopyGame();
-	auto globals = Cache::CopyGlobals();
-	auto players = Cache::CopyPlayers();
-
-	auto& io = ImGui::GetIO();
+	auto snapshot = Cache::CopySnapshot();
+	auto& game = snapshot.game;
+	auto& bomb = snapshot.bomb;
+	auto& globals = snapshot.globals;
+	auto& players = snapshot.players;
 
 	ImGui::PushFont(this->font);
+
+	this->io = ImGui::GetIO();
+	this->d = ImGui::GetBackgroundDrawList();
+
+	this->matrix = game.view_matrix;
 
 	static int local_team = 0;
 	for (auto& player : players) {
@@ -40,6 +43,7 @@ void Esp::RenderImpl() {
 
 		if (player.localplayer) {
 			local_team = player.team;
+			localplayer = &player;
 			continue;
 		}
 
@@ -54,14 +58,12 @@ void Esp::RenderImpl() {
 		RenderPlayer(player, mate);
 	}
 
+	RenderBomb(bomb);
+
 	ImGui::PopFont();
 }
 
 void Esp::RenderPlayer(Player player, bool mate) {
-	auto io = ImGui::GetIO();
-	auto d = ImGui::GetBackgroundDrawList();
-	this->matrix = Cache::CopyGame().view_matrix;
-
 	// Needed for flags & item sizing, so even if the box is not enabled
 	// Should be calculated
 	std::pair<Vec2_t, Vec2_t> bounds;
@@ -93,9 +95,6 @@ void Esp::RenderPlayer(Player player, bool mate) {
 }
 
 void Esp::RenderPlayerBones(Player player, bool mate) {
-	auto io = ImGui::GetIO();
-	auto d = ImGui::GetBackgroundDrawList();
-
 	auto color = mate ? cfg::esp::colors::skeleton_team : cfg::esp::colors::skeleton_enemy;
 
 	auto bone_count = player.bone_list.size();
@@ -126,8 +125,8 @@ void Esp::RenderPlayerBones(Player player, bool mate) {
 }
 
 void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
-	auto io = ImGui::GetIO();
-	auto d = ImGui::GetBackgroundDrawList();
+	if (player.bone_list.empty())
+		return;
 
 	auto head_bone = player.bone_list[bone_index::head];
 
@@ -147,9 +146,6 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 }
 
 void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
-	auto io = ImGui::GetIO();
-	auto d = ImGui::GetBackgroundDrawList();
-
 	if (cfg::esp::health) {
 		auto x_start = bounds.first.x - 4; // -4 is padding
 		auto x_end = x_start - 2; // -2 is the inner space of the rect
@@ -198,9 +194,6 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 }
 
 void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
-	auto io = ImGui::GetIO();
-	auto d = ImGui::GetBackgroundDrawList();
-
 	if (cfg::esp::flags::name) {
 		auto sanitized_name = std::format("{}{}", player.name, (player.bot ? " (Bot)" : ""));
 		auto name_size = ImGui::CalcTextSize(sanitized_name.data());
@@ -270,4 +263,59 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset += offset_mult;
 	}
+}
+
+void Esp::RenderBomb(Bomb bomb) {
+	if (!bomb.is_planted)
+		return;
+
+	if (!bomb.pos.length())
+		return;
+
+	auto marker = bomb.pos + Vec3_t(0, 0, 20);
+
+	Vec2_t pos;
+	if (!matrix.wts(bomb.pos, io.DisplaySize, pos))
+		return;
+
+	if (!localplayer)
+		return;
+
+	auto distance = bomb.pos.dist_to(localplayer->pos);
+
+	float width = 20.f;
+	float height = 20.f;
+	float rounding = 10.f;
+
+	static int margin = 10;
+	static int padding = 10;
+
+	//auto distance_str = std::format("{}pt", (int)distance);
+	auto duration_str = std::format("{}s", bomb.time_left);
+	auto bombsite_str = std::string(bomb.site == BombSite::A ? "A" : "B");
+
+	std::string bomb_string = std::format("Planted {} - {}", bombsite_str, duration_str);
+
+	auto text_size = ImGui::CalcTextSize(bomb_string.data());
+	width = text_size.x; height = text_size.y;
+
+	d->AddRectFilled(
+		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
+		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
+		IM_COL32(0, 0, 0, 200),
+		rounding
+	);
+
+	d->AddRect(
+		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
+		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
+		IM_COL32(100, 100, 100, 200),
+		rounding
+	);
+
+	d->AddText(
+		ImVec2(pos.x + margin, pos.y - height - 20 - margin),
+		IM_COL32(255, 255, 255, 255),
+		bomb_string.data()
+	);
 }

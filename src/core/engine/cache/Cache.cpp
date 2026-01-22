@@ -27,6 +27,16 @@ std::vector<Player> Cache::CopyPlayers() {
     return Get().players;
 }
 
+Snapshot Cache::CopySnapshot() {
+    std::lock_guard<std::mutex> lock(Get().mtx);
+    return {
+        Get().game,
+        Get().bomb,
+        Get().globals,
+        Get().players
+    };
+}
+
 bool Cache::RefreshImpl() {
     auto p = Engine::GetProcess();
     auto client = Engine::GetClient();
@@ -40,10 +50,6 @@ bool Cache::RefreshImpl() {
     // And needs to be updated as fast as possible
     if (!game.Update()) 
         return false;
-
-    // Just refresh every 5ms
-    if (now - last < 5ms)
-        return true; // All good
 
 #ifdef _DEBUG
     // Testing performance

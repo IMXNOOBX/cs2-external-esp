@@ -72,6 +72,7 @@ bool Player::UpdateController() {
 	this->steam_id = p->read<uint64_t>(controller + offsets::controller::m_steamID);
 	this->bot = this->steam_id == 0;
 
+	// expensive
 	if (!p->read_raw(controller + offsets::controller::m_iszPlayerName, this->name, sizeof(this->name)))
 		return false;
 
@@ -92,7 +93,7 @@ bool Player::UpdatePawn() {
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
 
-	if (this->health > 100 || this->health < 0)
+	if (this->health > 255 || this->health < 0)
 		LOGF(FATAL, 
 			"Health seems to have a random value (over 100 or under 0) with a value of ({}). Game has probably updated pawn structure", 
 			this->health
@@ -182,22 +183,30 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	Vec2_t origin;
 	bool pt1 = matrix.wts(this->pos, size, origin);
 
-	auto head_bone = this->bone_list[bone_index::head];
+
+	Vec3_t pos_top;
+	if (this->bone_list.empty())
+		pos_top = this->pos + Vec3_t(0, 0, 65.f); // 75.f
+	else
+		pos_top = this->bone_list[bone_index::head].pos;
+
+	//auto head_bone = this->bone_list[bone_index::head];
 	//head_bone.pos.z *= 1.09; // little offset to cover the entire head
+	//bone_pos head_bone = origin + ImVec3
 
-	Vec2_t head;
-	bool pt2 = matrix.wts(head_bone.pos, size, head);
+	Vec2_t top;
+	bool pt2 = matrix.wts(pos_top, size, top);
 
-	float height = origin.y - head.y;
+	float height = origin.y - top.y;
 	float width = height / 2.4f;
 
-	head.x -= width / 2;
+	top.x -= width / 2;
 	origin.x += width / 2;
 
-	head.y -= width / 4;
+	top.y -= width / 4;
 
 	// Top to bottom
-	bounds = { head, origin };
+	bounds = { top, origin };
 
 	return pt1 || pt2;
 }

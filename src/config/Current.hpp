@@ -39,7 +39,7 @@ namespace cfg {
 	namespace settings {
 		inline bool watermark = true;
 		inline bool streamproof = false;
-		inline bool vsync = true;
+		inline bool vsync = false;
 	}
 
 #ifdef _DEBUG
