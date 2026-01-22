@@ -15,12 +15,12 @@ namespace offsets
 	inline DWORD buildNumber;
 
 	namespace controller {
-		constexpr std::ptrdiff_t m_iPing = 0x818; // uint32
-		constexpr std::ptrdiff_t m_hPawn = 0x6B4; // CHandle<C_BasePlayerPawn>
-		constexpr std::ptrdiff_t m_steamID = 0x770; // uint64
-		constexpr std::ptrdiff_t m_iszPlayerName = 0x6E8; // char[128]
-		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x778; // bool
-		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x7F8; // CCSPlayerController_InGameMoneyServices*
+		constexpr std::ptrdiff_t m_iPing = 0x828; // uint32
+		constexpr std::ptrdiff_t m_hPawn = 0x6C4; // CHandle<C_BasePlayerPawn>
+		constexpr std::ptrdiff_t m_steamID = 0x780; // uint64
+		constexpr std::ptrdiff_t m_iszPlayerName = 0x6F8; // char[128]
+		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x788; // bool
+		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x808; // CCSPlayerController_InGameMoneyServices*
 		constexpr std::ptrdiff_t m_iAccount = 0x40; // int32 - CCSPlayerController_InGameMoneyServices 
 
 		//constexpr std::ptrdiff_t health = 0x32C;
@@ -31,16 +31,16 @@ namespace offsets
 	}
 
 	namespace pawn {
-		constexpr std::ptrdiff_t m_vOldOrigin = 0x15A0; // Vector
-		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
-		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
-		constexpr std::ptrdiff_t m_ArmorValue = 0x274C; // int32
-		constexpr std::ptrdiff_t m_bIsDefusing = 0x271A; // bool
-		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
-		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DE0; // C_CSWeaponBase*
-		constexpr std::ptrdiff_t m_entitySpottedState = 0x2700; // EntitySpottedState_t
+		constexpr std::ptrdiff_t m_vOldOrigin = 0x1588; // Vector
+		constexpr std::ptrdiff_t m_iHealth = 0x354; // int32
+		constexpr std::ptrdiff_t m_iTeamNum = 0x3F3; // uint8
+		constexpr std::ptrdiff_t m_ArmorValue = 0x272C; // int32
+		constexpr std::ptrdiff_t m_bIsDefusing = 0x26FA; // bool
+		constexpr std::ptrdiff_t m_pGameSceneNode = 0x338; // CGameSceneNode*
+		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
+		constexpr std::ptrdiff_t m_entitySpottedState = 0x26E0; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
-		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x1604; // float32 - C_CSPlayerPawnBase 
+		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x15EC; // float32 - C_CSPlayerPawnBase 
 
 
 #if 0
@@ -66,12 +66,12 @@ namespace offsets
 
 	namespace bomb {
 		constexpr std::ptrdiff_t m_isPlanted = 0x8; // unk
-		constexpr std::ptrdiff_t m_bC4Activated = 0x11A8; // bool
-		constexpr std::ptrdiff_t m_nBombSite = 0x1164; // int32
+		constexpr std::ptrdiff_t m_bC4Activated = 0x11B8; // bool
+		constexpr std::ptrdiff_t m_nBombSite = 0x1174; // int32
 	}
 
 	namespace bone {
-		constexpr std::ptrdiff_t m_modelState = 0x190; // CModelState
+		constexpr std::ptrdiff_t m_modelState = 0x160; // CModelState
 	}
 
 	namespace global {

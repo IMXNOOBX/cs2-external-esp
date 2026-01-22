@@ -92,6 +92,12 @@ bool Player::UpdatePawn() {
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
 
+	if (this->health > 100 || this->health < 0)
+		LOGF(FATAL, 
+			"Health seems to have a random value (over 100 or under 0) with a value of ({}). Game has probably updated pawn structure", 
+			this->health
+		);
+
 	if (!alive) // No need to continue 
 		return true;
 
