@@ -1,5 +1,9 @@
 # 🎡 CS2 External ESP
 
+> [!IMPORTANT]
+> A new version its under development at [#cs2-recode](/tree/cs2-recode) branch, with a click ui and improved performance!
+> Check out the showcase video here: https://youtu.be/3WHHLUyHyzA
+
 Simple external ESP for Counter-Strike 2 using the GDI overlay to render esp boxes on top of CS2, highlighting your enemies and teammates including their health and name. If you want to check out Discord overlay rendering check the [discord-overlay-esp](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay) tree.
 
 ### Make sure you 🌟 the project if you like it ❤
