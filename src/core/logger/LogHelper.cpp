@@ -12,6 +12,7 @@ bool LogHelper::Init()
 
 void LogHelper::Destroy()
 {
+    Logger::FlushQueue();
     Logger::Destroy();
 }
 

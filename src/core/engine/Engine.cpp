@@ -73,6 +73,10 @@ bool Engine::AwaitProcess() {
         }
 
         static int attempts = 0;
+
+        if (!attempts)
+            LOGF(INFO, "Waiting 50s for the game to open...");
+
         if (attempts > 10)
             return false;
         attempts++;
@@ -86,6 +90,8 @@ bool Engine::AwaitProcess() {
 bool Engine::AwaitModules() {
     if (!process || !process->handle_) // Process not initialized, or not attached
         return false;
+
+    LOGF(INFO, "Waiting for the game to open...");
 
     do {
         this->client = process->GetModule("client.dll");
@@ -101,7 +107,6 @@ bool Engine::AwaitModules() {
 
         std::this_thread::sleep_for(5s);
     } while (true);
-
 
     return true;
 }   
