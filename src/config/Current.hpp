@@ -39,6 +39,7 @@ namespace cfg {
 
 	namespace settings {
 		inline bool watermark = true;
+		inline bool crosshair = true;
 		inline bool streamproof = false;
 		inline bool vsync = false;
 	}

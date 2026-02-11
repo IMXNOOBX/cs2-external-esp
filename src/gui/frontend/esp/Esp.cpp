@@ -59,6 +59,7 @@ void Esp::RenderImpl() {
 	}
 
 	RenderBomb(bomb);
+	RenderCrosshair();
 
 	ImGui::PopFont();
 }
@@ -273,6 +274,47 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset += offset_mult;
 	}
+}
+
+void Esp::RenderCrosshair()
+{
+	if (!cfg::settings::crosshair)
+		return;
+
+	if (!localplayer)
+		return;
+
+	if (localplayer->scoped)
+		return;
+
+	auto weapon = localplayer->clean_weapon;
+
+	if (weapon.empty())
+		return;
+
+	static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20"};
+
+	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon) == valid_weapons.end())
+		return;
+
+	ImVec2 center(
+		floorf(io.DisplaySize.x * 0.5f),
+		floorf(io.DisplaySize.y * 0.5f));
+
+	constexpr float size = 6.f;
+	constexpr float thickness = 1.0f;
+
+	d->AddLine(
+		ImVec2(center.x - size, center.y),
+		ImVec2(center.x + size + 1, center.y),
+		IM_COL32(255, 255, 255, 255),
+		thickness);
+
+	d->AddLine(
+		ImVec2(center.x, center.y - size),
+		ImVec2(center.x, center.y + size + 1),
+		IM_COL32(255, 255, 255, 255),
+		thickness);
 }
 
 void Esp::RenderBomb(Bomb bomb) {

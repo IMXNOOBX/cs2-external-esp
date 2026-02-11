@@ -175,6 +175,7 @@ void Menu::RenderImpl() {
 			}
 
 			ImGui::Checkbox("Watermark", &cfg::settings::watermark);
+			ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
 
 			if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
 				Window::vsync = cfg::settings::vsync;

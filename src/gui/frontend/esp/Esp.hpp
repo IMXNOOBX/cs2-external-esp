@@ -39,4 +39,5 @@ private:
     void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
 
     void RenderBomb(Bomb bomb);
+	void RenderCrosshair();
 };

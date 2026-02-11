@@ -64,6 +64,7 @@ bool Config::ReadImpl() {
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
 		cfg::settings::watermark = data["utils"].value("watermark", true);
+		cfg::settings::crosshair = data["utils"].value("crosshair", true);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
@@ -114,6 +115,7 @@ bool Config::WriteImpl() {
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;
 	data["utils"]["watermark"] = cfg::settings::watermark;
+	data["utils"]["crosshair"] = cfg::settings::crosshair;
 	data["utils"]["streamproof"] = cfg::settings::streamproof;
 	data["utils"]["vsync"] = cfg::settings::vsync;
 	//data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
