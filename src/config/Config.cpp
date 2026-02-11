@@ -64,7 +64,7 @@ bool Config::ReadImpl() {
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
 		cfg::settings::watermark = data["utils"].value("watermark", true);
-		cfg::settings::crosshair = data["utils"].value("crosshair", true);
+		cfg::settings::crosshair = data["utils"].value("crosshair", false);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
