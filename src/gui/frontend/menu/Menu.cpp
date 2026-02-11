@@ -143,6 +143,7 @@ void Menu::RenderImpl() {
 					ImGui::Checkbox("Name", &cfg::esp::flags::name);
 					ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
 					ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
+					ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
 				}
 				ImGui::EndGroup();
 				

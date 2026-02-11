@@ -18,6 +18,7 @@ public:
 
     bool bot = true;
     bool alive = false;
+    bool scoped = false;
     bool flashed = false;
     bool spotted = false;
     bool defusing = false;

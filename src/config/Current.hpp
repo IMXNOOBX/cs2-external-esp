@@ -21,6 +21,7 @@ namespace cfg {
 			inline bool defusing = false;
 			inline bool money = false;
 			inline bool flashed = false;
+			inline bool scoped = false;
 		}
 
 		namespace colors {

@@ -247,7 +247,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	if (cfg::esp::flags::flashed && player.flashed) {
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(100, 100, 255, 255),
+			IM_COL32(100, 255, 100, 255),
 			"flashed"
 		);
 
@@ -260,6 +260,16 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			IM_COL32(255, 100, 100, 255),
 			"defusing"
 		);
+
+		offset += offset_mult;
+	}
+
+	if (cfg::esp::flags::scoped && player.scoped)
+	{
+		d->AddText(
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
+			IM_COL32(100, 100, 255, 255),
+			"scoped");
 
 		offset += offset_mult;
 	}
