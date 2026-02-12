@@ -48,6 +48,7 @@ bool Config::ReadImpl() {
 		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
 		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
+		cfg::esp::flags::scoped = data["esp"]["flags"].value("scoped", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
 
@@ -63,6 +64,7 @@ bool Config::ReadImpl() {
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
 		cfg::settings::watermark = data["utils"].value("watermark", true);
+		cfg::settings::crosshair = data["utils"].value("crosshair", false);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
@@ -96,6 +98,7 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
 	data["esp"]["flags"]["ping"] = cfg::esp::flags::ping;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
+	data["esp"]["flags"]["scoped"] = cfg::esp::flags::scoped;
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
@@ -112,6 +115,7 @@ bool Config::WriteImpl() {
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;
 	data["utils"]["watermark"] = cfg::settings::watermark;
+	data["utils"]["crosshair"] = cfg::settings::crosshair;
 	data["utils"]["streamproof"] = cfg::settings::streamproof;
 	data["utils"]["vsync"] = cfg::settings::vsync;
 	//data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
