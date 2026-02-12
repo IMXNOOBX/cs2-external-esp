@@ -123,6 +123,7 @@ void Menu::RenderImpl() {
 				ImGui::BeginGroup();
 				{
 					ImGui::Checkbox("Health", &cfg::esp::health);
+					ImGui::Checkbox("Health Number", &cfg::esp::health_number);
 					ImGui::Checkbox("Armor", &cfg::esp::armor);
 					ImGui::Checkbox("Spotted", &cfg::esp::spotted);
 					ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
