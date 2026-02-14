@@ -11,6 +11,7 @@ namespace cfg {
 		inline bool health = true;
 		inline bool skeleton = true;
 		inline bool head_tracker = true;
+		inline bool health_number = false;
 
 		inline bool spotted = false;
 

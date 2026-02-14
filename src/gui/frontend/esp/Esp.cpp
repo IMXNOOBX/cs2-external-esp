@@ -168,6 +168,20 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 			ImVec2(x_end, y_end),
 			IM_COL32(0, 0, 0, 50)
 		);
+
+		if (cfg::esp::health_number && player.health < 100) {
+			auto txt = std::to_string(player.health);
+			auto sz = ImGui::CalcTextSize(txt.c_str());
+
+			d->AddText(
+				Vec2_t(
+					(x_start + x_end) * 0.5f - sz.x * 0.5f,
+					y_end - filled_height - sz.y * 0.5f
+				),
+				IM_COL32(255, 255, 255, 255),
+				txt.c_str()
+			);
+		}
 	}
 
 	if (cfg::esp::armor) {
