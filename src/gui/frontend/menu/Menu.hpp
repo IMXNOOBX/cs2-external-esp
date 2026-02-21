@@ -35,3 +35,22 @@ private:
     ImVec2 pos;
     ImVec2 size;
 };
+
+enum Tab {
+    PLAYER,
+    WORLD,
+    SETTINGS
+};
+
+struct TabItem
+{
+    const char* label;
+    Tab id;
+};
+
+static constexpr TabItem tabs[] =
+{
+    { "Player",   Tab::PLAYER   },
+    { "World",    Tab::WORLD    },
+    { "Settings", Tab::SETTINGS }
+};

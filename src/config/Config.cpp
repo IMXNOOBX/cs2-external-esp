@@ -43,6 +43,8 @@ bool Config::ReadImpl() {
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 		cfg::esp::health_number = data["esp"].value("health_number", false);
+		cfg::esp::bomb_location = data["esp"].value("bomb_location", true);
+		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 
 
 		// flags

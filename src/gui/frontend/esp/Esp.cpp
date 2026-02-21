@@ -322,8 +322,8 @@ void Esp::RenderCrosshair()
 		ImVec2(center.x - size, center.y),
 		ImVec2(center.x + size + 1, center.y),
 		IM_COL32(255, 255, 255, 255),
-		thickness);
 
+		thickness);
 	d->AddLine(
 		ImVec2(center.x, center.y - size),
 		ImVec2(center.x, center.y + size + 1),
@@ -336,6 +336,9 @@ void Esp::RenderBomb(Bomb bomb) {
 		return;
 
 	if (!bomb.pos.length())
+		return;
+
+	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
 		return;
 
 	auto marker = bomb.pos + Vec3_t(0, 0, 20);
@@ -360,7 +363,22 @@ void Esp::RenderBomb(Bomb bomb) {
 	auto duration_str = std::format("{}s", bomb.time_left);
 	auto bombsite_str = std::string(bomb.site == BombSite::A ? "A" : "B");
 
-	std::string bomb_string = std::format("Planted {} - {}", bombsite_str, duration_str);
+	std::string bomb_string = "";
+
+	if (cfg::esp::bomb_location)
+	{
+		bomb_string += "Planted " + bombsite_str;
+	}
+
+	if (cfg::esp::bomb_timer)
+	{
+		if (cfg::esp::bomb_location)
+			bomb_string += " - ";
+		else
+			bomb_string += " ";
+
+		bomb_string += duration_str;
+	}
 
 	auto text_size = ImGui::CalcTextSize(bomb_string.data());
 	width = text_size.x; height = text_size.y;

@@ -15,6 +15,9 @@ namespace cfg {
 
 		inline bool spotted = false;
 
+		inline bool bomb_location = true;
+		inline bool bomb_timer = true;
+
 		namespace flags {
 			inline bool name = true;
 			inline bool ping = true;
