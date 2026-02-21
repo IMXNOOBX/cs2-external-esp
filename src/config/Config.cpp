@@ -98,6 +98,8 @@ bool Config::WriteImpl() {
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
 	data["esp"]["spotted"] = cfg::esp::spotted;
+	data["esp"]["bomb_location"] = cfg::esp::bomb_location;
+	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 
 	// falgs
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
