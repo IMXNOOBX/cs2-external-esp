@@ -140,7 +140,15 @@ void Menu::RenderImpl() {
 							}
 							ImGui::EndDisabled();
 
-							ImGui::Checkbox("Show Team", &cfg::esp::team);
+							ImGui::Checkbox("Tracers", &cfg::esp::tracers);
+							ImGui::BeginDisabled(!cfg::esp::tracers);
+							{
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Team tracer color", cfg::esp::colors::tracer_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Enemy tracer color", cfg::esp::colors::tracer_enemy.data(), color_flags);
+							}
+							ImGui::EndDisabled();
 						}
 						ImGui::EndGroup();
 
@@ -153,6 +161,7 @@ void Menu::RenderImpl() {
 								ImGui::Checkbox("Health Number", &cfg::esp::health_number);
 							ImGui::Checkbox("Armor", &cfg::esp::armor);
 							ImGui::Checkbox("Spotted", &cfg::esp::spotted);
+							ImGui::Checkbox("Show Team", &cfg::esp::team);
 						}
 						ImGui::EndGroup();
 

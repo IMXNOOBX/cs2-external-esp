@@ -18,6 +18,8 @@ namespace cfg {
 		inline bool bomb_location = true;
 		inline bool bomb_timer = true;
 
+		inline bool tracers = false;
+
 		namespace flags {
 			inline bool name = true;
 			inline bool ping = true;
@@ -37,6 +39,9 @@ namespace cfg {
 
 			inline color_t tracker_team{ 1.f, 1.f, 1.f, 0.3f };
 			inline color_t tracker_enemy{ 1.f, 1.f, 1.f, 0.3f };
+
+			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
+			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 		}
 
 	}

@@ -55,6 +55,8 @@ void Esp::RenderImpl() {
 		if (cfg::esp::spotted && !player.spotted)
 			continue;
 
+		RenderPlayerTracers(player, mate);
+
 		RenderPlayer(player, mate);
 	}
 
@@ -329,6 +331,56 @@ void Esp::RenderCrosshair()
 		ImVec2(center.x, center.y + size + 1),
 		IM_COL32(255, 255, 255, 255),
 		thickness);
+}
+
+void Esp::RenderPlayerTracers(Player player, bool mate) {
+	if (!cfg::esp::tracers)
+		return;
+
+	Vec2_t screenPos;
+	bool projected = matrix.wts(player.pos, io.DisplaySize, screenPos, false);
+
+	if (!projected)
+	{
+		Vec3_t camPos = localplayer->pos;
+		Vec3_t dir = player.pos - camPos;
+
+		// projection for off screen players
+		Vec3_t viewDir;
+		viewDir.x = matrix[0][0] * dir.x + matrix[0][1] * dir.y + matrix[0][2] * dir.z;
+		viewDir.y = matrix[1][0] * dir.x + matrix[1][1] * dir.y + matrix[1][2] * dir.z;
+		viewDir.z = matrix[2][0] * dir.x + matrix[2][1] * dir.y + matrix[2][2] * dir.z;
+
+		if (viewDir.z > 0.0f)
+		{
+			viewDir.x = -viewDir.x;
+			viewDir.y = -viewDir.y;
+		}
+
+		// normalize
+		float len = sqrt(viewDir.x * viewDir.x + viewDir.y * viewDir.y);
+		if (len > 0.001f)
+		{
+			viewDir.x /= len;
+			viewDir.y /= len;
+		}
+
+		screenPos.x = io.DisplaySize.x * 0.5f + viewDir.x * io.DisplaySize.x * 0.5f;
+		screenPos.y = io.DisplaySize.y * 0.5f - viewDir.y * io.DisplaySize.y * 0.5f;
+
+		float margin = 10.f;
+		screenPos.x = std::clamp(screenPos.x, margin, io.DisplaySize.x - margin);
+		screenPos.y = std::clamp(screenPos.y, margin, io.DisplaySize.y - margin);
+	}
+
+	auto color = mate ? cfg::esp::colors::tracer_team : cfg::esp::colors::tracer_enemy;
+
+	d->AddLine(
+		Vec2_t(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f),
+		screenPos,
+		ImColor(color),
+		1.0f
+	);
 }
 
 void Esp::RenderBomb(Bomb bomb) {
