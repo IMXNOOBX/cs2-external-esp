@@ -1,10 +1,10 @@
 {
-    "build_number": 14137,
-    "dwBuildNumber": 6345988,
-    "dwEntityList": 38449592,
-    "dwLocalPlayer": 33970928,
-    "dwPlantedC4": 36779776,
-    "dwViewMatrix": 36749024,
+    "build_number": 14138,
+    "dwBuildNumber": 6346004,
+    "dwEntityList": 38453928,
+    "dwLocalPlayer": 33975136,
+    "dwPlantedC4": 36784064,
+    "dwViewMatrix": 36753312,
     "m_ArmorValue": 10028,
     "m_bIsDefusing": 9978,
     "m_flC4Blow": 4512,
@@ -22,7 +22,7 @@
     "m_szName": 1600,
     "m_vOldOrigin": 5512,
     "m_vecAbsOrigin": 208,
-    "dwLocalPlayerController": 36635016,
+    "dwLocalPlayerController": 36639240,
     "m_hController": 5536,
     "m_iszPlayerName": 1784
 }
