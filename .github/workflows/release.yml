@@ -1,0 +1,41 @@
+name: Build & Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build solution
+      run: msbuild cs2-external-esp.sln /p:Configuration=Release
+
+    - name: Prepare artifacts
+      run: |
+        mkdir release
+        xcopy x64\Release\* release\ /E /I /Y
+        copy README.md release\README.md
+        copy LICENSE release\LICENSE.md
+
+    - name: Generate tag
+      id: tag
+      run: echo "tag=manual-release-${{ github.run_number }}" >> $env:GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.tag.outputs.tag }}
+        name: Manual Release ${{ github.run_number }}
+        files: release/**
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
