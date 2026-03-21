@@ -5,7 +5,7 @@
 #include "core/engine/classes/Globals.hpp"
 
 //constexpr int MAX_ENTITIES = 1024;
-//constexpr int MAX_PLAYERS = 64; // Mo need we get this from Globals
+//constexpr int MAX_PLAYERS = 64; // No need we get this from Globals
 
 using namespace std::chrono;
 
@@ -28,11 +28,6 @@ public:
 		static Cache instance{};
 		return instance;
 	}
-
-	static Game CopyGame();
-	static Bomb CopyBomb();
-	static Globals CopyGlobals();
-	static std::vector<Player> CopyPlayers();
 
 	static Snapshot CopySnapshot();
 

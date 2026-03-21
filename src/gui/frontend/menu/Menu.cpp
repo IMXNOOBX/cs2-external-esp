@@ -54,20 +54,7 @@ void Menu::RenderImpl() {
 		this->pos = ImGui::GetWindowPos();
 		this->size = ImGui::GetWindowSize();
 
-		ImGui::Checkbox("Enable", &cfg::enabled);
-		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(340, 0));
-		ImGui::SameLine();
-		ImGui::TextLinkOpenURL("Source/Support", "https://github.com/IMXNOOBX/cs2-external-esp");
-		ImGui::SameLine();
-		ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
-
-		static int y_space_left;
-		auto space = ImGui::GetContentRegionAvail();
-
 		static int active_tab = 0;
-
-		ImGui::BeginDisabled(!cfg::enabled);
 
 		if (ImGui::BeginChild("##main_split"))
 		{
@@ -92,10 +79,22 @@ void Menu::RenderImpl() {
 					if (is_active)
 						ImGui::PopStyleColor(3);
 				}
+
+				auto space = ImGui::GetContentRegionAvail().y;
+				ImGui::SetCursorPosY(ImGui::GetCursorPos().y + space - 15.f * 3);
+
+				ImGui::Checkbox("Enable", &cfg::enabled);
+
+				ImGui::TextLinkOpenURL("Source", "https://github.com/IMXNOOBX/cs2-external-esp");
+				ImGui::SameLine();
+				ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
 			}
 			ImGui::EndChild();
 
 			ImGui::SameLine();
+
+
+			ImGui::BeginDisabled(!cfg::enabled);
 
 			ImGui::BeginChild("##tab_content", ImVec2(0, size.y), true);
 			{
@@ -160,7 +159,10 @@ void Menu::RenderImpl() {
 							if (cfg::esp::health)
 								ImGui::Checkbox("Health Number", &cfg::esp::health_number);
 							ImGui::Checkbox("Armor", &cfg::esp::armor);
+
 							ImGui::Checkbox("Spotted", &cfg::esp::spotted);
+							ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
+
 							ImGui::Checkbox("Show Team", &cfg::esp::team);
 						}
 						ImGui::EndGroup();
@@ -176,7 +178,6 @@ void Menu::RenderImpl() {
 							ImGui::Checkbox("Name", &cfg::esp::flags::name);
 							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
 							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-							ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
 						}
 						ImGui::EndGroup();
 
@@ -187,6 +188,14 @@ void Menu::RenderImpl() {
 							ImGui::Checkbox("Money", &cfg::esp::flags::money);
 							ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
 							ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
+						}
+						ImGui::EndGroup();
+
+						ImGui::SameLine();
+
+						ImGui::BeginGroup();
+						{
+							ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
 						}
 						ImGui::EndGroup();
 
@@ -218,7 +227,6 @@ void Menu::RenderImpl() {
 						Window::vsync = cfg::settings::vsync;
 
 		#ifdef _DEBUG
-					ImGui::Separator();
 					ImGui::Text("Dev");
 					ImGui::Separator();
 
@@ -245,10 +253,12 @@ void Menu::RenderImpl() {
 			}
 			ImGui::EndChild();
 
+			ImGui::EndDisabled();
+
+
 			ImGui::EndChild();
 		}
 
-        ImGui::EndDisabled();
     }
 
     ImGui::End();

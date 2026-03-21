@@ -340,7 +340,7 @@ void Esp::RenderPlayerTracers(Player player, bool mate) {
 	Vec2_t screenPos;
 	bool projected = matrix.wts(player.pos, io.DisplaySize, screenPos, false);
 
-	if (!projected)
+	if (!projected && localplayer)
 	{
 		Vec3_t camPos = localplayer->pos;
 		Vec3_t dir = player.pos - camPos;

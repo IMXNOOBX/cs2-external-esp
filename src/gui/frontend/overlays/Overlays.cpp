@@ -45,7 +45,8 @@ void Overlays::RenderWatermark() {
 	auto& io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
 
-	auto globals = Cache::CopyGlobals();
+	auto snapshot = Cache::CopySnapshot();
+	auto& globals = snapshot.globals;
 
 	static int margin = 10;
 	static int padding = 10;
@@ -144,9 +145,11 @@ void Overlays::RenderDebugWindow() {
 	auto& io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
 
-	auto bomb = Cache::CopyBomb();
-	auto globals = Cache::CopyGlobals();
-	auto players = Cache::CopyPlayers();
+	auto snapshot = Cache::CopySnapshot();
+	auto& game = snapshot.game;
+	auto& bomb = snapshot.bomb;
+	auto& globals = snapshot.globals;
+	auto& players = snapshot.players;
 
 	static int margin = 10;
 	static int padding = 10;

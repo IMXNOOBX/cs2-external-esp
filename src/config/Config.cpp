@@ -45,7 +45,7 @@ bool Config::ReadImpl() {
 		cfg::esp::health_number = data["esp"].value("health_number", false);
 		cfg::esp::bomb_location = data["esp"].value("bomb_location", true);
 		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
-		cfg::esp::tracers = data["esp"].value("tracers", true);
+		cfg::esp::tracers = data["esp"].value("tracers", false);
 
 
 		// flags

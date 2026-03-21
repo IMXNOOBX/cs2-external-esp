@@ -7,26 +7,6 @@ bool Cache::Refresh() {
     return Get().RefreshImpl();
 }
 
-Game Cache::CopyGame() {
-    std::lock_guard<std::mutex> lock(Get().mtx);
-    return Get().game;
-}
-
-Bomb Cache::CopyBomb() {
-    std::lock_guard<std::mutex> lock(Get().mtx);
-    return Get().bomb;
-}
-
-Globals Cache::CopyGlobals() {
-    std::lock_guard<std::mutex> lock(Get().mtx);
-    return Get().globals;
-}
-
-std::vector<Player> Cache::CopyPlayers() {
-    std::lock_guard<std::mutex> lock(Get().mtx);
-    return Get().players;
-}
-
 Snapshot Cache::CopySnapshot() {
     std::lock_guard<std::mutex> lock(Get().mtx);
     return {
