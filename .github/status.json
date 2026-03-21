@@ -1,8 +1,8 @@
 {
     "unsafe": false,
-    "notice": "",
+    "notice": "You are using a Public Test Build (PTB). Bugs and instability are expected.",
     "version": {
-        "current": 103,
+        "current": 102,
         "minimum": 101
     }
 }
