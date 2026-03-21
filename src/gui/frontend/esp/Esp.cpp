@@ -384,13 +384,13 @@ void Esp::RenderPlayerTracers(Player player, bool mate) {
 }
 
 void Esp::RenderBomb(Bomb bomb) {
+	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
+		return;
+
 	if (!bomb.is_planted)
 		return;
 
 	if (!bomb.pos.length())
-		return;
-
-	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
 		return;
 
 	auto marker = bomb.pos + Vec3_t(0, 0, 20);
@@ -419,7 +419,7 @@ void Esp::RenderBomb(Bomb bomb) {
 
 	if (cfg::esp::bomb_location)
 	{
-		bomb_string += "Planted " + bombsite_str;
+		bomb_string += bombsite_str;
 	}
 
 	if (cfg::esp::bomb_timer)
