@@ -47,23 +47,22 @@ bool Cache::RefreshImpl() {
     auto now = steady_clock::now();
 
     // Without this, we are pointless :c
-    // And needs to be updated as fast as possible
-    if (!game.Update()) 
+    // Its just calling game.UpdateMatrix() which has to bee updated as fast as possible
+    if (!game.Update())
         return false;
 
 #ifdef _DEBUG
     // Testing performance
-    if (now - last < (cfg::dev::cache_refresh_rate * 1ms))
+    if (now - last < (cfg::dev::cache_refresh_rate * 1ms)) 
         return true;
 #else
     // Just refresh every 5ms good for most people
-    if (now - last < 5ms)
+    if (now - last < 5ms) 
         return true; // All good
 #endif
 
+    game.UpdateEntityList();
     globals.Update();
-    //LOGF(VERBOSE, "Playing in map {} with {} clients & time is {}", globals.map_name, globals.max_clients, globals.current_time);
-
     bomb.Update();
 
     std::vector<Player> scan;
@@ -73,8 +72,6 @@ bool Cache::RefreshImpl() {
 
         if (!player.Update())
             continue;
-
-        //LOGF(VERBOSE, "Player {} ({}) [{}] has {}hp in team {} at pos ({}x, {}y, {}z)", player.name, player.steam_id, i, player.health, player.team, player.pos.x, player.pos.y, player.pos.z);
     
         scan.push_back(player);
     }

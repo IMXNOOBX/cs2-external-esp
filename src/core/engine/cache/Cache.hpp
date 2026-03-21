@@ -39,8 +39,8 @@ public:
 	static bool Refresh();
 private:
 	std::mutex mtx;
-	milliseconds duration;
-	steady_clock::time_point last;
+	milliseconds duration{1};
+	steady_clock::time_point last{};
 private:
 	bool RefreshImpl();
 };
