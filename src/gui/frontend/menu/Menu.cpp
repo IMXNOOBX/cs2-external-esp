@@ -65,151 +65,193 @@ void Menu::RenderImpl() {
 		static int y_space_left;
 		auto space = ImGui::GetContentRegionAvail();
 
+		static int active_tab = 0;
+
 		ImGui::BeginDisabled(!cfg::enabled);
-		if (ImGui::BeginChild("##top", ImVec2(0, space.y / 2 + y_space_left)))
+
+		if (ImGui::BeginChild("##main_split"))
 		{
-			if (ImGui::BeginChild("##leftside", ImVec2(space.x / 2 - 10, 0)))
+			auto size = ImGui::GetContentRegionAvail();
+						
+			ImGui::BeginChild("##tab_buttons", ImVec2(120, size.y), true);
 			{
-				ImGui::Text("Visuals");
-				ImGui::Separator();
-
-				ImGui::BeginGroup();
+				for (const auto& tab : tabs)
 				{
-					ImGui::Checkbox("Box", &cfg::esp::box);
-					ImGui::BeginDisabled(!cfg::esp::box);
+					bool is_active = (active_tab == tab.id);
+
+					if (is_active)
 					{
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Team box color", cfg::esp::colors::box_team.data(), color_flags);
-						ImGui::SetItemTooltip("Team box color");
-
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
-						ImGui::SetItemTooltip("Enemy box color");
+						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
-					ImGui::EndDisabled();
-					
-					ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
-					ImGui::BeginDisabled(!cfg::esp::skeleton);
-					{
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Team skeleton color", cfg::esp::colors::skeleton_team.data(), color_flags);
-						ImGui::SetItemTooltip("Team skeleton color");
 
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Enemy skeleton color", cfg::esp::colors::skeleton_enemy.data(), color_flags);
-						ImGui::SetItemTooltip("Enemy skeleton color");
-					}
-					ImGui::EndDisabled();
+					if (ImGui::Button(tab.label, ImVec2(-1, 32)))
+						active_tab = tab.id;
 
-					ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
-					ImGui::BeginDisabled(!cfg::esp::head_tracker);
-					{
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Team head tracker color", cfg::esp::colors::tracker_team.data(), color_flags);
-						ImGui::SetItemTooltip("Team head tracker color");
-
-						ImGui::SameLine();
-						ImGui::ColorEdit4("Enemy head tracker color", cfg::esp::colors::tracker_enemy.data(), color_flags);
-						ImGui::SetItemTooltip("Enemy head tracker color");
-					}
-					ImGui::EndDisabled();
-
-					ImGui::Checkbox("Show Team", &cfg::esp::team);
+					if (is_active)
+						ImGui::PopStyleColor(3);
 				}
-				ImGui::EndGroup();
-
-				ImGui::SameLine();
-
-				ImGui::BeginGroup();
-				{
-					ImGui::Checkbox("Health", &cfg::esp::health);
-					if (cfg::esp::health)
-						ImGui::Checkbox("Health Number", &cfg::esp::health_number);
-					ImGui::Checkbox("Armor", &cfg::esp::armor);
-					ImGui::Checkbox("Spotted", &cfg::esp::spotted);
-					ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
-				}
-				ImGui::EndGroup();
 			}
 			ImGui::EndChild();
 
 			ImGui::SameLine();
 
-			if (ImGui::BeginChild("##rightside")) 
+			ImGui::BeginChild("##tab_content", ImVec2(0, size.y), true);
 			{
-				ImGui::Text("Flags");
-				ImGui::Separator();
-
-				ImGui::BeginGroup();
+				if (active_tab == Tab::PLAYER)
 				{
-					ImGui::Checkbox("Name", &cfg::esp::flags::name);
-					ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
-					ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-					ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
-				}
-				ImGui::EndGroup();
-				
-				ImGui::SameLine();
+					if (ImGui::BeginChild("##player_split"))
+					{
+						auto space = ImGui::GetContentRegionAvail();
 
-				ImGui::BeginGroup();
-				{
-					ImGui::Checkbox("Money", &cfg::esp::flags::money);
-					ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
-					ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
-				}
-				ImGui::EndGroup();
-			}
-			ImGui::EndChild();
-		}
-		ImGui::EndChild();
-		ImGui::EndDisabled();
+						ImGui::Text("Visuals");
+						ImGui::Separator();
 
-		if (ImGui::BeginChild("##bottom"))
-		{
-			ImGui::Text("Settings");
-			ImGui::Separator();
+						ImGui::BeginGroup();
+						{
+							ImGui::Checkbox("Box", &cfg::esp::box);
+							ImGui::BeginDisabled(!cfg::esp::box);
+							{
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Team box color", cfg::esp::colors::box_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
+							}
+							ImGui::EndDisabled();
 
-			if (ImGui::Checkbox("Streamproof", &cfg::settings::streamproof)) {
-				Window::SetAffinity(
-					Window::hwnd, 
-					cfg::settings::streamproof ? WindowAffinity::Invisible : WindowAffinity::Disabled
-				);
-			}
+							ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
+							ImGui::BeginDisabled(!cfg::esp::skeleton);
+							{
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Team skeleton color", cfg::esp::colors::skeleton_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Enemy skeleton color", cfg::esp::colors::skeleton_enemy.data(), color_flags);
+							}
+							ImGui::EndDisabled();
 
-			ImGui::Checkbox("Watermark", &cfg::settings::watermark);
-			ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
+							ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
+							ImGui::BeginDisabled(!cfg::esp::head_tracker);
+							{
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Team head tracker color", cfg::esp::colors::tracker_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Enemy head tracker color", cfg::esp::colors::tracker_enemy.data(), color_flags);
+							}
+							ImGui::EndDisabled();
 
-			if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
-				Window::vsync = cfg::settings::vsync;
-			ImGui::SetItemTooltip("VSync, matches render speed with screen refresh rate, improving performance");
+							ImGui::Checkbox("Tracers", &cfg::esp::tracers);
+							ImGui::BeginDisabled(!cfg::esp::tracers);
+							{
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Team tracer color", cfg::esp::colors::tracer_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("Enemy tracer color", cfg::esp::colors::tracer_enemy.data(), color_flags);
+							}
+							ImGui::EndDisabled();
+						}
+						ImGui::EndGroup();
 
-#ifdef _DEBUG
-			ImGui::Text("Dev");
-			ImGui::Separator();
+						ImGui::SameLine();
 
-			if (ImGui::Checkbox("Console", &cfg::dev::console)) 
-				if (!cfg::dev::console) LogHelper::Free();
-			
-			static int key_out;
-			if (ImGui::Button("Open Menu Key")) {
-				for (int i = ImGuiKey_NamedKey_BEGIN; i < ImGuiKey_NamedKey_END; i++) {
-					if (ImGui::IsKeyPressed((ImGuiKey)i)) {
-						key_out = i;
-						LOGF(VERBOSE, "Changed the open menu key to {}", key_out);
-						break;
+						ImGui::BeginGroup();
+						{
+							ImGui::Checkbox("Health", &cfg::esp::health);
+							if (cfg::esp::health)
+								ImGui::Checkbox("Health Number", &cfg::esp::health_number);
+							ImGui::Checkbox("Armor", &cfg::esp::armor);
+							ImGui::Checkbox("Spotted", &cfg::esp::spotted);
+							ImGui::Checkbox("Show Team", &cfg::esp::team);
+						}
+						ImGui::EndGroup();
+
+						//ImGui::SameLine();
+						ImGui::Spacing();
+
+						ImGui::Text("Flags");
+						ImGui::Separator();
+
+						ImGui::BeginGroup();
+						{
+							ImGui::Checkbox("Name", &cfg::esp::flags::name);
+							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
+							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
+							ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
+						}
+						ImGui::EndGroup();
+
+						ImGui::SameLine();
+
+						ImGui::BeginGroup();
+						{
+							ImGui::Checkbox("Money", &cfg::esp::flags::money);
+							ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+							ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
+						}
+						ImGui::EndGroup();
+
+						ImGui::EndChild();
 					}
 				}
+				else if (active_tab == Tab::WORLD)
+				{
+					ImGui::Text("Bomb");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Bomb Location", &cfg::esp::bomb_location);
+					ImGui::Checkbox("Bomb Timer", &cfg::esp::bomb_timer);
+				}
+				else if (active_tab == Tab::SETTINGS)
+				{
+					if (ImGui::Checkbox("Streamproof", &cfg::settings::streamproof))
+					{
+						Window::SetAffinity(
+							Window::hwnd,
+							cfg::settings::streamproof ? WindowAffinity::Invisible : WindowAffinity::Disabled
+						);
+					}
+
+					ImGui::Checkbox("Watermark", &cfg::settings::watermark);
+					ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
+
+					if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
+						Window::vsync = cfg::settings::vsync;
+
+		#ifdef _DEBUG
+					ImGui::Separator();
+					ImGui::Text("Dev");
+					ImGui::Separator();
+
+					if (ImGui::Checkbox("Console", &cfg::dev::console))
+						if (!cfg::dev::console) LogHelper::Free();
+
+					static int key_out;
+					if (ImGui::Button("Open Menu Key"))
+					{
+						for (int i = ImGuiKey_NamedKey_BEGIN; i < ImGuiKey_NamedKey_END; i++)
+						{
+							if (ImGui::IsKeyPressed((ImGuiKey)i))
+							{
+								key_out = i;
+								LOGF(VERBOSE, "Changed the open menu key to {}", key_out);
+								break;
+							}
+						}
+					}
+
+					ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
+		#endif
+				}
 			}
+			ImGui::EndChild();
 
-			ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
-#endif
+			ImGui::EndChild();
 		}
-		ImGui::EndChild();
 
-		y_space_left = ImGui::GetContentRegionAvail().y;
-	}
+        ImGui::EndDisabled();
+    }
 
-	ImGui::End();
+    ImGui::End();
 }
 
 void Menu::SetupStyles() {

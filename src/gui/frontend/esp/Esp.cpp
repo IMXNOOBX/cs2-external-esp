@@ -55,6 +55,8 @@ void Esp::RenderImpl() {
 		if (cfg::esp::spotted && !player.spotted)
 			continue;
 
+		RenderPlayerTracers(player, mate);
+
 		RenderPlayer(player, mate);
 	}
 
@@ -322,8 +324,8 @@ void Esp::RenderCrosshair()
 		ImVec2(center.x - size, center.y),
 		ImVec2(center.x + size + 1, center.y),
 		IM_COL32(255, 255, 255, 255),
-		thickness);
 
+		thickness);
 	d->AddLine(
 		ImVec2(center.x, center.y - size),
 		ImVec2(center.x, center.y + size + 1),
@@ -331,7 +333,60 @@ void Esp::RenderCrosshair()
 		thickness);
 }
 
+void Esp::RenderPlayerTracers(Player player, bool mate) {
+	if (!cfg::esp::tracers)
+		return;
+
+	Vec2_t screenPos;
+	bool projected = matrix.wts(player.pos, io.DisplaySize, screenPos, false);
+
+	if (!projected)
+	{
+		Vec3_t camPos = localplayer->pos;
+		Vec3_t dir = player.pos - camPos;
+
+		// projection for off screen players
+		Vec3_t viewDir;
+		viewDir.x = matrix[0][0] * dir.x + matrix[0][1] * dir.y + matrix[0][2] * dir.z;
+		viewDir.y = matrix[1][0] * dir.x + matrix[1][1] * dir.y + matrix[1][2] * dir.z;
+		viewDir.z = matrix[2][0] * dir.x + matrix[2][1] * dir.y + matrix[2][2] * dir.z;
+
+		if (viewDir.z > 0.0f)
+		{
+			viewDir.x = -viewDir.x;
+			viewDir.y = -viewDir.y;
+		}
+
+		// normalize
+		float len = sqrt(viewDir.x * viewDir.x + viewDir.y * viewDir.y);
+		if (len > 0.001f)
+		{
+			viewDir.x /= len;
+			viewDir.y /= len;
+		}
+
+		screenPos.x = io.DisplaySize.x * 0.5f + viewDir.x * io.DisplaySize.x * 0.5f;
+		screenPos.y = io.DisplaySize.y * 0.5f - viewDir.y * io.DisplaySize.y * 0.5f;
+
+		float margin = 10.f;
+		screenPos.x = std::clamp(screenPos.x, margin, io.DisplaySize.x - margin);
+		screenPos.y = std::clamp(screenPos.y, margin, io.DisplaySize.y - margin);
+	}
+
+	auto color = mate ? cfg::esp::colors::tracer_team : cfg::esp::colors::tracer_enemy;
+
+	d->AddLine(
+		Vec2_t(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f),
+		screenPos,
+		ImColor(color),
+		1.0f
+	);
+}
+
 void Esp::RenderBomb(Bomb bomb) {
+	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
+		return;
+
 	if (!bomb.is_planted)
 		return;
 
@@ -360,7 +415,22 @@ void Esp::RenderBomb(Bomb bomb) {
 	auto duration_str = std::format("{}s", bomb.time_left);
 	auto bombsite_str = std::string(bomb.site == BombSite::A ? "A" : "B");
 
-	std::string bomb_string = std::format("Planted {} - {}", bombsite_str, duration_str);
+	std::string bomb_string = "";
+
+	if (cfg::esp::bomb_location)
+	{
+		bomb_string += bombsite_str;
+	}
+
+	if (cfg::esp::bomb_timer)
+	{
+		if (cfg::esp::bomb_location)
+			bomb_string += " - ";
+		else
+			bomb_string += " ";
+
+		bomb_string += duration_str;
+	}
 
 	auto text_size = ImGui::CalcTextSize(bomb_string.data());
 	width = text_size.x; height = text_size.y;
