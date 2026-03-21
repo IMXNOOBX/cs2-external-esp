@@ -8,7 +8,7 @@ struct view_matrix_t {
     float matrix[4][4];
 
 	// World To Screen
-	bool wts(const Vec3_t& pos, const Vec2_t& screen, Vec2_t& out) {
+	bool wts(const Vec3_t& pos, const Vec2_t& screen, Vec2_t& out, bool check_bounds = true) {
 		auto bounds = RECT(
 			0, 0,
 			screen.x,
@@ -29,10 +29,11 @@ struct view_matrix_t {
 		out.x = SightX + (matrix[0][0] * pos.x + matrix[0][1] * pos.y + matrix[0][2] * pos.z + matrix[0][3]) / view * SightX;
 		out.y = SightY - (matrix[1][0] * pos.x + matrix[1][1] * pos.y + matrix[1][2] * pos.z + matrix[1][3]) / view * SightY;
 
-		if (
-			out.x < bounds.left - margin || out.x > bounds.right + margin ||
-			out.y < bounds.top - margin || out.y > bounds.bottom + margin
-			)
+		if (check_bounds &&
+			(
+				out.x < bounds.left - margin || out.x > bounds.right + margin ||
+				out.y < bounds.top - margin || out.y > bounds.bottom + margin
+			))
 			return false;
 
 		return true;
