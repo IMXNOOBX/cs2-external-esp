@@ -27,8 +27,6 @@ jobs:
         run: |
           mkdir release
           xcopy x64\Release\* release\ /E /I /Y
-          copy README.md release\README.md
-          copy LICENSE release\LICENSE.md
 
       - name: Generate tag
         id: tag
@@ -41,11 +39,22 @@ jobs:
           git tag ${{ steps.tag.outputs.tag }}
           git push origin ${{ steps.tag.outputs.tag }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate changelog
+        run:  |        
+          export CI=true
+          npx --yes changelogithub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          name: Manual Release ${{ github.run_number }}
+          name: Release (v${{ github.run_number }})
           files: release/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
