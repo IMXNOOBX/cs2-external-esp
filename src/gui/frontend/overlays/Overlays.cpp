@@ -50,7 +50,7 @@ void Overlays::RenderWatermark() {
 
 	static int margin = 10;
 	static int padding = 10;
-	std::string watermark_string = "cs2-external-esp (PTB)";
+	std::string watermark_string = "cs2-external-esp";
 
 	watermark_string += std::format(" | {}fps", (int)io.Framerate);
 
