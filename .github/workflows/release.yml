@@ -44,9 +44,7 @@ jobs:
         with:
           node-version: 20
       - name: Generate changelog
-        run:  |        
-          export CI=true
-          npx --yes changelogithub
+        run: npx --yes changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
