@@ -9,6 +9,8 @@ config.json
 !offsets/offsets.json 
 .vscode
 typos
+!offsets/offsets.json 
+.vscode
 
 # User-specific files
 *.rsuser
