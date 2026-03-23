@@ -18,14 +18,14 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 > [!IMPORTANT]
 > Make sure your game is in full screen windowed❗
 
-# 💡 Important 
+## 💡 Important
 
 > This project is provided *'as is'* for learning purposes with no warranties or responsibility from the developers/contributors. Use it at your own risk; you are the only one accountable for your actions
 
 * **Detection Status:** This project is intended solely for single-player use. That said, no ban reports have been raised for other modes.
-* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes' memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the developers' instructions. All provided binaries are compiled via the GitHub workflow (.github/workflows/auto_build.yml) from the repository source.
+* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the [developers instructions](#-developer-instructions). All provided binaries are compiled via the [GitHub workflow](.github/workflows/auto_build.yml) from the repository source.
 
-# 🕹️ Previous Versions
+## 🕹️ Previous Versions
 
 > This project has been reworked **3 times**, the current one been the third!
 
@@ -53,7 +53,7 @@ git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 * All [contributors](https://github.com/IMXNOOBX/cs2-external-esp/graphs/contributors) who have helped improve the project!
 * [**a2x**](https://github.com/a2x) for his [offset dumper](https://github.com/a2x/cs2-dumper) and constant updates to it!
 
-# 🔖 License & Copyright
+## 🔖 License & Copyright
 
 This project is licensed under [**CC BY-NC 4.0**](https://creativecommons.org/licenses/by-nc/4.0/).
 
