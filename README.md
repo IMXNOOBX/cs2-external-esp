@@ -1,6 +1,6 @@
 # 🕹️ CS2 External ESP | Recode
 
-Simple external ESP for Counter-Strike 2, after many years, the codebase has been modernized for clarity and ease of use, a redesigned interface, noticeable performance improvements, and several new quality-of-life features. It also includes automatic offset scanning to help maintain compatibility through game updates.
+Simple external ESP for Counter-Strike 2. After years of development the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, several quality-of-life additions, and automatic offset scanning to help maintain compatibility through game updates.
 
 ## Showcase
 
@@ -10,13 +10,28 @@ Simple external ESP for Counter-Strike 2, after many years, the codebase has bee
 
 ## 🌳 Simple Use
 
-1. You can download it from [**Actions**](https://github.com/IMXNOOBX/cs2-external-esp/actions/workflows/auto_build.yml) tab (**You must be logged in**) or build it yourself by cloning the repository.
+1. You can download it from [**Releases**](https://github.com/IMXNOOBX/cs2-external-esp/actions/workflows/auto_build.yml) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
 
 2. Open the game & the `cs2-external-esp.exe`, and thats it!
 3. **⭐ The repository if you like the project!**
 
 > [!IMPORTANT]
 > Make sure your game is in full screen windowed❗
+
+# 💡 Important 
+
+> This project is provided *'as is'* for learning purposes with no warranties or responsibility from the developers/contributors. Use it at your own risk; you are the only one accountable for your actions
+
+* **Detection Status:** This project is intended solely for single-player use. That said, no ban reports have been raised for other modes.
+* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes' memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the developers' instructions. All provided binaries are compiled via the GitHub workflow (.github/workflows/auto_build.yml) from the repository source.
+
+# 🕹️ Previous Versions
+
+> This project has been reworked **3 times**, the current one been the third!
+
+* [Discord Overlay (2023)](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
+* [Gdi Overlay (2023-2025)](https://github.com/IMXNOOBX/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
+* [Modern Version (Today)](https://github.com/IMXNOOBX/cs2-external-esp) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
 
 ## 📘 Developer Instructions
 
@@ -33,18 +48,10 @@ git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 
 3. Locate your binary file in the folder `<arch>/<configuration>`, e.g., `x64/Release`.
 
-
 ## 💫 Credits
 
 * All [contributors](https://github.com/IMXNOOBX/cs2-external-esp/graphs/contributors) who have helped improve the project!
-* [a2x](https://github.com/a2x) for his [offset dumper](https://github.com/a2x/cs2-dumper) and constant updates to it!
-
-
-> To the original project!
-* [UnnamedZ03](https://github.com/UnnamedZ03) for providing [offsets](https://www.unknowncheats.me/forum/3846642-post734.html) and guide with his [CS2-external-base](https://github.com/UnnamedZ03/CS2-external-base)
-* [ifBars](https://github.com/ifBars) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/37) to the project and ideas
-* [Bekston](https://github.com/Bekston) for his [contributions](https://github.com/IMXNOOBX/cs2-external-esp/pull/20) to the project and ideas
-* The _UnknownCheats_ community for their research!
+* [**a2x**](https://github.com/a2x) for his [offset dumper](https://github.com/a2x/cs2-dumper) and constant updates to it!
 
 # 🔖 License & Copyright
 
@@ -62,4 +69,4 @@ This project is licensed under [**CC BY-NC 4.0**](https://creativecommons.org/li
 	• Sublicense: This license forbids sublicensing original or modified material.
 ```
 ### ©️ Copyright
-The content of this project is ©️ by [IMXNOOBX](https://github.com/IMXNOOBX) and the respective contributors. See the [LICENSE.md](LICENSE.md) file for details.
+The content of this project is ©️ by [IMXNOOBX](https://github.com/IMXNOOBX) and the respective contributors. See the [LICENSE.md](LICENSE) file for details.

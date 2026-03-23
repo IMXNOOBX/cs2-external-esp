@@ -7,8 +7,12 @@ on:
       - main
       - cs2-recode
     #   - auto-build # testing
-    paths-ignore:
-      - '**/*.json'
+    paths:
+      - '**/*.sln'
+      - '**/*.cpp'
+      - '**/*.hpp'
+      - '**/*.c'
+      - '**/*.h'
 
 jobs:
   build:
