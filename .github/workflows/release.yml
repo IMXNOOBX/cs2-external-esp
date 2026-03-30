@@ -43,16 +43,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Generate changelog
         run: npx --yes changelogithub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create ZIP of release
+        run: |
+          powershell -Command "Compress-Archive -Path 'release\\*' -DestinationPath 'release.zip' -Force"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release (v${{ github.run_number }})
-          files: release/**
+          files: |
+            release/**
+            release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
