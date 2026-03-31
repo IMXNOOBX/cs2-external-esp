@@ -10,7 +10,7 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 ## 🌳 Simple Use
 
-1. You can download it from [**Releases**](./releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
+1. You can download it from [**Releases**](./-/releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
 
 2. Open the game & the `cs2-external-esp.exe`, and thats it!
 3. **⭐ The repository if you like the project!**
@@ -23,14 +23,14 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 > This project is provided *'as is'* for learning purposes with no warranties or responsibility from the developers/contributors. Use it at your own risk; you are the only one accountable for your actions
 
 * **Detection Status:** This project is intended solely for single-player use. That said, no ban reports have been raised for other modes.
-* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the [developers instructions](#-developer-instructions). All provided binaries are compiled via the [GitHub workflow](.github/workflows/auto_build.yml) from the repository source.
+* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the [developers instructions](#-developer-instructions). All provided binaries are compiled via the [GitHub workflow](.gitlab/workflows/auto_build.yml) from the repository source.
 
 ## 🕹️ Previous Versions
 
 > This project has been reworked **3 times**, the current one been the third!
 
-* [Discord Overlay (2023)](./tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
-* [Gdi Overlay (2023-2025)](./tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
+* [Discord Overlay (2023)](./-/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
+* [Gdi Overlay (2023-2025)](./-/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
 * [Modern Version (Today)](#) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
 
 ## 📘 Developer Instructions
