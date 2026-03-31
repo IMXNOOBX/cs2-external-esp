@@ -1,0 +1,40 @@
+name: Build Project
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - cs2-recode
+    #   - auto-build # testing
+    paths:
+      - '**/*.sln'
+      - '**/*.cpp'
+      - '**/*.hpp'
+      - '**/*.c'
+      - '**/*.h'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build solution
+      env:
+        VCPKG_ROOT: ${{ env.VCPKG_ROOT }}
+      run: msbuild cs2-external-esp.sln /p:Configuration=Release
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          x64/Release/*

@@ -6,7 +6,7 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > Click the picture below to go to the showcase video
 
-[![cs2esp](.github/showcase.png)](https://youtu.be/3WHHLUyHyzA)
+[![cs2esp](.gitlab/showcase.png)](https://youtu.be/3WHHLUyHyzA)
 
 ## 🌳 Simple Use
 
@@ -29,9 +29,9 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > This project has been reworked **3 times**, the current one been the third!
 
-* [Discord Overlay (2023)](./-/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
-* [Gdi Overlay (2023-2025)](./-/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
-* [Modern Version (Today)](./-/cs2-external-esp) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
+* [Discord Overlay (2023)](./tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
+* [Gdi Overlay (2023-2025)](./tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
+* [Modern Version (Today)](#) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
 
 ## 📘 Developer Instructions
 

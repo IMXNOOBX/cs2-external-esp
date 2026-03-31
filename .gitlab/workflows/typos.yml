@@ -1,0 +1,39 @@
+name: Typo Check CI
+on: 
+  push:
+    branches:
+      - main
+    #   - auto-build # Testing
+
+jobs:
+  run:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check spelling of SRC folder
+      uses: crate-ci/typos@master
+      with:
+        files: ./memory-external
+        config: .github/typos.toml
+        write_changes: true  # Write changes if typos are detected
+      continue-on-error: true
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GIT_PAT }}
+        commit-message: "Fix typos detected by typos GitHub action"
+        # author: ${{ secrets.GIT_USER_NAME }} <${{ secrets.GIT_USER_NAME }}@users.noreply.github.com>
+        signoff: false
+        branch: typos-fix
+        delete-branch: true
+        title: "Fix typos"
+        body: |
+          Fixed typos
+           - This pull request fixes typos detected by the typo-check GitHub action.
+        labels: typo
+        assignees: IMXNOOBX
