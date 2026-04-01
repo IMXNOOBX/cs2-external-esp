@@ -6,7 +6,7 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > Click the picture below to go to the showcase video
 
-[![cs2esp](.gitlab/showcase.png)](https://youtu.be/3WHHLUyHyzA)
+[![cs2esp](.github/showcase.png)](https://youtu.be/3WHHLUyHyzA)
 
 ## 🌳 Simple Use
 
@@ -23,7 +23,7 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 > This project is provided *'as is'* for learning purposes with no warranties or responsibility from the developers/contributors. Use it at your own risk; you are the only one accountable for your actions
 
 * **Detection Status:** This project is intended solely for single-player use. That said, no ban reports have been raised for other modes.
-* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the [developers instructions](#-developer-instructions). All provided binaries are compiled via the [GitHub workflow](.gitlab/workflows/auto_build.yml) from the repository source.
+* **Anti-Virus Alerts:** This software may resemble malware in behavior because it accesses other processes memory, so it is commonly flagged by anti‑virus programs. I strongly encourage you to read the source code and build it yourself by following the [developers instructions](#-developer-instructions). All provided binaries are compiled via the [GitHub workflow](.github/workflows/auto_build.yml) from the repository source.
 
 ## 🕹️ Previous Versions
 
