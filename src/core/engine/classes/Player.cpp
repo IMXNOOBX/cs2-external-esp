@@ -2,6 +2,7 @@
 
 #include "core/engine/Engine.hpp"
 #include "core/offsets/Dumper.hpp"
+#include "core/engine/classes/ObserverServices.hpp"
 
 bool Player::Update() {
 	if (!Engine::GetProcess())
@@ -17,6 +18,12 @@ bool Player::Update() {
 		return false;
 	}	
 
+	if (!GetObserverServices()) {
+		//LOGF(WARNING, "Failed to GET ObserverServices for entity index({})", index);
+		//return false;
+		//TODO: Move this into GetPawn
+	}
+
 	if (!UpdateController()) {
 		//LOGF(WARNING, "Failed to UPDATE controller for entity index({})", index);
 		return false;
@@ -27,6 +34,11 @@ bool Player::Update() {
 		return false;
 	}
 
+	if (!UpdateObserverServices()) {
+		//LOGF(WARNING, "Failed to UPDATE ObserverServices for entity index({})", index);
+		//return false;
+	}
+
 	return true;
 }
 
@@ -34,7 +46,7 @@ bool Player::GetController() {
 	auto p = Engine::GetProcess();
 	auto client = Engine::GetClient();
 
-	this->controller = p->read<DWORD64>(le + (index + 1) * 0x70); // before was 0x78
+	this->controller = p->read<DWORD64>(le + (controller_index + 1) * 0x70); // before was 0x78
 
 	return this->controller != 0;
 }
@@ -50,6 +62,8 @@ bool Player::GetPawn() {
 
 	if (!entity_pawn_address)
 		return false;
+
+	this->pawn_index = entity_pawn_address;
 
 	entity_pawn_list_entry = p->read<DWORD64>(client.base + offsets::entityList);
 
@@ -210,4 +224,23 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	bounds = { top, origin };
 
 	return pt1 || pt2;
+}
+
+bool Player::GetObserverServices() {
+	auto p = Engine::GetProcess();
+	if (!p) return false;
+
+	DWORD64 address = p->read<DWORD64>(this->pawn + offsets::pawn::m_pObserverServices);
+	if (!address) return false;
+
+	this->observer_services.SetAddress(address);
+
+	return true;
+	
+}
+
+bool Player::UpdateObserverServices() {
+	auto p = Engine::GetProcess();
+
+	return this->observer_services.Update();
 }

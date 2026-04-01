@@ -209,6 +209,22 @@ void Menu::RenderImpl() {
 
 					ImGui::Checkbox("Bomb Location", &cfg::esp::bomb_location);
 					ImGui::Checkbox("Bomb Timer", &cfg::esp::bomb_timer);
+
+					ImGui::Spacing();
+
+					ImGui::Text("Spectator list");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Enable", &cfg::esp::spectator_list);
+					if (cfg::esp::spectator_list) {
+						ImGui::Checkbox("Advanced", &cfg::esp::spectator_list_settings::advanced);
+
+						if (cfg::esp::spectator_list_settings::advanced) {
+							ImGui::Checkbox("Only you", &cfg::esp::spectator_list_settings::only_me);
+						}
+							
+					}
+
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{

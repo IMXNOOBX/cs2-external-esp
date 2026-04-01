@@ -41,4 +41,5 @@ private:
 
     void RenderBomb(Bomb bomb);
 	void RenderCrosshair();
+    void RenderSpectatorList(std::vector<Player>& players);
 };

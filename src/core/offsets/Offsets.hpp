@@ -42,6 +42,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_entitySpottedState = 0x26E0; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
 		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x15EC; // float32 - C_CSPlayerPawnBase 
+		constexpr std::ptrdiff_t m_pObserverServices = 0x13F0; // CPlayer_ObserverServices*
 
 
 #if 0
@@ -75,6 +76,11 @@ namespace offsets
 
 	namespace bone {
 		constexpr std::ptrdiff_t m_modelState = 0x160; // CModelState
+	}
+
+	namespace observerServices {
+		constexpr std::ptrdiff_t m_iObserverMode = 0x48;
+		constexpr std::ptrdiff_t m_hObserverTarget = 0x4C;
 	}
 
 	namespace global {

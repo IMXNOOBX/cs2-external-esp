@@ -46,6 +46,9 @@ bool Config::ReadImpl() {
 		cfg::esp::bomb_location = data["esp"].value("bomb_location", true);
 		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
+		cfg::esp::spectator_list = data["esp"].value("spectator_list", false);
+		cfg::esp::spectator_list_settings::only_me = data["esp"]["specator_list_settings"].value("only_me", true);
+		cfg::esp::spectator_list_settings::advanced = data["esp"]["specator_list_settings"].value("advanced", false);
 
 
 		// flags
@@ -104,8 +107,11 @@ bool Config::WriteImpl() {
 	data["esp"]["bomb_location"] = cfg::esp::bomb_location;
 	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 	data["esp"]["tracers"] = cfg::esp::tracers;
+	data["esp"]["spectator_list"] = cfg::esp::spectator_list;
+	data["esp"]["spectator_list_settings"]["only_me"] = cfg::esp::spectator_list_settings::only_me;
+	data["esp"]["spectator_list_settings"]["advanced"] = cfg::esp::spectator_list_settings::advanced;
 
-	// falgs
+	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
 	data["esp"]["flags"]["ping"] = cfg::esp::flags::ping;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
@@ -113,6 +119,7 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
+	
 
 	// colors
 	auto& col = data["esp"]["colors"];

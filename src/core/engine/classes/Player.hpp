@@ -1,9 +1,10 @@
 #pragma once
 #include "core/engine/classes/Bones.hpp"
+#include "core/engine/classes/ObserverServices.hpp"
 
 class Player {
 public:
-    Player(int index, uintptr_t le) : index(index), le(le){}
+    Player(int index, uintptr_t le) : controller_index(index), le(le){}
 
     bool Update();
     bool GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds);
@@ -32,8 +33,12 @@ public:
     std::string clean_weapon;
 
     std::vector<bone_pos> bone_list;
+
+    ObserverServices observer_services;
+    int controller_index;
+    int pawn_index;
 private:
-    int index; 
+    
     uintptr_t le; // List Entry
 
     uintptr_t pawn;
@@ -43,9 +48,11 @@ private:
 private:
     bool GetPawn();
     bool GetController();
+    bool GetObserverServices();
 
     bool UpdatePawn();
     bool UpdateWeapon();
     bool UpdateSkeleton();
     bool UpdateController();
+    bool UpdateObserverServices();
 };

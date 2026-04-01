@@ -28,6 +28,9 @@ void Esp::RenderImpl() {
 	auto& bomb = snapshot.bomb;
 	auto& globals = snapshot.globals;
 	auto& players = snapshot.players;
+	
+
+	RenderSpectatorList(players);
 
 	ImGui::PushFont(this->font);
 
@@ -62,6 +65,7 @@ void Esp::RenderImpl() {
 
 	RenderBomb(bomb);
 	RenderCrosshair();
+	
 
 	ImGui::PopFont();
 }
@@ -454,4 +458,80 @@ void Esp::RenderBomb(Bomb bomb) {
 		IM_COL32(255, 255, 255, 255),
 		bomb_string.data()
 	);
+}
+
+Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
+	Player* found = nullptr;
+
+	for (auto& p : players) {
+		if (p.pawn_index == index) {
+			found = &p;
+			break;
+		}
+	}
+	return found;
+}
+
+
+void Esp::RenderSpectatorList(std::vector<Player>& players) {
+	if (!cfg::esp::spectator_list) return;
+
+	static auto io = ImGui::GetIO();
+	static auto screen = io.DisplaySize;
+
+	ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
+
+	if (ImGui::Begin("Spectator list", nullptr, ImGuiWindowFlags_NoCollapse)) {
+		if (ImGui::BeginTable("Spectator List", 3, ImGuiTableFlags_SizingFixedFit)) {
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Mode");
+			ImGui::TableSetupColumn("Target");
+			ImGui::TableHeadersRow();
+		}
+		else {
+
+		}
+
+		
+		
+		for (Player& player : players) {
+			if (player.alive)
+				continue;
+
+			int targetIndex = player.observer_services.target;
+
+			if (targetIndex == 0)
+				continue;
+
+			Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+			if (cfg::esp::spectator_list_settings::only_me) {
+				if (!target || !target->localplayer)
+					continue;
+			}
+
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s", player.name);
+
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%s", player.observer_services.ToString());
+
+			ImGui::TableSetColumnIndex(2);
+
+			if (cfg::esp::spectator_list_settings::only_me) {
+				ImGui::Text("You");
+			}
+			else {
+				if (target)
+					ImGui::Text("%s", target->name);
+				else
+					ImGui::Text("Invalid/bomb");
+			}
+		}
+		ImGui::EndTable();
+	}
+	ImGui::End();
 }

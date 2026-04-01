@@ -184,6 +184,7 @@
     <ClCompile Include="config\Config.cpp" />
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\classes\Bomb.cpp" />
+    <ClCompile Include="core\engine\classes\ObserverServices.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
     <ClCompile Include="core\engine\classes\Game.cpp" />
     <ClCompile Include="core\engine\classes\Globals.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="external\timer\timer.cpp" />
     <ClCompile Include="gui\frontend\esp\Esp.cpp" />
     <ClCompile Include="gui\frontend\menu\Menu.cpp" />
+    <ClCompile Include="gui\frontend\menu\SpectatorListMenu.cpp" />
     <ClCompile Include="gui\frontend\overlays\Overlays.cpp" />
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
@@ -219,6 +221,7 @@
     <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\classes\Bomb.hpp" />
+    <ClInclude Include="core\engine\classes\ObserverServices.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\types\Color.hpp" />
     <ClInclude Include="core\engine\types\Types.hpp" />
@@ -299,6 +302,7 @@
     <ClInclude Include="external\timer\timer.hpp" />
     <ClInclude Include="gui\frontend\esp\Esp.hpp" />
     <ClInclude Include="gui\frontend\menu\Menu.hpp" />
+    <ClInclude Include="gui\frontend\menu\SpectatorListMenu.hpp" />
     <ClInclude Include="gui\frontend\overlays\Overlays.hpp" />
     <ClInclude Include="gui\renderer\Renderer.hpp" />
     <ClInclude Include="gui\renderer\window\Window.hpp" />
