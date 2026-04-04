@@ -81,7 +81,6 @@ bool Config::ReadImpl() {
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
 	} catch (const std::exception& e) {
 		LOGF(FATAL, "Failed to parse configuration");
-		LOGF(INFO, "{}", e.what());
 		WriteImpl();
 		return false;
 	}
@@ -123,7 +122,6 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
-	
 
 	// colors
 	auto& col = data["esp"]["colors"];

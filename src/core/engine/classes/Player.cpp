@@ -18,12 +18,6 @@ bool Player::Update() {
 		return false;
 	}	
 
-	if (!GetObserverServices()) {
-		//LOGF(WARNING, "Failed to GET ObserverServices for entity index({})", index);
-		//return false;
-		//TODO: Move this into GetPawn
-	}
-
 	if (!UpdateController()) {
 		//LOGF(WARNING, "Failed to UPDATE controller for entity index({})", index);
 		return false;
@@ -32,11 +26,6 @@ bool Player::Update() {
 	if (!UpdatePawn()) {
 		//LOGF(WARNING, "Failed to UPDATE pawn for entity index({})", index);
 		return false;
-	}
-
-	if (!UpdateObserverServices()) {
-		//LOGF(WARNING, "Failed to UPDATE ObserverServices for entity index({})", index);
-		//return false;
 	}
 
 	return true;
@@ -140,6 +129,10 @@ bool Player::UpdatePawn() {
 		return false;
 	}
 
+	if (!UpdateObserverServices()) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -226,7 +219,7 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	return pt1 || pt2;
 }
 
-bool Player::GetObserverServices() {
+bool Player::UpdateObserverServices() {
 	auto p = Engine::GetProcess();
 	if (!p) return false;
 
@@ -234,13 +227,6 @@ bool Player::GetObserverServices() {
 	if (!address) return false;
 
 	this->observer_services.SetAddress(address);
-
-	return true;
-	
-}
-
-bool Player::UpdateObserverServices() {
-	auto p = Engine::GetProcess();
 
 	return this->observer_services.Update();
 }

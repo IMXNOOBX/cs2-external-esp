@@ -29,7 +29,6 @@ void Esp::RenderImpl() {
 	auto& globals = snapshot.globals;
 	auto& players = snapshot.players;
 	
-
 	RenderSpectatorList(players);
 
 	ImGui::PushFont(this->font);
@@ -65,7 +64,6 @@ void Esp::RenderImpl() {
 
 	RenderBomb(bomb);
 	RenderCrosshair();
-	
 
 	ImGui::PopFont();
 }
