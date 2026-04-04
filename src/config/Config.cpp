@@ -46,10 +46,11 @@ bool Config::ReadImpl() {
 		cfg::esp::bomb_location = data["esp"].value("bomb_location", true);
 		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
-		cfg::esp::spectator_list = data["esp"].value("spectator_list", false);
-		cfg::esp::spectator_list_settings::only_me = data["esp"]["specator_list_settings"].value("only_me", true);
-		cfg::esp::spectator_list_settings::advanced = data["esp"]["specator_list_settings"].value("advanced", false);
 
+		// spectator list
+		cfg::esp::spectator_list = data["esp"].value("spectator_list", false);
+		cfg::esp::spectator_list_settings::advanced = data["esp"]["spectator_list_settings"].value("advanced", false);
+		cfg::esp::spectator_list_settings::only_me = data["esp"]["spectator_list_settings"].value("only_me", true);
 
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
@@ -80,6 +81,7 @@ bool Config::ReadImpl() {
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
 	} catch (const std::exception& e) {
 		LOGF(FATAL, "Failed to parse configuration");
+		LOGF(INFO, "{}", e.what());
 		WriteImpl();
 		return false;
 	}
@@ -107,6 +109,8 @@ bool Config::WriteImpl() {
 	data["esp"]["bomb_location"] = cfg::esp::bomb_location;
 	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 	data["esp"]["tracers"] = cfg::esp::tracers;
+
+	// spectator list
 	data["esp"]["spectator_list"] = cfg::esp::spectator_list;
 	data["esp"]["spectator_list_settings"]["only_me"] = cfg::esp::spectator_list_settings::only_me;
 	data["esp"]["spectator_list_settings"]["advanced"] = cfg::esp::spectator_list_settings::advanced;

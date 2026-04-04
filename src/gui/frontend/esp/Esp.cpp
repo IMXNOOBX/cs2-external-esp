@@ -483,55 +483,78 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
 
 	if (ImGui::Begin("Spectator list", nullptr, ImGuiWindowFlags_NoCollapse)) {
-		if (ImGui::BeginTable("Spectator List", 3, ImGuiTableFlags_SizingFixedFit)) {
-			ImGui::TableSetupColumn("Name");
-			ImGui::TableSetupColumn("Mode");
-			ImGui::TableSetupColumn("Target");
-			ImGui::TableHeadersRow();
+		if (cfg::esp::spectator_list_settings::advanced) {
+			if (ImGui::BeginTable("Advanced Spectator List", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV)) {
+				ImGui::TableSetupColumn("Name");
+				ImGui::TableSetupColumn("Mode");
+				ImGui::TableSetupColumn("Target");
+				ImGui::TableHeadersRow();
+
+				for (Player& player : players) {
+					if (player.alive)
+						continue;
+
+					int targetIndex = player.observer_services.target;
+
+					if (targetIndex == 0)
+						continue;
+
+					Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+					if (cfg::esp::spectator_list_settings::only_me) {
+						if (!target || !target->localplayer)
+							continue;
+					}
+
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s", player.name);
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%s", player.observer_services.ToString());
+
+					ImGui::TableSetColumnIndex(2);
+
+					if (cfg::esp::spectator_list_settings::only_me) {
+						ImGui::Text("You");
+					}
+					else {
+						ImGui::Text("%s", target ? target->name : "Invalid/bomb");
+					}
+				}
+
+				ImGui::EndTable();
+			}
 		}
 		else {
+			if (ImGui::BeginTable("Simple Spectator List", 1, ImGuiTableFlags_SizingFixedFit)) {
+				ImGui::TableSetupColumn("Spectator");
+				ImGui::TableHeadersRow();
 
-		}
+				for (Player& player : players) {
+					if (player.alive)
+						continue;
 
-		
-		
-		for (Player& player : players) {
-			if (player.alive)
-				continue;
+					int targetIndex = player.observer_services.target;
 
-			int targetIndex = player.observer_services.target;
+					if (targetIndex == 0)
+						continue;
 
-			if (targetIndex == 0)
-				continue;
+					Player* target = FindPlayerByPawnIndex(players, targetIndex);
+					
+					if (!target || !target->localplayer)
+						continue;
 
-			Player* target = FindPlayerByPawnIndex(players, targetIndex);
+					ImGui::TableNextRow();
 
-			if (cfg::esp::spectator_list_settings::only_me) {
-				if (!target || !target->localplayer)
-					continue;
-			}
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s", player.name);
+				}
 
-			ImGui::TableNextRow();
-
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s", player.name);
-
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Text("%s", player.observer_services.ToString());
-
-			ImGui::TableSetColumnIndex(2);
-
-			if (cfg::esp::spectator_list_settings::only_me) {
-				ImGui::Text("You");
-			}
-			else {
-				if (target)
-					ImGui::Text("%s", target->name);
-				else
-					ImGui::Text("Invalid/bomb");
+				ImGui::EndTable();
 			}
 		}
-		ImGui::EndTable();
 	}
 	ImGui::End();
 }
