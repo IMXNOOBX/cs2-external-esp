@@ -16,7 +16,11 @@ bool Player::Update() {
 	if (!GetPawn()) {
 		//LOGF(WARNING, "Failed to GET pawn for entity index({})", index);
 		return false;
-	}	
+	}
+
+	if (!GetObserverServices()) {
+
+	}
 
 	if (!UpdateController()) {
 		//LOGF(WARNING, "Failed to UPDATE controller for entity index({})", index);
@@ -26,6 +30,10 @@ bool Player::Update() {
 	if (!UpdatePawn()) {
 		//LOGF(WARNING, "Failed to UPDATE pawn for entity index({})", index);
 		return false;
+	}
+
+	if (!UpdateObserverServices()) {
+
 	}
 
 	return true;
@@ -56,7 +64,7 @@ bool Player::GetPawn() {
 
 	entity_pawn_list_entry = p->read<DWORD64>(client.base + offsets::entityList);
 
-	if (!entity_pawn_list_entry) 
+	if (!entity_pawn_list_entry)
 		return false;
 
 	entity_pawn_list_entry = p->read<uintptr_t>(entity_pawn_list_entry + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
@@ -97,8 +105,8 @@ bool Player::UpdatePawn() {
 	this->alive = health != 0;
 
 	if (this->health > 255 || this->health < 0)
-		LOGF(FATAL, 
-			"Health seems to have a random value (over 100 or under 0) with a value of ({}). Game has probably updated pawn structure", 
+		LOGF(FATAL,
+			"Health seems to have a random value (over 100 or under 0) with a value of ({}). Game has probably updated pawn structure",
 			this->health
 		);
 
@@ -152,7 +160,7 @@ bool Player::UpdateSkeleton() {
 	if (!p->read_raw(bone_array, bones, sizeof(bones)))
 		return false;
 
-	for (int i = 0; i < 30; i++) 
+	for (int i = 0; i < 30; i++)
 		this->bone_list.push_back({ bones[i].pos });
 
 	return true;
@@ -219,14 +227,19 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	return pt1 || pt2;
 }
 
-bool Player::UpdateObserverServices() {
+bool Player::GetObserverServices() {
 	auto p = Engine::GetProcess();
 	if (!p) return false;
 
 	DWORD64 address = p->read<DWORD64>(this->pawn + offsets::pawn::m_pObserverServices);
 	if (!address) return false;
 
-	this->observer_services.SetAddress(address);
+	this->observer_services.SetAddress(address); 
+	return true; 
+} 
 
-	return this->observer_services.Update();
+bool Player::UpdateObserverServices() { 
+	auto p = Engine::GetProcess(); 
+
+	return this->observer_services.Update(); 
 }
