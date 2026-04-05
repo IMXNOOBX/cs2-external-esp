@@ -18,10 +18,6 @@ bool Player::Update() {
 		return false;
 	}
 
-	if (!GetObserverServices()) {
-
-	}
-
 	if (!UpdateController()) {
 		//LOGF(WARNING, "Failed to UPDATE controller for entity index({})", index);
 		return false;
@@ -30,10 +26,6 @@ bool Player::Update() {
 	if (!UpdatePawn()) {
 		//LOGF(WARNING, "Failed to UPDATE pawn for entity index({})", index);
 		return false;
-	}
-
-	if (!UpdateObserverServices()) {
-
 	}
 
 	return true;
@@ -110,6 +102,8 @@ bool Player::UpdatePawn() {
 			this->health
 		);
 
+	UpdateObserverServices();
+
 	if (!alive) // No need to continue 
 		return true;
 
@@ -137,9 +131,6 @@ bool Player::UpdatePawn() {
 		return false;
 	}
 
-	if (!UpdateObserverServices()) {
-		return false;
-	}
 
 	return true;
 }
@@ -227,19 +218,13 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	return pt1 || pt2;
 }
 
-bool Player::GetObserverServices() {
+bool Player::UpdateObserverServices() {
 	auto p = Engine::GetProcess();
 	if (!p) return false;
 
 	DWORD64 address = p->read<DWORD64>(this->pawn + offsets::pawn::m_pObserverServices);
 	if (!address) return false;
 
-	this->observer_services.SetAddress(address); 
-	return true; 
-} 
-
-bool Player::UpdateObserverServices() { 
-	auto p = Engine::GetProcess(); 
-
-	return this->observer_services.Update(); 
+	this->observer_services.SetAddress(address);
+	return this->observer_services.Update();
 }

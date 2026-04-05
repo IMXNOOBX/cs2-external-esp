@@ -55,4 +55,5 @@ private:
     bool UpdateSkeleton();
     bool UpdateController();
     bool UpdateObserverServices();
+    bool UpdateObserverServices2();
 };
