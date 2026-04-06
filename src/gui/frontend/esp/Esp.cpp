@@ -518,7 +518,13 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 						ImGui::Text("You");
 					}
 					else {
-						ImGui::Text("%s", target ? target->name : "Invalid/bomb");
+						if (player.observer_services.mode == ObserverMode::Free) {
+							ImGui::Text("");
+						}
+						else {
+							ImGui::Text("%s", target ? target->name : "Invalid/bomb");
+						}
+						
 					}
 				}
 
