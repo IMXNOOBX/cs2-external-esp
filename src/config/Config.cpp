@@ -74,8 +74,10 @@ bool Config::ReadImpl() {
 		cfg::settings::crosshair = data["utils"].value("crosshair", false);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
+		cfg::settings::free_cpu = data["utils"].value("free_cpu", true);
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
-	} catch (const std::exception& e) {
+	}
+	catch (const std::exception& e) {
 		LOGF(FATAL, "Failed to parse configuration");
 		WriteImpl();
 		return false;

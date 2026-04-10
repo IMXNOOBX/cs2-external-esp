@@ -37,14 +37,14 @@ bool Engine::InitImpl() {
         return false;
     }
 
-    if (!Config::Read()) 
+    if (!Config::Read())
         LOGF(WARNING, "Failed to parse config, using default values");
 
 #ifdef _DEBUG
     if (!cfg::dev::console)
         LogHelper::Free();
 #endif
-    
+
     std::thread(&Engine::Thread, this).detach();
 
     LOGF(INFO, "Succesfully initialized engine...");
@@ -58,7 +58,9 @@ void Engine::Thread() {
         auto start = steady_clock::now();
 
         Cache::Refresh();
-        std::this_thread::sleep_until(start + 1ms);
+
+        if (cfg::settings::free_cpu)
+            std::this_thread::sleep_until(start + 1ms);
     }
 }
 
@@ -112,4 +114,4 @@ bool Engine::AwaitModules() {
     } while (true);
 
     return true;
-}   
+}
