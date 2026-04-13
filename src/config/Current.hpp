@@ -18,14 +18,7 @@ namespace cfg {
 		inline bool bomb_location = true;
 		inline bool bomb_timer = true;
 
-		inline bool spectator_list = false;
-
 		inline bool tracers = false;
-
-		namespace spectator_list_settings {
-			inline bool only_me = true;
-			inline bool advanced = false;
-		}
 
 		namespace flags {
 			inline bool name = true;
@@ -51,6 +44,13 @@ namespace cfg {
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 		}
 
+	}
+
+	namespace spectators {
+		inline bool enabled = false;
+
+		inline bool detailed = false;
+		inline bool self_only = true;
 	}
 
 	namespace settings {

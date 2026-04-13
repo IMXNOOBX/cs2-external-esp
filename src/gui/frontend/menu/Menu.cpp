@@ -215,14 +215,11 @@ void Menu::RenderImpl() {
 					ImGui::Text("Spectator list");
 					ImGui::Separator();
 
-					ImGui::Checkbox("Enable", &cfg::esp::spectator_list);
-					if (cfg::esp::spectator_list) {
-						ImGui::Checkbox("Advanced", &cfg::esp::spectator_list_settings::advanced);
-
-						if (cfg::esp::spectator_list_settings::advanced) {
-							ImGui::Checkbox("Only you", &cfg::esp::spectator_list_settings::only_me);
-						}
-							
+					ImGui::Checkbox("Enable", &cfg::spectators::enabled);
+					if (cfg::spectators::enabled) {
+						ImGui::Checkbox("Detailed", &cfg::spectators::detailed);
+						ImGui::Checkbox("Only Self", &cfg::spectators::self_only);
+						ImGui::SetItemTooltip("Only display users spectating you");
 					}
 
 				}

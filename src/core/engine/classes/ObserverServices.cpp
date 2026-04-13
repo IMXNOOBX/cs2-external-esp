@@ -22,7 +22,7 @@ void ObserverServices::SetAddress(DWORD64 address) {
 	this->address = address;
 }
 
-const char* ObserverServices::ToString() {
+const char* ObserverServices::ToString() const {
 	switch (this->mode)
 	{
 	case ObserverMode::Alive:   return "Self";

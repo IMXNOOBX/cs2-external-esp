@@ -47,11 +47,6 @@ bool Config::ReadImpl() {
 		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
 
-		// spectator list
-		cfg::esp::spectator_list = data["esp"].value("spectator_list", false);
-		cfg::esp::spectator_list_settings::advanced = data["esp"]["spectator_list_settings"].value("advanced", false);
-		cfg::esp::spectator_list_settings::only_me = data["esp"]["spectator_list_settings"].value("only_me", true);
-
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
 		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
@@ -71,6 +66,11 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 1.f, 1.f, 1.f, 0.3f });
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
+		// spectator list
+		cfg::spectators::enabled = data["spectators"].value("enabled", false);
+		cfg::spectators::detailed = data["spectators"].value("detailed", false);
+		cfg::spectators::self_only = data["spectators"].value("self_only", true);
 
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
@@ -109,11 +109,6 @@ bool Config::WriteImpl() {
 	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 	data["esp"]["tracers"] = cfg::esp::tracers;
 
-	// spectator list
-	data["esp"]["spectator_list"] = cfg::esp::spectator_list;
-	data["esp"]["spectator_list_settings"]["only_me"] = cfg::esp::spectator_list_settings::only_me;
-	data["esp"]["spectator_list_settings"]["advanced"] = cfg::esp::spectator_list_settings::advanced;
-
 	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
 	data["esp"]["flags"]["ping"] = cfg::esp::flags::ping;
@@ -122,6 +117,11 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
+
+	// spectator list
+	data["spectators"]["enabled"] = cfg::spectators::enabled;
+	data["spectators"]["detailed"] = cfg::spectators::detailed;
+	data["spectators"]["self_only"] = cfg::spectators::self_only;
 
 	// colors
 	auto& col = data["esp"]["colors"];

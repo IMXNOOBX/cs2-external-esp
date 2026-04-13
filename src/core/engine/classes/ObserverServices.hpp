@@ -16,7 +16,7 @@ public:
 
 	bool Update();
 	void SetAddress(DWORD64 address);
-	const char* ToString();
+	const char* ToString() const;
 public:
 	ObserverMode mode = ObserverMode::Alive;
 	int target = 0;

@@ -470,9 +470,8 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 	return found;
 }
 
-
 void Esp::RenderSpectatorList(std::vector<Player>& players) {
-	if (!cfg::esp::spectator_list) return;
+	if (!cfg::spectators::enabled || !localplayer) return;
 
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
@@ -480,85 +479,64 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
 
-	if (ImGui::Begin("Spectator list", nullptr, ImGuiWindowFlags_NoCollapse)) {
-		if (cfg::esp::spectator_list_settings::advanced) {
-			if (ImGui::BeginTable("Advanced Spectator List", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV)) {
-				ImGui::TableSetupColumn("Name");
-				ImGui::TableSetupColumn("Mode");
-				ImGui::TableSetupColumn("Target");
-				ImGui::TableHeadersRow();
+	if (!ImGui::Begin("Spectator list", nullptr, ImGuiWindowFlags_NoCollapse)) {
+		ImGui::End();
+		return;
+	}
 
-				for (Player& player : players) {
-					if (player.alive)
-						continue;
+	const bool detailed = cfg::spectators::detailed;
+	const bool self_only = cfg::spectators::self_only;
 
-					int targetIndex = player.observer_services.target;
+	const int columns = detailed ? 3 : 1;
+	ImGuiTableFlags tableFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
 
-					if (targetIndex == 0)
-						continue;
+	if (detailed) {
+		if (ImGui::BeginTable("##detailed", 3, tableFlags)) {
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Mode");
+			ImGui::TableSetupColumn("Target");
+			ImGui::TableHeadersRow();
 
-					Player* target = FindPlayerByPawnIndex(players, targetIndex);
+			for (Player& player : players) {
+				if (player.alive) continue;
 
-					if (cfg::esp::spectator_list_settings::only_me) {
-						if (!target || !target->localplayer)
-							continue;
-					}
+				int targetIndex = player.observer_services.target;
+				if (targetIndex == 0) continue;
 
-					ImGui::TableNextRow();
+				Player* target = FindPlayerByPawnIndex(players, targetIndex);
 
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s", player.name);
+				if (self_only && (!target || !target->localplayer)) 
+					continue;
 
-					ImGui::TableSetColumnIndex(1);
-					ImGui::Text("%s", player.observer_services.ToString());
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s", player.name);
 
-					ImGui::TableSetColumnIndex(2);
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%s", player.observer_services.ToString());
 
-					if (cfg::esp::spectator_list_settings::only_me) {
-						ImGui::Text("You");
-					}
-					else {
-						if (player.observer_services.mode == ObserverMode::Free) {
-							ImGui::Text("");
-						}
-						else {
-							ImGui::Text("%s", target ? target->name : "Invalid/bomb");
-						}
-						
-					}
-				}
-
-				ImGui::EndTable();
+				ImGui::TableSetColumnIndex(2);
+				if (self_only) ImGui::Text("You");
+				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("");
+				else ImGui::Text("%s", target ? target->name : "Invalid/bomb");
 			}
-		}
-		else {
-			if (ImGui::BeginTable("Simple Spectator List", 1, ImGuiTableFlags_SizingFixedFit)) {
-				ImGui::TableSetupColumn("Spectator");
-				ImGui::TableHeadersRow();
 
-				for (Player& player : players) {
-					if (player.alive)
-						continue;
-
-					int targetIndex = player.observer_services.target;
-
-					if (targetIndex == 0)
-						continue;
-
-					Player* target = FindPlayerByPawnIndex(players, targetIndex);
-					
-					if (!target || !target->localplayer)
-						continue;
-
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s", player.name);
-				}
-
-				ImGui::EndTable();
-			}
+			ImGui::EndTable();
 		}
 	}
+	else {
+		for (Player& player : players) {
+			if (player.alive) continue;
+			int targetIndex = player.observer_services.target;
+			if (targetIndex == 0) continue;
+			Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+			if (self_only && (!target || !target->localplayer)) continue;
+
+			ImGui::Text("%s", player.name);
+		}
+	}
+
+
 	ImGui::End();
 }
