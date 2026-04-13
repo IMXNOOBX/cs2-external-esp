@@ -40,8 +40,8 @@ int main()
 
     if (!Updater::Init() || !Updater::Process()) {
         LOGF(FATAL, "Updater failed to run, the application has not verified its status, execution its not recommended");
-        //LOGF(INFO, "Click any key to continue... [NOT RECOMMENDED]");
-        //std::cin.get();
+        LOGF(INFO, "Click any key to continue...");
+        std::cin.get();
         //goto exit;
     }
 
