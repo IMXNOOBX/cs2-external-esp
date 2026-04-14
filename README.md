@@ -1,5 +1,8 @@
 # 🕹️ CS2 External ESP | Recode
 
+> [!WARNING]
+> Due to some recent *issues* the project has been **temporarily** moved to [gitlab.com/cs2-external-esp](https://gitlab.com/IMXNOOBX/cs2-external-esp), more info in our discord server!
+
 Simple external ESP for Counter-Strike 2. After years of development the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, several quality-of-life additions, and automatic offset scanning to help maintain compatibility through game updates.
 
 ## Showcase
