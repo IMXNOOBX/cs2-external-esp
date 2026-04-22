@@ -176,7 +176,14 @@ void Menu::RenderImpl() {
 						ImGui::BeginGroup();
 						{
 							ImGui::Checkbox("Name", &cfg::esp::flags::name);
+					#ifdef _DEBUG
+							ImGui::BeginDisabled(false);
+					#else
+							ImGui::BeginDisabled(true);
+					#endif
 							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
+							ImGui::SetItemTooltip("Weapong names are disabled for now, due to last game update breaking this feature");
+							ImGui::EndDisabled();
 							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
 						}
 						ImGui::EndGroup();
@@ -235,7 +242,7 @@ void Menu::RenderImpl() {
 					ImGui::Text("Notes");
 					ImGui::Separator();
 					ImGui::TextWrapped(
-						"If you experience performance/lag try the following suggestions:\n"
+						"If you experience bad performance/lag try the following:\n"
 						"\t- Disable ESP VSync: Look up > VSync: Un-Check\n"
 						"\t- Disable VSync in game: ...Advanced Video > V-Sync: Disabled\n"
 						"\t- Last Resort: Disable \"Free CPU\" option, it will inpact on your overall performace, but improve latency\n"
