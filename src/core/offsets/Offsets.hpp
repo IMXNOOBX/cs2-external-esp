@@ -34,8 +34,8 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x1390; // Vector
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
-		constexpr std::ptrdiff_t m_bIsScoped = 0x1C88; // bool
-		constexpr std::ptrdiff_t m_ArmorValue = 0x1CB4; // int32
+		constexpr std::ptrdiff_t m_bIsScoped = 0x01C48; // bool
+		constexpr std::ptrdiff_t m_ArmorValue = 0x1C74; // int32
 		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C8A; // bool
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
