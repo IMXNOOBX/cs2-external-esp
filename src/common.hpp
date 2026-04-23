@@ -1,5 +1,9 @@
 #pragma once
+
+// warning: 'IMGUI_DEFINE_MATH_OPERATORS' macro redefined [-Wmacro-redefined]
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 
 // If you see dependency errors here, you didn't read README.md properly
 #include <Logger.hpp>

@@ -1,6 +1,10 @@
 #pragma once
 
+// warning: 'CURL_STATICLIB' macro redefined [-Wmacro-redefined]
+#ifndef CURL_STATICLIB
 #define CURL_STATICLIB
+#endif
+
 #include <curl/curl.h>
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "zlib.lib")

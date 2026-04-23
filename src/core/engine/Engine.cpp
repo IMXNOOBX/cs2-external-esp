@@ -48,6 +48,8 @@ bool Engine::InitImpl() {
     std::thread(&Engine::Thread, this).detach();
 
     LOGF(INFO, "Succesfully initialized engine...");
+    // warning: non-void function does not return a value in all control paths [-Wreturn-type]
+    return true;
 }
 
 void Engine::Thread() {

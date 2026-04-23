@@ -22,6 +22,8 @@ bool Esp::InitImpl() {
 }
 
 void Esp::RenderImpl() {
+	// i don't see this reset anywhere else
+	this->localplayer = nullptr;
 	if (!cfg::enabled)
 		return;
 

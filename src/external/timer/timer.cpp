@@ -1,6 +1,7 @@
 #ifndef DISABLE_TIMERS
 
-#include "Timer.hpp"
+// warning: non-portable path to file '"timer.hpp"'; specified path differs in case from file name on disk [-Wnonportable-include-path]
+#include "timer.hpp"
 
 // Initialize static members
 std::map<std::string, Timer::FunctionData> Timer::functionData;

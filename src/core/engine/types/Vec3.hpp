@@ -228,7 +228,8 @@ public:
 		return delta.length();
 	}
 
-	const Vec3_t& ToAngle() const noexcept {
+	// warning: returning reference to local temporary object [-Wreturn-stack-address]
+	Vec3_t ToAngle() const noexcept {
 		return Vec3_t{
 			std::atan2(-z, std::hypot(x, y)) * (180.0f / std::numbers::pi_v<float>),
 			std::atan2(y, x) * (180.0f / std::numbers::pi_v<float>),

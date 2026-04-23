@@ -12,6 +12,8 @@ crashlog.txt
 # Ignore all the offsets.json files but the one in the folder offsets for the auto updater
 offsets.json
 !offsets/offsets.json 
+.vscode
+crashlog.txt
 
 # User-specific files
 *.rsuser
@@ -19,6 +21,10 @@ offsets.json
 *.user
 *.userosscache
 *.sln.docstates
+
+# zig compat libraries
+**/libLIBCMT.a
+**/libOLDNAMES.a
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -107,6 +113,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.exe
 
 # Chutzpah Test files
 _Chutzpah*
