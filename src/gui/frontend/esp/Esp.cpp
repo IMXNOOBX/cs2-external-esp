@@ -38,6 +38,8 @@ void Esp::RenderImpl() {
 
 	this->matrix = game.view_matrix;
 
+	RenderBomb(bomb);
+
 	static int local_team = 0;
 	for (auto& player : players) {
 		if (!player.alive)
@@ -57,12 +59,19 @@ void Esp::RenderImpl() {
 		if (cfg::esp::spotted && !player.spotted)
 			continue;
 
+		// Are we spectating the player in first person? then dont render
+		if (
+			localplayer
+			&& localplayer->observer_services.target == player.pawn_index
+			&& localplayer->observer_services.mode == ObserverMode::First
+		)
+			continue;
+
 		RenderPlayerTracers(player, mate);
 
 		RenderPlayer(player, mate);
 	}
 
-	RenderBomb(bomb);
 	RenderCrosshair();
 
 	ImGui::PopFont();
@@ -475,6 +484,24 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
+	const bool detailed = cfg::spectators::detailed;
+	const bool self_only = cfg::spectators::self_only;
+
+	bool should_render = false;
+	for (Player& p : players) {
+		if (auto i = p.observer_services.target) {
+			Player* target = FindPlayerByPawnIndex(players, i);
+
+			if (self_only && (!target || !target->localplayer))
+				continue;
+		
+			should_render = true;
+			break;
+		}
+	}
+
+	if (!should_render)
+		return;
 
 	ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
@@ -484,8 +511,6 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 		return;
 	}
 
-	const bool detailed = cfg::spectators::detailed;
-	const bool self_only = cfg::spectators::self_only;
 
 	const int columns = detailed ? 3 : 1;
 	ImGuiTableFlags tableFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
