@@ -176,14 +176,7 @@ void Menu::RenderImpl() {
 						ImGui::BeginGroup();
 						{
 							ImGui::Checkbox("Name", &cfg::esp::flags::name);
-					#ifdef _DEBUG
-							ImGui::BeginDisabled(false);
-					#else
-							ImGui::BeginDisabled(true);
-					#endif
 							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
-							ImGui::SetItemTooltip("Weapong names are disabled for now, due to last game update breaking this feature");
-							ImGui::EndDisabled();
 							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
 						}
 						ImGui::EndGroup();
