@@ -39,7 +39,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C8A; // bool
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
-		constexpr std::ptrdiff_t m_entitySpottedState = 0x1C70; // EntitySpottedState_t
+		constexpr std::ptrdiff_t m_entitySpottedState = 0x1170; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
 		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x13F4; // float32 - C_CSPlayerPawnBase 
 		constexpr std::ptrdiff_t m_pWeaponServices = 0x11E0; // CPlayer_WeaponServices*
