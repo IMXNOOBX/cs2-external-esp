@@ -3,14 +3,15 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Extra
+typos
+.vscode
+config.json
+crashlog.txt
+
 # Ignore all the offsets.json files but the one in the folder offsets for the auto updater
 offsets.json
-config.json
 !offsets/offsets.json 
-.vscode
-typos
-!offsets/offsets.json 
-.vscode
 
 # User-specific files
 *.rsuser
