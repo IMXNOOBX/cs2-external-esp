@@ -129,7 +129,7 @@ bool Player::UpdatePawn() {
 	// Shows errors when player just respawned
 	if (!UpdateWeapon()) {
 		//LOGF(FATAL, "Failed to update weapon"); // too verbose
-		//return false;
+		return false;
 	}
 
 
@@ -178,30 +178,6 @@ bool Player::UpdateWeapon() {
 
 	this->clean_weapon = weapon.weapon_name;
 
-	/*
-	auto clipping_weapon = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pClippingWeapon);
-
-	if (!clipping_weapon)
-		return false;
-
-	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x10);
-
-	if (!clipping_weapon)
-		return false;
-
-	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x20);
-
-	if (!clipping_weapon)
-		return false;
-
-	if (!p->read_raw(clipping_weapon, this->weapon, sizeof(this->weapon)))
-		return false;
-
-	this->clean_weapon = this->weapon;
-
-	if (this->clean_weapon.compare(0, 7, "weapon_") == 0)
-		this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
-		*/
 	return true;
 }
 
