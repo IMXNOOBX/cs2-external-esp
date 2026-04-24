@@ -2,7 +2,7 @@
 class Weapon
 {
 public:
-	Weapon(int index, uintptr_t le) : index(index), le(le) {}
+	Weapon(int index) : index(index) {}
 	bool Update();
 
 public:
@@ -13,6 +13,5 @@ private:
 
 	short item_index;
 	int index;
-	uintptr_t le;
 };
 

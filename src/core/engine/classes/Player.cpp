@@ -171,7 +171,7 @@ bool Player::UpdateWeapon() {
 	if (!active_weapon_index)
 		return false;
 
-	auto weapon = Weapon(active_weapon_index, this->le);
+	auto weapon = Weapon(active_weapon_index);
 
 	if (!weapon.Update())
 		return false;
