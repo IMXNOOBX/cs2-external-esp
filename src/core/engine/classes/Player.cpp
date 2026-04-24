@@ -2,6 +2,7 @@
 
 #include "core/engine/Engine.hpp"
 #include "core/offsets/Dumper.hpp"
+#include "Weapon.hpp"
 #include "core/engine/classes/ObserverServices.hpp"
 
 bool Player::Update() {
@@ -128,7 +129,7 @@ bool Player::UpdatePawn() {
 	// Shows errors when player just respawned
 	if (!UpdateWeapon()) {
 		//LOGF(FATAL, "Failed to update weapon"); // too verbose
-		return false;
+		//return false;
 	}
 
 
@@ -160,6 +161,25 @@ bool Player::UpdateSkeleton() {
 bool Player::UpdateWeapon() {
 	auto p = Engine::GetProcess();
 
+	auto weapon_services = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pWeaponServices);
+
+	if (!weapon_services)
+		return false;
+
+	auto active_weapon_index = p->read<int>(weapon_services + offsets::pawn::m_hActiveWeapon);
+
+	if (!active_weapon_index)
+		return false;
+
+	auto weapon = Weapon(active_weapon_index, this->le);
+
+	if (!weapon.Update())
+		return false;
+
+	this->clean_weapon = weapon.weapon_name;
+
+	/*
+
 	auto clipping_weapon = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pClippingWeapon);
 
 	if (!clipping_weapon)
@@ -182,7 +202,7 @@ bool Player::UpdateWeapon() {
 
 	if (this->clean_weapon.compare(0, 7, "weapon_") == 0)
 		this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
-
+		*/
 	return true;
 }
 

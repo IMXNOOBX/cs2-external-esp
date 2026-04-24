@@ -1,8 +1,8 @@
 {
     "unsafe": false,
-    "notice": "Recently my github account was banned (twice) and the project has been moved to GitLab!",
+    "notice": "",
     "version": {
-        "current": 103,
-        "minimum": 101
+        "current": 104,
+        "minimum": 104
     }
 }

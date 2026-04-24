@@ -6,11 +6,11 @@
 
 
 bool Menu::Init() {
-    return GetInstance().InitImpl();
+	return GetInstance().InitImpl();
 }
 
 void Menu::Render() {
-    return GetInstance().RenderImpl();
+	return GetInstance().RenderImpl();
 }
 
 void Menu::RenderStartupHelp() {
@@ -28,8 +28,8 @@ ImVec2 Menu::GetSize() {
 bool Menu::InitImpl() {
 	SetupStyles();
 
-    LOGF(INFO, "Successfully initialized menu...");
-    return true;
+	LOGF(INFO, "Successfully initialized menu...");
+	return true;
 }
 
 void Menu::RenderImpl() {
@@ -47,7 +47,7 @@ void Menu::RenderImpl() {
 #endif
 
 	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2(screen.x/2 - 300, screen.y/2 - 150), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(screen.x / 2 - 300, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
 
 	ImGui::GetWindowPos();
 	if (ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize)) {
@@ -59,7 +59,7 @@ void Menu::RenderImpl() {
 		if (ImGui::BeginChild("##main_split"))
 		{
 			auto size = ImGui::GetContentRegionAvail();
-						
+
 			ImGui::BeginChild("##tab_buttons", ImVec2(120, size.y), true);
 			{
 				for (const auto& tab : tabs)
@@ -68,9 +68,9 @@ void Menu::RenderImpl() {
 
 					if (is_active)
 					{
-						ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
 
 					if (ImGui::Button(tab.label, ImVec2(-1, 32)))
@@ -176,7 +176,14 @@ void Menu::RenderImpl() {
 						ImGui::BeginGroup();
 						{
 							ImGui::Checkbox("Name", &cfg::esp::flags::name);
+					#ifdef _DEBUG
+							ImGui::BeginDisabled(false);
+					#else
+							ImGui::BeginDisabled(true);
+					#endif
 							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
+							ImGui::SetItemTooltip("Weapong names are disabled for now, due to last game update breaking this feature");
+							ImGui::EndDisabled();
 							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
 						}
 						ImGui::EndGroup();
@@ -225,6 +232,9 @@ void Menu::RenderImpl() {
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{
+					ImGui::Text("Misc");
+					ImGui::Separator();
+
 					if (ImGui::Checkbox("Streamproof", &cfg::settings::streamproof))
 					{
 						Window::SetAffinity(
@@ -239,7 +249,19 @@ void Menu::RenderImpl() {
 					if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
 						Window::vsync = cfg::settings::vsync;
 
-		#ifdef _DEBUG
+					ImGui::Checkbox("Free CPU", &cfg::settings::free_cpu);
+					ImGui::SetItemTooltip("Let the CPU sleep to Free Resources\nNOTE: might cause performance issues in lower end computers!");
+
+					ImGui::Text("Notes");
+					ImGui::Separator();
+					ImGui::TextWrapped(
+						"If you experience bad performance/lag try the following:\n"
+						"\t- Disable ESP VSync: Look up > VSync: Un-Check\n"
+						"\t- Disable VSync in game: ...Advanced Video > V-Sync: Disabled\n"
+						"\t- Last Resort: Disable \"Free CPU\" option, it will inpact on your overall performace, but improve latency\n"
+					);
+
+#ifdef _DEBUG
 					ImGui::Text("Dev");
 					ImGui::Separator();
 
@@ -261,7 +283,7 @@ void Menu::RenderImpl() {
 					}
 
 					ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
-		#endif
+#endif
 				}
 			}
 			ImGui::EndChild();
@@ -272,9 +294,9 @@ void Menu::RenderImpl() {
 			ImGui::EndChild();
 		}
 
-    }
+	}
 
-    ImGui::End();
+	ImGui::End();
 }
 
 void Menu::SetupStyles() {
@@ -346,10 +368,10 @@ void Menu::SetupStyles() {
 
 	style.GrabRounding = 3.f;
 
-    auto& io = ImGui::GetIO();
+	auto& io = ImGui::GetIO();
 
-    io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
+	io.Fonts->Clear();
+	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
 }
 
 void Menu::RenderStartupHelpImpl() {

@@ -1,39 +1,53 @@
 enum bone_index : DWORD {
-    head = 6,
-    neck_0 = 5,
-    spine_1 = 4,
-    spine_2 = 2,
-    pelvis = 0,
-    arm_upper_L = 8,
-    arm_lower_L = 9,
-    hand_L = 10,
-    arm_upper_R = 13,
-    arm_lower_R = 14,
+    origin = 0,
+    pelvis = 1,
+    spine_0 = 2,
+    spine_1 = 3,
+    spine_2 = 4,
+    neck = 6,
+    head = 7,
+    shoulder_L = 9,
+    elbow_L = 10,
+    hand_L = 11,
+    shoulder_R = 13,
+    elbow_R = 14,
     hand_R = 15,
-    leg_upper_L = 22,
-    leg_lower_L = 23,
-    ankle_L = 24,
-    leg_upper_R = 25,
-    leg_lower_R = 26,
-    ankle_R = 27,
+    hip_L = 17,
+    knee_L = 18,
+    foot_heel_L = 19,
+    hip_R = 20,
+    knee_R = 21,
+    foot_heel_R = 22,
+    chest = 23,
 };
 
-inline const int connections[15][2] = {
-    { neck_0, spine_1 },
+static const int connections[17][2] = {
+    // Spine
+    { pelvis, spine_1 },
     { spine_1, spine_2 },
-    { spine_2, pelvis },
-    { neck_0, arm_upper_L },
-    { arm_upper_L, arm_lower_L },
-    { arm_lower_L, hand_L },
-    { neck_0, arm_upper_R },
-    { arm_upper_R, arm_lower_R },
-    { arm_lower_R, hand_R },
-    { pelvis, leg_upper_L },
-    { leg_upper_L, leg_lower_L },
-    { leg_lower_L, ankle_L },
-    { pelvis, leg_upper_R },
-    { leg_upper_R, leg_lower_R },
-    { leg_lower_R, ankle_R },
+    { spine_2, chest },
+    { chest, neck },
+    { neck,  head },
+
+    // Left arm
+    { neck,           shoulder_L },
+    { shoulder_L,    elbow_L },
+    { elbow_L,    hand_L },
+
+    // Right arm
+    { neck,           shoulder_R },
+    { shoulder_R,    elbow_R },
+    { elbow_R,    hand_R },
+
+    // Left leg
+    { pelvis,         hip_L },
+    { hip_L,    knee_L },
+    { knee_L,    foot_heel_L },
+
+    // Right leg
+    { pelvis,         hip_R },
+    { hip_R,    knee_R },
+    { knee_R,    foot_heel_R },
 };
 
 struct bone_data {

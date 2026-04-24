@@ -31,7 +31,7 @@ namespace cfg {
 		}
 
 		namespace colors {
-			inline color_t box_team{ 0.f, 1.f, 0.29f, 0.5f };	
+			inline color_t box_team{ 0.f, 1.f, 0.29f, 0.5f };
 			inline color_t box_enemy{ 1.f, 0.f, 0.f, 0.5f };
 
 			inline color_t skeleton_team{ 0.f, 1.f, 0.f, 0.5f };
@@ -58,6 +58,8 @@ namespace cfg {
 		inline bool crosshair = false;
 		inline bool streamproof = false;
 		inline bool vsync = false;
+
+		inline bool free_cpu = true;
 	}
 
 #ifdef _DEBUG
