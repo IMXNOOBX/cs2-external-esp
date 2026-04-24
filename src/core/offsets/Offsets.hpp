@@ -48,7 +48,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_Item = 0x50; // C_EconItemView - C_AttributeContainer
 		constexpr std::ptrdiff_t m_iItemDefinitionIndex = 0x1BA; // uint16 - C_EconItemView
 
-		constexpr std::ptrdiff_t m_pObserverServices = 0x13F0; // CPlayer_ObserverServices*
+		constexpr std::ptrdiff_t m_pObserverServices = 0x11F8; // CPlayer_ObserverServices*
 
 
 #if 0
@@ -82,11 +82,6 @@ namespace offsets
 
 	namespace bone {
 		constexpr std::ptrdiff_t m_modelState = 0x150; // CModelState
-	}
-
-	namespace observerServices {
-		constexpr std::ptrdiff_t m_iObserverMode = 0x48;
-		constexpr std::ptrdiff_t m_hObserverTarget = 0x4C;
 	}
 
 	namespace observerServices {
