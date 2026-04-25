@@ -53,7 +53,6 @@ bool Config::ReadImpl() {
 		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
 		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
-	#endif
 		cfg::esp::flags::ammo = data["esp"]["flags"].value("ammo", false);
 		cfg::esp::flags::scoped = data["esp"]["flags"].value("scoped", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
