@@ -177,7 +177,7 @@ void Menu::RenderImpl() {
 						{
 							ImGui::Checkbox("Name", &cfg::esp::flags::name);
 							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
-							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
+							ImGui::Checkbox("Ammo", &cfg::esp::flags::ammo);
 						}
 						ImGui::EndGroup();
 
@@ -185,9 +185,9 @@ void Menu::RenderImpl() {
 
 						ImGui::BeginGroup();
 						{
+							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
 							ImGui::Checkbox("Money", &cfg::esp::flags::money);
 							ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
-							ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
 						}
 						ImGui::EndGroup();
 
@@ -196,6 +196,7 @@ void Menu::RenderImpl() {
 						ImGui::BeginGroup();
 						{
 							ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
+							ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
 						}
 						ImGui::EndGroup();
 

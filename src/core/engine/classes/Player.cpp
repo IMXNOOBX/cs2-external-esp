@@ -169,6 +169,7 @@ bool Player::UpdateWeapon() {
 	if (!weapon.Update())
 		return false;
 
+	this->ammo = weapon.ammo;
 	this->weapon = weapon;
 
 	//this->clean_weapon = weapon.weapon_name;
