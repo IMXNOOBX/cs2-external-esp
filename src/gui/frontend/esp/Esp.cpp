@@ -275,6 +275,20 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
+	if (cfg::esp::flags::ammo) {
+		auto txt = std::to_string(player.ammo);
+		auto ammo_size = ImGui::CalcTextSize(txt.c_str());
+
+		d->AddText(
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - ammo_size.x / 2,
+				bounds.second.y + 15
+			),
+			IM_COL32(255, 255, 255, 255),
+			txt.data()
+		);
+	}
+
 	int offset = 0;
 	static int offset_mult = 15;
 
