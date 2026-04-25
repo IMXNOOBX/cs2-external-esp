@@ -55,6 +55,7 @@ bool Config::ReadImpl() {
 	#ifdef _DEBUG
 		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
 	#endif
+		cfg::esp::flags::ammo = data["esp"]["flags"].value("ammo", false);
 		cfg::esp::flags::scoped = data["esp"]["flags"].value("scoped", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);

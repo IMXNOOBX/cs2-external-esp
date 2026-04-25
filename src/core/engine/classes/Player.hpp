@@ -30,6 +30,7 @@ public:
 
     char weapon[32];
     std::string clean_weapon;
+    int32_t ammo;
 
     std::vector<bone_pos> bone_list;
 private:

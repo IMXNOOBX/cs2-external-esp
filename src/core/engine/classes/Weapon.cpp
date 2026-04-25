@@ -30,8 +30,9 @@ bool Weapon::Update() {
 	if (!this->item_index)
 		return false;
 
-    this->weapon_name = ToString();
-	
+    this->weapon_name = ToString();	
+    this->ammo = p->read<int32_t>(weapon_ptr + offsets::pawn::m_iClip1);
+
 	return true;
 }
 
