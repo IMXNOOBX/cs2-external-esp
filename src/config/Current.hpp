@@ -24,6 +24,7 @@ namespace cfg {
 			inline bool name = true;
 			inline bool ping = true;
 			inline bool weapon = false;
+			inline bool ammo = false;
 			inline bool defusing = false;
 			inline bool money = false;
 			inline bool flashed = false;
