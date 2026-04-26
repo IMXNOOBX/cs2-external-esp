@@ -88,7 +88,7 @@ const char* Weapon::ToString() const
     case item_defuser: return "Defuser";
     case item_cutters: return "cutters";
     case weapon_healthshot: return "Healthshot";
-    case weapon_knife_t: return "knife_t";
+    case weapon_knife_t: return "Knife";
     case weapon_m4a1_silencer: return "M4A1-S";
     case weapon_usp_silencer: return "USP-S";
     case weapon_cz75a: return "CZ75A";
