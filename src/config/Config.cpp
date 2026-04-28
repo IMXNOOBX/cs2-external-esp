@@ -70,9 +70,10 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
 
 		// spectator list
-		cfg::spectators::enabled = data["spectators"].value("enabled", false);
+		cfg::spectators::enabled = data["spectators"].value("enabled", true);
 		cfg::spectators::detailed = data["spectators"].value("detailed", false);
 		cfg::spectators::self_only = data["spectators"].value("self_only", true);
+		cfg::spectators::pos = JsonToVec2(data["spectators"], "pos", { 10.f, 100.f });
 
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
@@ -126,6 +127,7 @@ bool Config::WriteImpl() {
 	data["spectators"]["enabled"] = cfg::spectators::enabled;
 	data["spectators"]["detailed"] = cfg::spectators::detailed;
 	data["spectators"]["self_only"] = cfg::spectators::self_only;
+	Vec2ToJson(data["spectators"], "pos", cfg::spectators::pos);
 
 	// colors
 	auto& col = data["esp"]["colors"];
@@ -154,6 +156,8 @@ bool Config::WriteImpl() {
 	return true;
 }
 
+
+// TODO: Refactor this
 color_t Config::JsonToColor(const json& parent, const std::string& key, const color_t& def) {
 	if (!parent.contains(key) || !parent[key].is_array() || parent[key].size() != 4)
 		return def;
@@ -167,4 +171,20 @@ color_t Config::JsonToColor(const json& parent, const std::string& key, const co
 
 void Config::ColorToJson(json& parent, const std::string& key, const color_t& color) {
 	parent[key] = { color.r, color.g, color.b, color.a };
+}
+
+Vec2_t Config::JsonToVec2(const json& parent, const std::string& key, const Vec2_t& def)
+{
+	if (!parent.contains(key) || !parent[key].is_array() || parent[key].size() != 2)
+		return def;
+
+	return Vec2_t{
+		parent[key][0].get<float>(),
+		parent[key][1].get<float>()
+	};
+}
+
+void Config::Vec2ToJson(json& parent, const std::string& key, const Vec2_t& vec)
+{
+	parent[key] = { vec.x, vec.y };
 }

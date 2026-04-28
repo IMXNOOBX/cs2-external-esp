@@ -51,6 +51,8 @@ namespace cfg {
 
 		inline bool detailed = false;
 		inline bool self_only = true;
+
+		inline Vec2_t pos{ 10.f, 100.f };
 	}
 
 	namespace settings {

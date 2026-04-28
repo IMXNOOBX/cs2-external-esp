@@ -1,5 +1,7 @@
 #include "Esp.hpp"
 
+#include "gui/renderer/Renderer.hpp"
+
 bool Esp::Init() {
 	return GetInstance().InitImpl();
 }
@@ -479,6 +481,8 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 	return found;
 }
 
+
+// TODO: Move this to Overlays.cpp
 void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	if (!cfg::spectators::enabled || !localplayer) return;
 
@@ -486,6 +490,9 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	static auto screen = io.DisplaySize;
 	const bool detailed = cfg::spectators::detailed;
 	const bool self_only = cfg::spectators::self_only;
+	
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
 
 	bool should_render = false;
 	for (Player& p : players) {
@@ -503,20 +510,25 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	if (!should_render)
 		return;
 
-	ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
+	//ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
+	//ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(cfg::spectators::pos.x, cfg::spectators::pos.y), ImGuiCond_FirstUseEver);
 
-	if (!ImGui::Begin("Spectator list", nullptr, ImGuiWindowFlags_NoCollapse)) {
+	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
 		ImGui::End();
 		return;
 	}
 
+	if (Renderer::IsOpen())
+		cfg::spectators::pos = {
+			ImGui::GetWindowPos().x,
+			ImGui::GetWindowPos().y
+		};
 
-	const int columns = detailed ? 3 : 1;
-	ImGuiTableFlags tableFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
+	//const int columns = detailed ? 3 : 1;
 
 	if (detailed) {
-		if (ImGui::BeginTable("##detailed", 3, tableFlags)) {
+		if (ImGui::BeginTable("##detailed", 3, flags_table)) {
 			ImGui::TableSetupColumn("Name");
 			ImGui::TableSetupColumn("Mode");
 			ImGui::TableSetupColumn("Target");
@@ -561,7 +573,6 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 			ImGui::Text("%s", player.name);
 		}
 	}
-
 
 	ImGui::End();
 }
