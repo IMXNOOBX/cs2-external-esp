@@ -253,25 +253,16 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::reloading) {
+		auto center = Vec2_t(
+			(bounds.first.x + bounds.second.x) / 2 + 13,
+			bounds.second.y + 20
+		);
+
 		if (player.is_reloading) {
-			d->AddCircleFilled(
-				Vec2_t(
-					(bounds.first.x + bounds.second.x) / 2 + 13,
-					bounds.second.y + 20
-				),
-				5.f,
-				IM_COL32(255, 255, 255, 255)
-			);
+			d->AddCircleFilled(center, 5.f, IM_COL32(255, 255, 255, 255));
 		}
 		else {
-			d->AddCircle(
-				Vec2_t(
-					(bounds.first.x + bounds.second.x) / 2 + 13,
-					bounds.second.y + 20
-				),
-				5.f,
-				IM_COL32(255, 255, 255, 255)
-			);
+			d->AddCircle(center, 5.f, IM_COL32(255, 255, 255, 255));
 		}
 	}
 
