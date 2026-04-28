@@ -168,7 +168,7 @@ void Overlays::RenderDebugWindow() {
 		debug_string += std::format("Players ({}):\n", players.size());
 
 	for (auto& player : players)
-		debug_string += std::format("- {} ({}) {}hp {}\n", player.name, player.steam_id, player.health, player.clean_weapon);
+		debug_string += std::format("- {} ({}) {}hp {}\n", player.name, player.steam_id, player.health, player.weapon.name);
 
 	auto size = ImGui::CalcTextSize(debug_string.data());
 

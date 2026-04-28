@@ -1,9 +1,11 @@
 #pragma once
 #include "core/engine/classes/Bones.hpp"
+#include "core/engine/classes/Weapon.hpp"
 
 class Player {
 public:
-    Player(int index, uintptr_t le) : index(index), le(le){}
+    Player(int index, uintptr_t el, uintptr_t le) 
+        : index(index), entity_list(el), list_entry(le){}
 
     bool Update();
     bool GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds);
@@ -28,13 +30,13 @@ public:
     //std::string name;
     uint64_t steam_id{};
 
-    char weapon[32];
-    std::string clean_weapon;
+    Weapon weapon;
 
     std::vector<bone_pos> bone_list;
 private:
     int index; 
-    uintptr_t le; // List Entry
+    uintptr_t list_entry;
+    uintptr_t entity_list;
 
     uintptr_t pawn;
     uintptr_t controller;

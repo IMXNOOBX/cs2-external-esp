@@ -220,7 +220,7 @@
     <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\classes\Bomb.hpp" />
-    <ClInclude Include="core\engine\classes\Weapons.hpp" />
+    <ClInclude Include="core\engine\types\Weapons.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\types\Color.hpp" />
     <ClInclude Include="core\engine\types\Types.hpp" />
