@@ -48,7 +48,7 @@ bool Cache::RefreshImpl() {
     std::vector<Player> scan;
     scan.reserve(globals.max_clients);
     for (int i = 0; i < globals.max_clients; i++) {
-        auto player = Player(i, game.list_entry);
+        auto player = Player(i, game.entity_list, game.list_entry);
 
         if (!player.Update())
             continue;

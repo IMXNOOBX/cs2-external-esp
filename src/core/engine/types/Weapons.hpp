@@ -1,4 +1,5 @@
 #pragma once
+
 enum WeaponIds : short
 {
 	weapon_deagle = 1,

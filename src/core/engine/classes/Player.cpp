@@ -36,7 +36,7 @@ bool Player::GetController() {
 	auto p = Engine::GetProcess();
 	auto client = Engine::GetClient();
 
-	this->controller = p->read<DWORD64>(le + (controller_index + 1) * 0x70); // before was 0x78
+	this->controller = p->read<DWORD64>(list_entry + (index + 1) * 0x70); // before was 0x78
 
 	return this->controller != 0;
 }
@@ -171,12 +171,14 @@ bool Player::UpdateWeapon() {
 	if (!active_weapon_index)
 		return false;
 
-	auto weapon = Weapon(active_weapon_index);
+	auto weapon = Weapon(entity_list, active_weapon_index);
 
 	if (!weapon.Update())
 		return false;
 
-	this->clean_weapon = weapon.weapon_name;
+	this->weapon = weapon;
+
+	//this->clean_weapon = weapon.weapon_name;
 
 	return true;
 }

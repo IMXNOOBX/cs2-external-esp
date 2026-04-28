@@ -2,7 +2,6 @@
 #include "Weapon.hpp"
 #include "core/engine/Engine.hpp"
 #include "core/offsets/Dumper.hpp"
-#include "Weapons.hpp"
 
 bool Weapon::Update() {
 	auto p = Engine::GetProcess();
@@ -10,18 +9,16 @@ bool Weapon::Update() {
 	if (!p)
 		return false;
 
-    auto ent_list = p->read<uintptr_t>(client.base + offsets::entityList);
-    if (!ent_list)
+    if (!entity_list)
         return false;
 
-    uint32_t bucket_index = (index & 0x7FFF) >> 9;
-    uintptr_t bucket_ptr = p->read<uintptr_t>(ent_list + 0x10 + 0x8 * bucket_index);
+    uint32_t bucket_index = (slot_index & 0x7FFF) >> 9;
+    uintptr_t bucket_ptr = p->read<uintptr_t>(entity_list + 0x10 + 0x8 * bucket_index);
     if (!bucket_ptr)
         return false;
 
-    uint32_t index_in_bucket = index & 0x1FF;
+    uint32_t index_in_bucket = slot_index & 0x1FF;
     uintptr_t weapon_ptr = p->read<uintptr_t>(bucket_ptr + 0x70 * index_in_bucket);
-	
 	if (!weapon_ptr)
 		return false;
 
@@ -30,7 +27,7 @@ bool Weapon::Update() {
 	if (!this->item_index)
 		return false;
 
-    this->weapon_name = ToString();
+    this->name = ToString();
 	
 	return true;
 }
