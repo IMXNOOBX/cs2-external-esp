@@ -10,7 +10,8 @@ bool ObserverServices::Update() {
 
 	auto client = Engine::GetClient();
 
-	if (!this->address) return false;
+	if (!this->address) 
+		return false;
 
 	this->mode = p->read<ObserverMode>(this->address + offsets::observerServices::m_iObserverMode);
 	this->target = p->read<int>(this->address + offsets::observerServices::m_hObserverTarget);

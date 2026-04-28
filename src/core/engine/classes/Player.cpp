@@ -179,7 +179,6 @@ bool Player::UpdateWeapon() {
 	this->clean_weapon = weapon.weapon_name;
 
 	/*
-
 	auto clipping_weapon = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pClippingWeapon);
 
 	if (!clipping_weapon)
@@ -238,12 +237,15 @@ bool Player::GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2
 	return pt1 || pt2;
 }
 
+// Does not update if match is started
 bool Player::UpdateObserverServices() {
 	auto p = Engine::GetProcess();
-	if (!p) return false;
+	if (!p) 
+		return false;
 
 	DWORD64 address = p->read<DWORD64>(this->pawn + offsets::pawn::m_pObserverServices);
-	if (!address) return false;
+	if (!address) 
+		return false;
 
 	this->observer_services.SetAddress(address);
 	return this->observer_services.Update();

@@ -62,6 +62,7 @@ void Esp::RenderImpl() {
 			continue;
 
 		// Are we spectating the player in first person? then dont render
+		// TODO: Exception here when spectating someone
 		if (
 			localplayer
 			&& localplayer->observer_services.target == player.pawn_index
@@ -481,7 +482,6 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 	return found;
 }
 
-
 // TODO: Move this to Overlays.cpp
 void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	if (!cfg::spectators::enabled || !localplayer) return;
@@ -490,6 +490,7 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	static auto screen = io.DisplaySize;
 	const bool detailed = cfg::spectators::detailed;
 	const bool self_only = cfg::spectators::self_only;
+	const bool is_menu_open = Renderer::IsOpen();
 	
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
 	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
@@ -507,23 +508,26 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 		}
 	}
 
-	if (!should_render)
+	if (!should_render && !is_menu_open)
 		return;
 
-	//ImGui::SetNextWindowSize(ImVec2(400, 280), ImGuiCond_FirstUseEver);
-	//ImGui::SetNextWindowPos(ImVec2(200, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
+	// Window
 	ImGui::SetNextWindowPos(ImVec2(cfg::spectators::pos.x, cfg::spectators::pos.y), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
 
 	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
 		ImGui::End();
 		return;
 	}
 
-	if (Renderer::IsOpen())
+	if (is_menu_open)
 		cfg::spectators::pos = {
 			ImGui::GetWindowPos().x,
 			ImGui::GetWindowPos().y
 		};
+
+	if (!should_render && is_menu_open) 
+		ImGui::TextDisabled("No spectators");
 
 	//const int columns = detailed ? 3 : 1;
 

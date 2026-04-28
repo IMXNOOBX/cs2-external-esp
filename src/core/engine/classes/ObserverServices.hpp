@@ -18,8 +18,8 @@ public:
 	void SetAddress(DWORD64 address);
 	const char* ToString() const;
 public:
-	ObserverMode mode = ObserverMode::Alive;
 	int target = 0;
+	ObserverMode mode = ObserverMode::Alive;
 	
 private:
 	DWORD64 address = 0;
