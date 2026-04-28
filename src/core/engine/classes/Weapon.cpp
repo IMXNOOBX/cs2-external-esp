@@ -22,6 +22,7 @@ bool Weapon::Update() {
 		return false;
 
 	this->item_index = p->read<short>(weapon_ptr + offsets::pawn::m_AttributeManager + offsets::pawn::m_Item + offsets::pawn::m_iItemDefinitionIndex);
+    this->is_reloading = p->read<bool>(weapon_ptr + offsets::pawn::m_bInReload);
 
 	if (!this->item_index)
 		return false;

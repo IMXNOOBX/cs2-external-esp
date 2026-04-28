@@ -173,6 +173,7 @@ bool Player::UpdateWeapon() {
 	this->weapon = weapon;
 
 	//this->clean_weapon = weapon.weapon_name;
+	this->is_reloading = weapon.is_reloading;
 
 	return true;
 }

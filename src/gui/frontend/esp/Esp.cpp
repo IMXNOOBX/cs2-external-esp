@@ -289,6 +289,29 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
+	if (cfg::esp::flags::reloading) {
+		if (player.is_reloading) {
+			d->AddCircleFilled(
+				Vec2_t(
+					(bounds.first.x + bounds.second.x) / 2 + 13,
+					bounds.second.y + 20
+				),
+				5.f,
+				IM_COL32(255, 255, 255, 255)
+			);
+		}
+		else {
+			d->AddCircle(
+				Vec2_t(
+					(bounds.first.x + bounds.second.x) / 2 + 13,
+					bounds.second.y + 20
+				),
+				5.f,
+				IM_COL32(255, 255, 255, 255)
+			);
+		}
+	}
+
 	int offset = 0;
 	static int offset_mult = 15;
 
