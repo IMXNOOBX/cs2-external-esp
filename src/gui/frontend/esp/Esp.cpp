@@ -1,5 +1,7 @@
 #include "Esp.hpp"
 
+#include "gui/renderer/Renderer.hpp"
+
 bool Esp::Init() {
 	return GetInstance().InitImpl();
 }
@@ -26,8 +28,11 @@ void Esp::RenderImpl() {
 	auto snapshot = Cache::CopySnapshot();
 	auto& game = snapshot.game;
 	auto& bomb = snapshot.bomb;
+	auto& local = snapshot.local;
 	auto& globals = snapshot.globals;
 	auto& players = snapshot.players;
+	
+	RenderSpectatorList(players);
 
 	ImGui::PushFont(this->font);
 
@@ -36,18 +41,16 @@ void Esp::RenderImpl() {
 
 	this->matrix = game.view_matrix;
 
-	static int local_team = 0;
+	RenderBomb(local, bomb);
+
 	for (auto& player : players) {
 		if (!player.alive)
 			continue;
 
-		if (player.localplayer) {
-			local_team = player.team;
-			localplayer = &player;
+		if (player.localplayer)
 			continue;
-		}
 
-		bool mate = player.team == local_team;
+		bool mate = player.team == local.team;
 
 		if (!cfg::esp::team && mate)
 			continue;
@@ -55,13 +58,19 @@ void Esp::RenderImpl() {
 		if (cfg::esp::spotted && !player.spotted)
 			continue;
 
-		RenderPlayerTracers(player, mate);
+		// Are we spectating the player in first person? then dont render
+		// TODO: Exception here when spectating someone
+		if (
+			local.observer_services.target == player.pawn_controller_addr
+			&& local.observer_services.mode == ObserverMode::First
+		)
+			continue;
 
+		RenderPlayerTracers(local, player, mate);
 		RenderPlayer(player, mate);
 	}
 
-	RenderBomb(bomb);
-	RenderCrosshair();
+	RenderCrosshair(local);
 
 	ImGui::PopFont();
 }
@@ -226,7 +235,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::weapon) {
-		auto weapon_size = ImGui::CalcTextSize(player.clean_weapon.data());
+		auto weapon_size = ImGui::CalcTextSize(player.weapon.name.data());
 
 		d->AddText(
 			Vec2_t(
@@ -234,7 +243,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 				bounds.second.y + 5
 			), 
 			IM_COL32(255, 255, 255, 255),
-			player.clean_weapon.data()
+			player.weapon.name.data()
 		);
 	}
 
@@ -292,25 +301,26 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 }
 
-void Esp::RenderCrosshair()
+void Esp::RenderCrosshair(Player local)
 {
 	if (!cfg::settings::crosshair)
 		return;
 
-	if (!localplayer)
+	//if (!localplayer)
+	//	return;
+
+	if (local.scoped)
 		return;
 
-	if (localplayer->scoped)
+	auto weapon = local.weapon;
+
+	if (weapon.item_index == -1)
 		return;
 
-	auto weapon = localplayer->clean_weapon;
+	//static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20" };
+	static std::vector<WeaponIds> valid_weapons = { weapon_ssg08, weapon_awp, weapon_g3sg1, weapon_scar20 };
 
-	if (weapon.empty())
-		return;
-
-	static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20"};
-
-	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon) == valid_weapons.end())
+	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon.item_index) == valid_weapons.end())
 		return;
 
 	ImVec2 center(
@@ -333,16 +343,16 @@ void Esp::RenderCrosshair()
 		thickness);
 }
 
-void Esp::RenderPlayerTracers(Player player, bool mate) {
+void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 	if (!cfg::esp::tracers)
 		return;
 
 	Vec2_t screenPos;
 	bool projected = matrix.wts(player.pos, io.DisplaySize, screenPos, false);
 
-	if (!projected && localplayer)
+	if (!projected)
 	{
-		Vec3_t camPos = localplayer->pos;
+		Vec3_t camPos = source.pos;
 		Vec3_t dir = player.pos - camPos;
 
 		// projection for off screen players
@@ -383,7 +393,7 @@ void Esp::RenderPlayerTracers(Player player, bool mate) {
 	);
 }
 
-void Esp::RenderBomb(Bomb bomb) {
+void Esp::RenderBomb(Player local, Bomb bomb) {
 	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
 		return;
 
@@ -399,10 +409,10 @@ void Esp::RenderBomb(Bomb bomb) {
 	if (!matrix.wts(bomb.pos, io.DisplaySize, pos))
 		return;
 
-	if (!localplayer)
+	if (!local.alive)
 		return;
 
-	auto distance = bomb.pos.dist_to(localplayer->pos);
+	auto distance = bomb.pos.dist_to(local.pos);
 
 	float width = 20.f;
 	float height = 20.f;
@@ -454,4 +464,118 @@ void Esp::RenderBomb(Bomb bomb) {
 		IM_COL32(255, 255, 255, 255),
 		bomb_string.data()
 	);
+}
+
+Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
+	Player* found = nullptr;
+
+	for (auto& p : players) {
+		if (p.pawn_controller_addr == index) {
+			found = &p;
+			break;
+		}
+	}
+	return found;
+}
+
+// TODO: Move this to Overlays.cpp
+void Esp::RenderSpectatorList(std::vector<Player>& players) {
+	if (!cfg::spectators::enabled) 
+		return;
+
+	static auto io = ImGui::GetIO();
+	static auto screen = io.DisplaySize;
+	const bool detailed = cfg::spectators::detailed;
+	const bool self_only = cfg::spectators::self_only;
+	const bool is_menu_open = Renderer::IsOpen();
+	
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
+
+	bool should_render = false;
+	for (Player& p : players) {
+		if (auto i = p.observer_services.target) {
+			Player* target = FindPlayerByPawnIndex(players, i);
+
+			if (self_only && (!target || !target->localplayer))
+				continue;
+		
+			should_render = true;
+			break;
+		}
+	}
+
+	if (!should_render && !is_menu_open)
+		return;
+
+	// Window
+	ImGui::SetNextWindowPos(ImVec2(cfg::spectators::pos.x, cfg::spectators::pos.y), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
+
+	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
+		ImGui::End();
+		return;
+	}
+
+	if (is_menu_open)
+		cfg::spectators::pos = {
+			ImGui::GetWindowPos().x,
+			ImGui::GetWindowPos().y
+		};
+
+	if (!should_render && is_menu_open) {
+		ImGui::TextDisabled("No spectators");
+		return ImGui::End();
+	}
+
+	//const int columns = detailed ? 3 : 1;
+
+	if (detailed) {
+		if (ImGui::BeginTable("##detailed", 3, flags_table)) {
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Mode");
+			ImGui::TableSetupColumn("Target");
+			ImGui::TableHeadersRow();
+
+			for (Player& player : players) {
+				if (player.alive) continue;
+
+				int targetIndex = player.observer_services.target;
+				if (targetIndex == 0) continue;
+
+				Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+				if (self_only && (!target || !target->localplayer)) 
+					continue;
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s", player.name);
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%s", player.observer_services.ToString());
+
+				ImGui::TableSetColumnIndex(2);
+				if (self_only) ImGui::Text("You");
+				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("No One");
+				else ImGui::Text("%s", target ? target->name : "Invalid/bomb");
+			}
+
+			ImGui::EndTable();
+		}
+	}
+	else {
+		for (Player& player : players) {
+			if (player.alive) continue;
+			int targetIndex = player.observer_services.target;
+			if (targetIndex == 0) continue;
+			Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+			if (self_only && (!target || !target->localplayer)) continue;
+
+			ImGui::Text("%s", player.name);
+		}
+	}
+
+	ImGui::End();
 }

@@ -29,7 +29,6 @@ private:
     ImDrawList* d;
 
     // Temporary storage for ease
-    Player* localplayer; 
     view_matrix_t matrix;
 
     void RenderPlayer(Player player, bool mate = false);
@@ -37,8 +36,9 @@ private:
     void RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds);
     void RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
     void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
-    void RenderPlayerTracers(Player player, bool mate = false);
+    void RenderPlayerTracers(Player source, Player player, bool mate = false);
 
-    void RenderBomb(Bomb bomb);
-	void RenderCrosshair();
+	void RenderCrosshair(Player local);
+    void RenderBomb(Player local, Bomb bomb);
+    void RenderSpectatorList(std::vector<Player>& players);
 };
