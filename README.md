@@ -6,11 +6,10 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > Click the picture below to go to the showcase video
 
-[![cs2esp](.gitlab/showcase.png)](https://youtu.be/3WHHLUyHyzA)
+[![cs2esp](.github/showcase.png)](https://youtu.be/3WHHLUyHyzA)
 
 ## 🌳 Simple Use
 
-1. You can download it from [**Releases**](./releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
 1. You can download it from [**Releases**](./releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
 
 2. Open the game & the `cs2-external-esp.exe`, and thats it!
