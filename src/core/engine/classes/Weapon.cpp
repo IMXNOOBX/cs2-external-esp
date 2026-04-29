@@ -12,13 +12,12 @@ bool Weapon::Update() {
     if (!entity_list)
         return false;
 
-    uint32_t bucket_index = (slot_index & 0x7FFF) >> 9;
-    uintptr_t bucket_ptr = p->read<uintptr_t>(entity_list + 0x10 + 0x8 * bucket_index);
+    // Similar to Player::GetPawn()
+    uintptr_t bucket_ptr = p->read<uintptr_t>(entity_list + 0x10 + 0x8 * ((slot_index & 0x7FFF) >> 9));
     if (!bucket_ptr)
         return false;
 
-    uint32_t index_in_bucket = slot_index & 0x1FF;
-    uintptr_t weapon_ptr = p->read<uintptr_t>(bucket_ptr + 0x70 * index_in_bucket);
+    uintptr_t weapon_ptr = p->read<uintptr_t>(bucket_ptr + 0x70 * (slot_index & 0x1FF));
 	if (!weapon_ptr)
 		return false;
 
