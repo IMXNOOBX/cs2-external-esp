@@ -41,7 +41,7 @@ void Menu::RenderImpl() {
 	static auto color_flags = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_None;
 
 #ifdef _DEBUG
-	static auto title = "gitlab.com/IMXNOOBX/cs2-external-esp (recode) [DEV]";
+	static auto title = "github.com/IMXNOOBX/cs2-external-esp (recode) [DEV]";
 #else
 	static auto title = "cs2-external-esp | recode";
 #endif
@@ -85,7 +85,7 @@ void Menu::RenderImpl() {
 
 				ImGui::Checkbox("Enable", &cfg::enabled);
 
-				ImGui::TextLinkOpenURL("Source", "https://gitlab.com/IMXNOOBX/cs2-external-esp");
+				ImGui::TextLinkOpenURL("Source", "https://github.com/IMXNOOBX/cs2-external-esp");
 				ImGui::SameLine();
 				ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
 			}

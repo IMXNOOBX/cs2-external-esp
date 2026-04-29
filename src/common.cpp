@@ -14,8 +14,8 @@
 	• Sell: This license forbids selling original or modified material for commercial purposes.
 	• Sublicense: This license forbids sublicensing original or modified material.
 
-	© Copyright by IMXNOOBX (https://gitlab.com/IMXNOOBX) and contributors.
-	See https://gitlab.com/IMXNOOBX/cs2-external-esp/-/blob/main/LICENSE for full details.
+	© Copyright by IMXNOOBX (https://github.com/IMXNOOBX) and contributors.
+	See https://github.com/IMXNOOBX/cs2-external-esp/-/blob/main/LICENSE for full details.
 */
 
 #include "common.hpp"

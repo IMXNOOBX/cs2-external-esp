@@ -1,8 +1,5 @@
 # 🕹️ CS2 External ESP | Recode
 
-> [!WARNING]
-> Due to some recent *issues* the project has been **temporarily** moved to [gitlab.com/cs2-external-esp](https://gitlab.com/IMXNOOBX/cs2-external-esp), more info in our discord server!
-
 Simple external ESP for Counter-Strike 2. After years of development the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, several quality-of-life additions, and automatic offset scanning to help maintain compatibility through game updates.
 
 ## Showcase
@@ -32,16 +29,16 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > This project has been reworked **3 times**, the current one been the third!
 
-* [Discord Overlay (2023)](./-/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
-* [Gdi Overlay (2023-2025)](./-/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
-* [Modern Version (Today)](./-/cs2-external-esp) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
+* [Discord Overlay (2023)](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
+* [Gdi Overlay (2023-2025)](https://github.com/IMXNOOBX/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
+* [Modern Version (Today)](.) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
 
 ## 📘 Developer Instructions
 
 1. Clone repository. Make sure you copy the command below to clone dependencies too
 
 ```sh
-git clone --recursive https://gitlab.com/IMXNOOBX/cs2-external-esp
+git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 ```
 
 * If you cloned the repository before submodules were added, run this command `git submodule update --init --recursive`
@@ -73,4 +70,4 @@ This project is licensed under [**CC BY-NC 4.0**](https://creativecommons.org/li
 ```
 
 ### ©️ Copyright
-The content of this project is ©️ by [IMXNOOBX](https://gitlab.com/IMXNOOBX) and the respective contributors. See the [LICENSE.md](LICENSE) file for details.
+The content of this project is ©️ by [IMXNOOBX](https://github.com/IMXNOOBX) and the respective contributors. See the [LICENSE.md](LICENSE) file for details.

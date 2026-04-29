@@ -65,7 +65,7 @@ bool Updater::ProcessImpl() {
 		auto result = MessageBox(
 			NULL, 
 			"This application has been marked as \"Unsafe\" to use, its not recommended to proceed.\nDo you want to continue?"
-			"\n\nMore information available at: https://gitlab.com/IMXNOOBX/cs2-external-esp"
+			"\n\nMore information available at: https://github.com/IMXNOOBX/cs2-external-esp"
 			"\n\nCtrl+C To copy this message",
 			"Unsafe | Warning", MB_ICONWARNING | MB_YESNO
 		);
@@ -83,7 +83,7 @@ bool Updater::ProcessImpl() {
 		auto result = MessageBox(
 			NULL,
 			"This application is \"out-of-date\", and might not work as expected.\nDo you want to continue?"
-			"\n\nMore information available at: https://gitlab.com/IMXNOOBX/cs2-external-esp"
+			"\n\nMore information available at: https://github.com/IMXNOOBX/cs2-external-esp"
 			"\n\nCtrl+C To copy this message",
 			"Out Of Date | Warning", MB_ICONWARNING | MB_YESNO
 		);
