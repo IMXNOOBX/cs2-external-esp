@@ -36,7 +36,7 @@ bool Player::GetController() {
 	auto p = Engine::GetProcess();
 	auto client = Engine::GetClient();
 
-	this->controller = p->read<DWORD64>(le + (controller_index + 1) * 0x70); // before was 0x78
+	this->controller = p->read<DWORD64>(list_entry + (index + 1) * 0x70); // before was 0x78
 
 	return this->controller != 0;
 }
@@ -45,22 +45,12 @@ bool Player::GetPawn() {
 	auto p = Engine::GetProcess();
 	auto client = Engine::GetClient();
 
-	DWORD64 entity_pawn_list_entry = 0;
-	DWORD64 entity_pawn_address = 0;
-
-	entity_pawn_address = p->read<DWORD64>(controller + offsets::controller::m_hPawn);
+	auto entity_pawn_address = p->read<uintptr_t>(controller + offsets::controller::m_hPawn);
 
 	if (!entity_pawn_address)
 		return false;
 
-	this->pawn_index = entity_pawn_address;
-
-	entity_pawn_list_entry = p->read<DWORD64>(client.base + offsets::entityList);
-
-	if (!entity_pawn_list_entry)
-		return false;
-
-	entity_pawn_list_entry = p->read<uintptr_t>(entity_pawn_list_entry + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
+	auto entity_pawn_list_entry = p->read<uintptr_t>(this->entity_list + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
 
 	if (!entity_pawn_list_entry)
 		return false;
@@ -129,7 +119,7 @@ bool Player::UpdatePawn() {
 	// Shows errors when player just respawned
 	if (!UpdateWeapon()) {
 		//LOGF(FATAL, "Failed to update weapon"); // too verbose
-		//return false;
+		return false;
 	}
 
 
@@ -171,37 +161,15 @@ bool Player::UpdateWeapon() {
 	if (!active_weapon_index)
 		return false;
 
-	auto weapon = Weapon(active_weapon_index, this->le);
+	auto weapon = Weapon(this->entity_list, active_weapon_index);
 
 	if (!weapon.Update())
 		return false;
 
-	this->clean_weapon = weapon.weapon_name;
+	this->weapon = weapon;
 
-	/*
-	auto clipping_weapon = p->read<uintptr_t>(this->pawn + offsets::pawn::m_pClippingWeapon);
+	//this->clean_weapon = weapon.weapon_name;
 
-	if (!clipping_weapon)
-		return false;
-
-	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x10);
-
-	if (!clipping_weapon)
-		return false;
-
-	clipping_weapon = p->read<uintptr_t>(clipping_weapon + 0x20);
-
-	if (!clipping_weapon)
-		return false;
-
-	if (!p->read_raw(clipping_weapon, this->weapon, sizeof(this->weapon)))
-		return false;
-
-	this->clean_weapon = this->weapon;
-
-	if (this->clean_weapon.compare(0, 7, "weapon_") == 0)
-		this->clean_weapon = this->clean_weapon.substr(7, this->clean_weapon.length());
-		*/
 	return true;
 }
 

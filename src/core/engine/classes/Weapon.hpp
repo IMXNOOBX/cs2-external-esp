@@ -1,18 +1,23 @@
 #pragma once
+#include "core/engine/types/Weapons.hpp"
+
 class Weapon
 {
 public:
-	Weapon(int index, uintptr_t le) : index(index), le(le) {}
-	bool Update();
+	Weapon(uintptr_t entity_list, int slot_index)
+		: entity_list(entity_list), slot_index(slot_index) {}
+	Weapon() 
+		: item_index(-1), name("Invalid"), slot_index(0), entity_list(0){}
 
+	bool Update();
 public:
-	std::string weapon_name;
+	short item_index;
+	std::string name;
 	
 private:
 	const char* ToString() const;
 
-	short item_index;
-	int index;
-	uintptr_t le;
+	int slot_index;
+	uintptr_t entity_list;
 };
 

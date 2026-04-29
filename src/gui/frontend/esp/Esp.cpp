@@ -240,7 +240,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::weapon) {
-		auto weapon_size = ImGui::CalcTextSize(player.clean_weapon.data());
+		auto weapon_size = ImGui::CalcTextSize(player.weapon.name.data());
 
 		d->AddText(
 			Vec2_t(
@@ -248,7 +248,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 				bounds.second.y + 5
 			), 
 			IM_COL32(255, 255, 255, 255),
-			player.clean_weapon.data()
+			player.weapon.name.data()
 		);
 	}
 
@@ -317,14 +317,15 @@ void Esp::RenderCrosshair()
 	if (localplayer->scoped)
 		return;
 
-	auto weapon = localplayer->clean_weapon;
+	auto weapon = localplayer->weapon;
 
-	if (weapon.empty())
+	if (weapon.item_index == -1)
 		return;
 
-	static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20"};
+	//static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20" };
+	static std::vector<WeaponIds> valid_weapons = { weapon_ssg08, weapon_awp, weapon_g3sg1, weapon_scar20 };
 
-	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon) == valid_weapons.end())
+	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon.item_index) == valid_weapons.end())
 		return;
 
 	ImVec2 center(
