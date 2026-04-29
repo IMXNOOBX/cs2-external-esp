@@ -45,22 +45,12 @@ bool Player::GetPawn() {
 	auto p = Engine::GetProcess();
 	auto client = Engine::GetClient();
 
-	DWORD64 entity_pawn_list_entry = 0;
-	DWORD64 entity_pawn_address = 0;
-
-	entity_pawn_address = p->read<DWORD64>(controller + offsets::controller::m_hPawn);
+	auto entity_pawn_address = p->read<uintptr_t>(controller + offsets::controller::m_hPawn);
 
 	if (!entity_pawn_address)
 		return false;
 
-	this->pawn_index = entity_pawn_address;
-
-	entity_pawn_list_entry = p->read<DWORD64>(client.base + offsets::entityList);
-
-	if (!entity_pawn_list_entry)
-		return false;
-
-	entity_pawn_list_entry = p->read<uintptr_t>(entity_pawn_list_entry + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
+	auto entity_pawn_list_entry = p->read<uintptr_t>(this->entity_list + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
 
 	if (!entity_pawn_list_entry)
 		return false;
@@ -171,7 +161,7 @@ bool Player::UpdateWeapon() {
 	if (!active_weapon_index)
 		return false;
 
-	auto weapon = Weapon(entity_list, active_weapon_index);
+	auto weapon = Weapon(this->entity_list, active_weapon_index);
 
 	if (!weapon.Update())
 		return false;
