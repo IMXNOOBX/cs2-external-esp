@@ -523,8 +523,10 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 			ImGui::GetWindowPos().y
 		};
 
-	if (!should_render && is_menu_open) 
+	if (!should_render && is_menu_open) {
 		ImGui::TextDisabled("No spectators");
+		return ImGui::End();
+	}
 
 	//const int columns = detailed ? 3 : 1;
 
@@ -555,7 +557,7 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 
 				ImGui::TableSetColumnIndex(2);
 				if (self_only) ImGui::Text("You");
-				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("");
+				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("No One");
 				else ImGui::Text("%s", target ? target->name : "Invalid/bomb");
 			}
 
