@@ -5,6 +5,7 @@
 
 class Player {
 public:
+    Player() {}; //i mean adding this default no be able to define the local
     Player(int index, uintptr_t el, uintptr_t le) 
         : index(index), entity_list(el), list_entry(le){}
 
@@ -35,11 +36,11 @@ public:
 
     std::vector<bone_pos> bone_list;
 
+    int pawn_controller_addr;
     ObserverServices observer_services;
-    int controller_index;
-    int pawn_index;
 private:
-    int index; 
+    int index;
+
     uintptr_t list_entry;
     uintptr_t entity_list;
 

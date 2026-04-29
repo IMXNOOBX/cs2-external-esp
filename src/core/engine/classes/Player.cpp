@@ -1,8 +1,9 @@
 #include "Player.hpp"
 
+#include "Weapon.hpp"
 #include "core/engine/Engine.hpp"
 #include "core/offsets/Dumper.hpp"
-#include "Weapon.hpp"
+
 #include "core/engine/classes/ObserverServices.hpp"
 
 bool Player::Update() {
@@ -49,6 +50,8 @@ bool Player::GetPawn() {
 
 	if (!entity_pawn_address)
 		return false;
+
+	this->pawn_controller_addr = entity_pawn_address;
 
 	auto entity_pawn_list_entry = p->read<uintptr_t>(this->entity_list + 0x10 + 0x8 * ((entity_pawn_address & 0x7FFF) >> 9));
 

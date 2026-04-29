@@ -12,6 +12,7 @@ Snapshot Cache::CopySnapshot() {
     return {
         Get().game,
         Get().bomb,
+        Get().local,
         Get().globals,
         Get().players
     };
@@ -52,6 +53,9 @@ bool Cache::RefreshImpl() {
 
         if (!player.Update())
             continue;
+
+        if (player.localplayer)
+            this->local = player;
     
         scan.push_back(player);
     }

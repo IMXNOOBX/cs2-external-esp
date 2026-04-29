@@ -28,6 +28,7 @@ void Esp::RenderImpl() {
 	auto snapshot = Cache::CopySnapshot();
 	auto& game = snapshot.game;
 	auto& bomb = snapshot.bomb;
+	auto& local = snapshot.local;
 	auto& globals = snapshot.globals;
 	auto& players = snapshot.players;
 	
@@ -40,20 +41,16 @@ void Esp::RenderImpl() {
 
 	this->matrix = game.view_matrix;
 
-	RenderBomb(bomb);
+	RenderBomb(local, bomb);
 
-	static int local_team = 0;
 	for (auto& player : players) {
 		if (!player.alive)
 			continue;
 
-		if (player.localplayer) {
-			local_team = player.team;
-			localplayer = &player;
+		if (player.localplayer)
 			continue;
-		}
 
-		bool mate = player.team == local_team;
+		bool mate = player.team == local.team;
 
 		if (!cfg::esp::team && mate)
 			continue;
@@ -64,18 +61,16 @@ void Esp::RenderImpl() {
 		// Are we spectating the player in first person? then dont render
 		// TODO: Exception here when spectating someone
 		if (
-			localplayer
-			&& localplayer->observer_services.target == player.pawn_index
-			&& localplayer->observer_services.mode == ObserverMode::First
+			local.observer_services.target == player.pawn_controller_addr
+			&& local.observer_services.mode == ObserverMode::First
 		)
 			continue;
 
-		RenderPlayerTracers(player, mate);
-
+		RenderPlayerTracers(local, player, mate);
 		RenderPlayer(player, mate);
 	}
 
-	RenderCrosshair();
+	RenderCrosshair(local);
 
 	ImGui::PopFont();
 }
@@ -306,18 +301,18 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 }
 
-void Esp::RenderCrosshair()
+void Esp::RenderCrosshair(Player local)
 {
 	if (!cfg::settings::crosshair)
 		return;
 
-	if (!localplayer)
+	//if (!localplayer)
+	//	return;
+
+	if (local.scoped)
 		return;
 
-	if (localplayer->scoped)
-		return;
-
-	auto weapon = localplayer->weapon;
+	auto weapon = local.weapon;
 
 	if (weapon.item_index == -1)
 		return;
@@ -348,16 +343,16 @@ void Esp::RenderCrosshair()
 		thickness);
 }
 
-void Esp::RenderPlayerTracers(Player player, bool mate) {
+void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 	if (!cfg::esp::tracers)
 		return;
 
 	Vec2_t screenPos;
 	bool projected = matrix.wts(player.pos, io.DisplaySize, screenPos, false);
 
-	if (!projected && localplayer)
+	if (!projected)
 	{
-		Vec3_t camPos = localplayer->pos;
+		Vec3_t camPos = source.pos;
 		Vec3_t dir = player.pos - camPos;
 
 		// projection for off screen players
@@ -398,7 +393,7 @@ void Esp::RenderPlayerTracers(Player player, bool mate) {
 	);
 }
 
-void Esp::RenderBomb(Bomb bomb) {
+void Esp::RenderBomb(Player local, Bomb bomb) {
 	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
 		return;
 
@@ -414,10 +409,10 @@ void Esp::RenderBomb(Bomb bomb) {
 	if (!matrix.wts(bomb.pos, io.DisplaySize, pos))
 		return;
 
-	if (!localplayer)
+	if (!local.alive)
 		return;
 
-	auto distance = bomb.pos.dist_to(localplayer->pos);
+	auto distance = bomb.pos.dist_to(local.pos);
 
 	float width = 20.f;
 	float height = 20.f;
@@ -475,7 +470,7 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 	Player* found = nullptr;
 
 	for (auto& p : players) {
-		if (p.pawn_index == index) {
+		if (p.pawn_controller_addr == index) {
 			found = &p;
 			break;
 		}
@@ -485,7 +480,8 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 
 // TODO: Move this to Overlays.cpp
 void Esp::RenderSpectatorList(std::vector<Player>& players) {
-	if (!cfg::spectators::enabled || !localplayer) return;
+	if (!cfg::spectators::enabled) 
+		return;
 
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
