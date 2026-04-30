@@ -120,6 +120,8 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
 	data["esp"]["flags"]["scoped"] = cfg::esp::flags::scoped;
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
+	data["esp"]["flags"]["ammo"] = cfg::esp::flags::ammo;
+	data["esp"]["flags"]["reloading"] = cfg::esp::flags::reloading;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
 
