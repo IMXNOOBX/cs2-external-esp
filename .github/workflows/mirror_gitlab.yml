@@ -1,0 +1,19 @@
+name: Mirror Gitlab
+on: 
+  workflow_dispatch:
+  # push: # Disabled for now
+
+jobs:
+  run:
+    name: Mirror Latest Commits
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: yesolutions/mirror-action@master
+        with:
+          REMOTE: 'https://gitlab.com/IMXNOOBX/cs2-external-esp'
+          GIT_USERNAME: IMXNOOBX
+          GIT_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
