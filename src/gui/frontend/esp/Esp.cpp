@@ -238,7 +238,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
-	if (cfg::esp::flags::ammo) {
+	if (cfg::esp::flags::ammo && player.ammo != -1) {
 		auto txt = std::to_string(player.ammo);
 		auto ammo_size = ImGui::CalcTextSize(txt.c_str());
 
