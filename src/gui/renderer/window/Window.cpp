@@ -161,9 +161,7 @@ bool Window::SpawnWindow()
 	UpdateWindow(hwnd);
 	SetForeground(hwnd);
 
-	// error: cast from pointer to smaller type 'long' loses information
 	LOGF(VERBOSE, "Window Created with HWND {} dimensions {}w {}h", (uintptr_t)hwnd, width, height);
-	// warning: non-void function does not return a value in all control paths [-Wreturn-type]
 	return true;
 }
 
@@ -313,8 +311,9 @@ bool Window::SetAffinity(HWND window, WindowAffinity afi) {
 		mode = WDA_EXCLUDEFROMCAPTURE;
 		mode_str = "Invisible";
 		break;
-	// warning: enumeration value 'Disabled' not handled in switch [-Wswitch]
 	default:
+		mode = WDA_NONE;
+		mode_str = "Disabled";
 		break;
 	}
 

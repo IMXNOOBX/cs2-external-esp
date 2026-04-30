@@ -1,6 +1,5 @@
 #pragma once
 
-// warning: 'IMGUI_DEFINE_MATH_OPERATORS' macro redefined [-Wmacro-redefined]
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif

@@ -1,6 +1,5 @@
 #pragma once
 
-// warning: 'CURL_STATICLIB' macro redefined [-Wmacro-redefined]
 #ifndef CURL_STATICLIB
 #define CURL_STATICLIB
 #endif

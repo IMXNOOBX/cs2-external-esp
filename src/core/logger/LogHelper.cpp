@@ -94,7 +94,6 @@ LogColor LogHelper::GetColor(const eLogLevel level)
 }
 
 const char* LogHelper::GetLevelStr(const eLogLevel level) {
-    // warning: braces around scalar initializer [-Wbraced-scalar-init]
     constexpr std::array<const char*, 4> levelStrings = {{"DBG", "INF", "WRN", "ERR"}};
 
     return levelStrings[level];
