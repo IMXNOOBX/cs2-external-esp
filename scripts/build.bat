@@ -2,8 +2,11 @@
 SETLOCAL EnableDelayedExpansion
 
 set CC=zig c++
-set OUT=obs64.exe
+set BINARY=cs2-external-esp.exe
 set TARGET=x86_64-windows-gnu
+
+set OUTDIR=x64\%TARGET%
+set OUT=%OUTDIR%\%BINARY%
 
 if not exist "src\external\lib\libLIBCMT.a" goto :gen_libs
 if not exist "src\external\lib\libOLDNAMES.a" goto :gen_libs
@@ -11,7 +14,7 @@ goto :skip_gen
 
 :gen_libs
 echo generating compat libs
-%CC% -c src\msvc_compat.cpp -o msvc_compat.obj
+%CC% -c scripts\msvc\compatibility.cpp -o msvc_compat.obj
 zig ar rcs src\external\lib\libLIBCMT.a msvc_compat.obj
 zig ar rcs src\external\lib\libOLDNAMES.a msvc_compat.obj
 del msvc_compat.obj
@@ -34,7 +37,7 @@ set LIBS=src/external/lib/libcurl.lib ^
          -ld3d11 -ldxgi -ld3dcompiler_47 -ldwmapi -lgdi32 -luser32 -limm32 -lole32 ^
          -lws2_32 -lwldap32 -lcrypt32 -lnormaliz -ladvapi32 -lbcrypt
 
-set SRCS=src/msvc_compat.cpp ^
+set SRCS=scripts\msvc\compatibility.cpp ^
          src/common.cpp ^
          src/config/Config.cpp ^
          src/core/engine/cache/Cache.cpp ^
@@ -68,6 +71,8 @@ set SRCS=src/msvc_compat.cpp ^
          src/main.cpp ^
          src/updater/http/HttpHelper.cpp ^
          src/updater/Updater.cpp
+
+mkdir "%OUTDIR%" 2>nul
 
 echo compiling project
 %CC% -target %TARGET% -std=c++20 -O3 -Wno-date-time -fno-autolink -include src/common.hpp %DEFINES% %INCLUDES% %SRCS% -o %OUT% %LIBS% -Lsrc/external/lib
