@@ -261,20 +261,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
-	if (cfg::esp::flags::reloading) {
-		auto center = Vec2_t(
-			(bounds.first.x + bounds.second.x) / 2 + 13,
-			bounds.second.y + 20
-		);
-
-		if (player.is_reloading) {
-			d->AddCircleFilled(center, 5.f, IM_COL32(255, 255, 255, 255));
-		}
-		else {
-			d->AddCircle(center, 5.f, IM_COL32(255, 255, 255, 255));
-		}
-	}
-
 	if (cfg::esp::flags::ammo && player.ammo != -1) {
 		auto txt = std::to_string(player.ammo);
 		auto ammo_size = ImGui::CalcTextSize(txt.c_str());
@@ -290,17 +276,18 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::reloading) {
-		auto center = Vec2_t(
-			(bounds.first.x + bounds.second.x) / 2 + 13,
-			bounds.second.y + 20
-		);
+		//auto center = Vec2_t(
+		//	(bounds.first.x + bounds.second.x) / 2,
+		//	bounds.second.y + 20
+		//);
+		//auto center = bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 20, offset);
 
-		if (player.is_reloading) {
-			d->AddCircleFilled(center, 5.f, IM_COL32(255, 255, 255, 255));
-		}
-		else {
-			d->AddCircle(center, 5.f, IM_COL32(255, 255, 255, 255));
-		}
+		//if (player.is_reloading) //{
+		//	d->AddCircleFilled(center, 7.f, IM_COL32(255, 255, 255, 255));
+		//}
+		//else {
+		//	//d->AddCircle(center, 7.f, IM_COL32(255, 255, 255, 255));
+		//}
 	}
 
 	int offset = 0;
@@ -313,7 +300,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			std::format("{}$", player.money).c_str()
 		);
 
-		offset += offset_mult;
+		offset -= offset_mult;
 	}
 
 	if (cfg::esp::flags::ping && player.ping) {
@@ -323,7 +310,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			std::format("{}ms", player.ping).c_str()
 		);
 
-		offset += offset_mult;
+		offset -= offset_mult;
 	}
 
 	if (cfg::esp::flags::flashed && player.flashed) {
@@ -333,7 +320,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			"flashed"
 		);
 
-		offset += offset_mult;
+		offset -= offset_mult;
 	}
 
 	if (cfg::esp::flags::defusing && player.defusing) {
@@ -343,7 +330,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			"defusing"
 		);
 
-		offset += offset_mult;
+		offset -= offset_mult;
 	}
 
 	if (cfg::esp::flags::scoped && player.scoped)
@@ -353,8 +340,20 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 			IM_COL32(100, 100, 255, 255),
 			"scoped");
 
-		offset += offset_mult;
+		offset -= offset_mult;
 	}
+
+	if (cfg::esp::flags::reloading && player.is_reloading)
+	{
+		d->AddText(
+			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
+			IM_COL32(200, 200, 100, 255),
+			"reloading");
+
+		offset -= offset_mult;
+	}
+
+
 }
 
 void Esp::RenderCrosshair(Player local)

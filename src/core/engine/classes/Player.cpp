@@ -169,10 +169,8 @@ bool Player::UpdateWeapon() {
 	if (!weapon.Update())
 		return false;
 
-	this->ammo = weapon.ammo;
 	this->weapon = weapon;
-
-	//this->clean_weapon = weapon.weapon_name;
+	this->ammo = weapon.ammo;
 	this->is_reloading = weapon.is_reloading;
 
 	return true;
