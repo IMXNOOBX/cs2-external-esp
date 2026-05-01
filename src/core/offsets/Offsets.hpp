@@ -47,7 +47,8 @@ namespace offsets
 		constexpr std::ptrdiff_t m_AttributeManager = 0x1180; // C_AttributeContainer - C_EconEntity (parent of C_BasePlayerWeapon)
 		constexpr std::ptrdiff_t m_Item = 0x50; // C_EconItemView - C_AttributeContainer
 		constexpr std::ptrdiff_t m_iItemDefinitionIndex = 0x1BA; // uint16 - C_EconItemView
-
+		constexpr std::ptrdiff_t m_iClip1 = 0x16D8; // int32 - C_BasePlayerWeapon
+		constexpr std::ptrdiff_t m_bInReload = 0x17F4; // bool - C_CSWeaponBase
 		constexpr std::ptrdiff_t m_pObserverServices = 0x11F8; // CPlayer_ObserverServices*
 
 

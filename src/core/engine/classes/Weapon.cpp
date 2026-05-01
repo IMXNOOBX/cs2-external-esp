@@ -26,8 +26,10 @@ bool Weapon::Update() {
 	if (!this->item_index)
 		return false;
 
-    this->name = ToString();
-	
+    this->name = ToString();	
+    this->ammo = p->read<int32_t>(weapon_ptr + offsets::pawn::m_iClip1);
+    this->is_reloading = p->read<bool>(weapon_ptr + offsets::pawn::m_bInReload);
+
 	return true;
 }
 
