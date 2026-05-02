@@ -14,6 +14,6 @@ jobs:
           fetch-depth: 0
       - uses: yesolutions/mirror-action@master
         with:
-          REMOTE: 'https://gitlab.com/IMXNOOBX/cs2-external-esp'
+          REMOTE: 'https://gitlab.com/IMXNOOBX/cs2-external-esp-fork'
           GIT_USERNAME: IMXNOOBX
           GIT_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
