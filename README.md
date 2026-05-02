@@ -29,9 +29,9 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 > This project has been reworked **3 times**, the current one been the third!
 
-* [Discord Overlay (2023)](./-/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
-* [Gdi Overlay (2023-2025)](./-/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
-* [Modern Version (Today)](./-/cs2-external-esp) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
+* [Discord Overlay (2023)](https://github.com/IMXNOOBX/cs2-external-esp/tree/discord-overlay) is the first and the **simplest** version of all, great to start learning.
+* [Gdi Overlay (2023-2025)](https://github.com/IMXNOOBX/cs2-external-esp/tree/gdi-overlay) is an **improved version**, featuring automatic offset updating & configurations
+* [Modern Version (Today)](https://github.com/IMXNOOBX/cs2-external-esp/tree/main) is the current and the **latest version**, with a click ui, automatic offset scanning and more!
 
 ## 📘 Developer Instructions
 
@@ -50,7 +50,7 @@ git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 
 ## 💫 Credits
 
-* All [contributors](./graphs/contributors) who have helped improve the project!
+* All [contributors](https://github.com/IMXNOOBX/cs2-external-esp/graphs/contributors) who have helped improve the project!
 * [**a2x**](https://github.com/a2x) for his [offset dumper](https://github.com/a2x/cs2-dumper) and constant updates to it!
 
 ## 🔖 License & Copyright

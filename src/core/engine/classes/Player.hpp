@@ -5,7 +5,7 @@
 
 class Player {
 public:
-    Player() {}; //i mean adding this default no be able to define the local
+    Player() {}
     Player(int index, uintptr_t el, uintptr_t le) 
         : index(index), entity_list(el), list_entry(le){}
 
