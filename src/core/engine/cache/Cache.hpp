@@ -12,6 +12,7 @@ using namespace std::chrono;
 struct Snapshot {
 	Game game;
 	Bomb bomb;
+	Player local;
 	Globals globals;
 	std::vector<Player> players;
 };
@@ -20,6 +21,7 @@ class Cache {
 public:
 	Game game;
 	Bomb bomb;
+	Player local;
 	Globals globals;
 	std::vector<Player> players;
 public:

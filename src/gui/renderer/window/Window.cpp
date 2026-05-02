@@ -161,7 +161,8 @@ bool Window::SpawnWindow()
 	UpdateWindow(hwnd);
 	SetForeground(hwnd);
 
-	LOGF(VERBOSE, "Window Created with HWND {} dimensions {}w {}h", (long)hwnd, width, height);
+	LOGF(VERBOSE, "Window Created with HWND {} dimensions {}w {}h", (uintptr_t)hwnd, width, height);
+	return true;
 }
 
 void Window::DespawnWindow()
@@ -309,6 +310,10 @@ bool Window::SetAffinity(HWND window, WindowAffinity afi) {
 	case WindowAffinity::Invisible:
 		mode = WDA_EXCLUDEFROMCAPTURE;
 		mode_str = "Invisible";
+		break;
+	default:
+		mode = WDA_NONE;
+		mode_str = "Disabled";
 		break;
 	}
 

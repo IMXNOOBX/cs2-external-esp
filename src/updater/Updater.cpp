@@ -46,8 +46,10 @@ bool Updater::InitImpl() {
 		LOGF(WARNING, "This application has been marked as \"Unsafe\" to use, its not recommended to proceed");
 	else if (current_version < status.version_minimum)
 		LOGF(WARNING, "This application is \"Out Of Date\", and might not work as expected");
-	else if (status.version_current != current_version)
+	else if (status.version_current > current_version)
 		LOGF(WARNING, "There is a newer version available, current version is {} and github version is {}", current_version, status.version_current);
+	else if (status.version_current != current_version)
+		LOGF(WARNING, "Version missmatch detected, current version is {} and github version is {}", current_version, status.version_current);
 	else if (!status.notice.empty())
 		LOGF(WARNING, "Developer notice: {}", status.notice);
 
@@ -65,7 +67,7 @@ bool Updater::ProcessImpl() {
 		auto result = MessageBox(
 			NULL, 
 			"This application has been marked as \"Unsafe\" to use, its not recommended to proceed.\nDo you want to continue?"
-			"\n\nMore information available at: https://github.com/IMXNOOBX/cs2-external-esp"
+			"\n\nMore information available at: https://gitlab.com/IMXNOOBX/cs2-external-esp"
 			"\n\nCtrl+C To copy this message",
 			"Unsafe | Warning", MB_ICONWARNING | MB_YESNO
 		);
@@ -83,7 +85,7 @@ bool Updater::ProcessImpl() {
 		auto result = MessageBox(
 			NULL,
 			"This application is \"out-of-date\", and might not work as expected.\nDo you want to continue?"
-			"\n\nMore information available at: https://github.com/IMXNOOBX/cs2-external-esp"
+			"\n\nMore information available at: https://gitlab.com/IMXNOOBX/cs2-external-esp"
 			"\n\nCtrl+C To copy this message",
 			"Out Of Date | Warning", MB_ICONWARNING | MB_YESNO
 		);

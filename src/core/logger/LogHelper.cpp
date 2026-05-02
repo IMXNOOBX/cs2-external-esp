@@ -94,7 +94,7 @@ LogColor LogHelper::GetColor(const eLogLevel level)
 }
 
 const char* LogHelper::GetLevelStr(const eLogLevel level) {
-    constexpr std::array<const char*, 4> levelStrings = {{{"DBG"}, {"INF"}, {"WRN"}, {"ERR"}}};
+    constexpr std::array<const char*, 4> levelStrings = {{"DBG", "INF", "WRN", "ERR"}};
 
     return levelStrings[level];
 }

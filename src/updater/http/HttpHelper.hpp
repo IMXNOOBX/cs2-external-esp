@@ -1,6 +1,9 @@
 #pragma once
 
+#ifndef CURL_STATICLIB
 #define CURL_STATICLIB
+#endif
+
 #include <curl/curl.h>
 #pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "zlib.lib")

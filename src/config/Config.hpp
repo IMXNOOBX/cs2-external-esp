@@ -28,4 +28,6 @@ private:
 
     static color_t JsonToColor(const json& parent, const std::string& key, const color_t& def);
     static void ColorToJson(json& parent, const std::string& key, const color_t& color);
+    static void Vec2ToJson(json& parent, const std::string& key, const Vec2_t& vec);
+    static Vec2_t JsonToVec2(const json& parent, const std::string& key, const Vec2_t& def);
 };
