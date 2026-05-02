@@ -261,20 +261,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
-	if (cfg::esp::flags::ammo && player.ammo != -1) {
-		auto txt = std::to_string(player.ammo);
-		auto ammo_size = ImGui::CalcTextSize(txt.c_str());
-
-		d->AddText(
-			Vec2_t(
-				(bounds.first.x + bounds.second.x) / 2 - ammo_size.x / 2,
-				bounds.second.y + 15
-			),
-			IM_COL32(255, 255, 255, 255),
-			txt.data()
-		);
-	}
-
 	int offset = 0;
 	static int offset_mult = 15;
 
@@ -337,17 +323,12 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset -= offset_mult;
 	}
-
-
 }
 
 void Esp::RenderCrosshair(Player local)
 {
 	if (!cfg::settings::crosshair)
 		return;
-
-	//if (!localplayer)
-	//	return;
 
 	if (local.scoped)
 		return;
@@ -357,7 +338,6 @@ void Esp::RenderCrosshair(Player local)
 	if (weapon.item_index == -1)
 		return;
 
-	//static std::vector<std::string> valid_weapons = { "ssg08", "awp", "g3sg1", "scar20" };
 	static std::vector<WeaponIds> valid_weapons = { weapon_ssg08, weapon_awp, weapon_g3sg1, weapon_scar20 };
 
 	if (std::find(valid_weapons.begin(), valid_weapons.end(), weapon.item_index) == valid_weapons.end())
