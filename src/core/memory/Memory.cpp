@@ -1,4 +1,4 @@
-#include "memory.hpp"
+#include "Memory.hpp"
 #include <tlhelp32.h>
 
 uint32_t pProcess::FindProcessIdByProcessName(const char* ProcessName)

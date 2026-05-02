@@ -1,6 +1,6 @@
 #ifndef DISABLE_TIMERS
 
-#include "Timer.hpp"
+#include "timer.hpp"
 
 // Initialize static members
 std::map<std::string, Timer::FunctionData> Timer::functionData;

@@ -46,8 +46,10 @@ bool Updater::InitImpl() {
 		LOGF(WARNING, "This application has been marked as \"Unsafe\" to use, its not recommended to proceed");
 	else if (current_version < status.version_minimum)
 		LOGF(WARNING, "This application is \"Out Of Date\", and might not work as expected");
-	else if (status.version_current != current_version)
+	else if (status.version_current > current_version)
 		LOGF(WARNING, "There is a newer version available, current version is {} and github version is {}", current_version, status.version_current);
+	else if (status.version_current != current_version)
+		LOGF(WARNING, "Version missmatch detected, current version is {} and github version is {}", current_version, status.version_current);
 	else if (!status.notice.empty())
 		LOGF(WARNING, "Developer notice: {}", status.notice);
 

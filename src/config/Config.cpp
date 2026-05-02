@@ -47,12 +47,13 @@ bool Config::ReadImpl() {
 		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
 
-
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
 		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
 		cfg::esp::flags::money = data["esp"]["flags"].value("money", false);
 		cfg::esp::flags::weapon = data["esp"]["flags"].value("weapon", false);
+		cfg::esp::flags::ammo = data["esp"]["flags"].value("ammo", false);
+		cfg::esp::flags::reloading = data["esp"]["flags"].value("reloading", false);
 		cfg::esp::flags::scoped = data["esp"]["flags"].value("scoped", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
@@ -68,14 +69,22 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
 
+		// spectator list
+		cfg::spectators::enabled = data["spectators"].value("enabled", true);
+		cfg::spectators::detailed = data["spectators"].value("detailed", false);
+		cfg::spectators::self_only = data["spectators"].value("self_only", true);
+		cfg::spectators::pos = JsonToVec2(data["spectators"], "pos", { 10.f, 100.f });
+
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
 		cfg::settings::watermark = data["utils"].value("watermark", true);
 		cfg::settings::crosshair = data["utils"].value("crosshair", false);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
+		cfg::settings::free_cpu = data["utils"].value("free_cpu", true);
 		//cfg::settings::open_menu_key = data["utils"].value("open_menu_key", 0);
-	} catch (const std::exception& e) {
+	}
+	catch (const std::exception& e) {
 		LOGF(FATAL, "Failed to parse configuration");
 		WriteImpl();
 		return false;
@@ -105,14 +114,22 @@ bool Config::WriteImpl() {
 	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 	data["esp"]["tracers"] = cfg::esp::tracers;
 
-	// falgs
+	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
 	data["esp"]["flags"]["ping"] = cfg::esp::flags::ping;
 	data["esp"]["flags"]["money"] = cfg::esp::flags::money;
 	data["esp"]["flags"]["scoped"] = cfg::esp::flags::scoped;
 	data["esp"]["flags"]["weapon"] = cfg::esp::flags::weapon;
+	data["esp"]["flags"]["ammo"] = cfg::esp::flags::ammo;
+	data["esp"]["flags"]["reloading"] = cfg::esp::flags::reloading;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
+
+	// spectator list
+	data["spectators"]["enabled"] = cfg::spectators::enabled;
+	data["spectators"]["detailed"] = cfg::spectators::detailed;
+	data["spectators"]["self_only"] = cfg::spectators::self_only;
+	Vec2ToJson(data["spectators"], "pos", cfg::spectators::pos);
 
 	// colors
 	auto& col = data["esp"]["colors"];
@@ -141,6 +158,8 @@ bool Config::WriteImpl() {
 	return true;
 }
 
+
+// TODO: Refactor this
 color_t Config::JsonToColor(const json& parent, const std::string& key, const color_t& def) {
 	if (!parent.contains(key) || !parent[key].is_array() || parent[key].size() != 4)
 		return def;
@@ -154,4 +173,20 @@ color_t Config::JsonToColor(const json& parent, const std::string& key, const co
 
 void Config::ColorToJson(json& parent, const std::string& key, const color_t& color) {
 	parent[key] = { color.r, color.g, color.b, color.a };
+}
+
+Vec2_t Config::JsonToVec2(const json& parent, const std::string& key, const Vec2_t& def)
+{
+	if (!parent.contains(key) || !parent[key].is_array() || parent[key].size() != 2)
+		return def;
+
+	return Vec2_t{
+		parent[key][0].get<float>(),
+		parent[key][1].get<float>()
+	};
+}
+
+void Config::Vec2ToJson(json& parent, const std::string& key, const Vec2_t& vec)
+{
+	parent[key] = { vec.x, vec.y };
 }

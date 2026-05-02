@@ -15,7 +15,7 @@
     • Sublicense: This license forbids sublicensing original or modified material.
 
     © Copyright by IMXNOOBX (https://github.com/IMXNOOBX) and contributors.
-    See https://github.com/IMXNOOBX/cs2-external-esp/blob/main/LICENSE for full details.
+    See https://github.com/IMXNOOBX/cs2-external-esp/-/blob/main/LICENSE for full details.
 */
 
 #include <iostream>
@@ -34,9 +34,13 @@ int main()
 
     LOGF(INFO, "Compiled {}, Welcome to cs2-external-esp-recode!", __TIMESTAMP__);
 
+    // Needs to be ran as ADMINISTRATOR
+    if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
+        LOGF(WARNING, "Could not set application process priority to HIGH");
+
     if (!Updater::Init() || !Updater::Process()) {
         LOGF(FATAL, "Updater failed to run, the application has not verified its status, execution its not recommended");
-        LOGF(INFO, "Click any key to continue... [NOT RECOMMENDED]");
+        LOGF(INFO, "Click any key to continue...");
         std::cin.get();
         //goto exit;
     }
@@ -45,7 +49,6 @@ int main()
         LOGF(FATAL, "Engine failed to initialize, cannot continue execution");
         goto exit;
     }
-
 
     if (!Renderer::Init()) {
         LOGF(FATAL, "Renderer failed to initialize, cannot continue execution");

@@ -184,6 +184,7 @@
     <ClCompile Include="config\Config.cpp" />
     <ClCompile Include="core\engine\cache\Cache.cpp" />
     <ClCompile Include="core\engine\classes\Bomb.cpp" />
+    <ClCompile Include="core\engine\classes\ObserverServices.cpp" />
     <ClCompile Include="core\engine\Engine.cpp" />
     <ClCompile Include="core\engine\classes\Game.cpp" />
     <ClCompile Include="core\engine\classes\Globals.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="updater\http\HttpHelper.cpp" />
     <ClCompile Include="updater\Updater.cpp" />
+    <ClCompile Include="core\engine\classes\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.hpp" />
@@ -219,6 +221,8 @@
     <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
     <ClInclude Include="core\engine\classes\Bomb.hpp" />
+    <ClInclude Include="core\engine\types\Weapons.hpp" />
+    <ClInclude Include="core\engine\classes\ObserverServices.hpp" />
     <ClInclude Include="core\engine\Engine.hpp" />
     <ClInclude Include="core\engine\types\Color.hpp" />
     <ClInclude Include="core\engine\types\Types.hpp" />
@@ -304,6 +308,7 @@
     <ClInclude Include="gui\renderer\window\Window.hpp" />
     <ClInclude Include="updater\http\HttpHelper.hpp" />
     <ClInclude Include="updater\Updater.hpp" />
+    <ClInclude Include="core\engine\classes\Weapon.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

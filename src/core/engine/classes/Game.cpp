@@ -5,8 +5,8 @@
 
 bool Game::Update() {
 	if (!Engine::GetProcess())
-		return false;
-
+		return false;	
+	
 	if (!UpdateMatrix()) {
 		LOGF(FATAL, "Failed to update view matrix");
 		return false;

@@ -15,7 +15,7 @@
 	• Sublicense: This license forbids sublicensing original or modified material.
 
 	© Copyright by IMXNOOBX (https://github.com/IMXNOOBX) and contributors.
-	See https://github.com/IMXNOOBX/cs2-external-esp/blob/main/LICENSE for full details.
+	See https://github.com/IMXNOOBX/cs2-external-esp/-/blob/main/LICENSE for full details.
 */
 
 #include "common.hpp"
