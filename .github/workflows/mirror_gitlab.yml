@@ -1,7 +1,7 @@
 name: Mirror Gitlab
 on: 
   workflow_dispatch:
-  # push:
+  push:
 
 jobs:
   run:

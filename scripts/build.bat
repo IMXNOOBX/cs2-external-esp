@@ -47,6 +47,7 @@ set SRCS=scripts\msvc\compatibility.cpp ^
          src/core/engine/classes/Globals.cpp ^
          src/core/engine/classes/Player.cpp ^
          src/core/engine/classes/Weapon.cpp ^
+         src/core/engine/classes/ObserverServices.cpp ^
          src/core/logger/LogHelper.cpp ^
          src/core/memory/Memory.cpp ^
          src/core/offsets/Dumper.cpp ^
