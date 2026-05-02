@@ -1,0 +1,19 @@
+name: Mirror Codeberg
+on: 
+  workflow_dispatch:
+  push:
+
+jobs:
+  run:
+    name: Mirror Latest Commits
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: yesolutions/mirror-action@master
+        with:
+          REMOTE: 'https://codeberg.org/IMXNOOBX/cs2-external-esp'
+          GIT_USERNAME: IMXNOOBX
+          GIT_PASSWORD: ${{ secrets.CODEBERG_PASSWORD }}
