@@ -27,6 +27,12 @@ jobs:
         run: |
           mkdir release
           xcopy x64\Release\* release\ /E /I /Y
+          copy README.md release\README.md
+          copy LICENSE release\LICENSE
+
+      - name: Archive artifacts
+        run: |
+          powershell Compress-Archive -Path release\* -DestinationPath release.zip
 
       - name: Generate tag
         id: tag
@@ -43,16 +49,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - name: Generate changelog
         run: npx --yes changelogithub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release (v${{ github.run_number }})
-          files: release/**
+          files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
