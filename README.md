@@ -2,6 +2,12 @@
 
 Simple external ESP for Counter-Strike 2. After years of development the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, several quality-of-life additions, and automatic offset scanning to help maintain compatibility through game updates.
 
+- This project is mirrored in the following locations.
+  - **Gitlab**: [*gitlab.com/IMXNOOBX/cs2-external-esp*](https://gitlab.com/IMXNOOBX/cs2-external-esp)
+  - **CodeBerg**: [*codeberg.org/IMXNOOBX/cs2-external-esp*](https://codeberg.org/IMXNOOBX/cs2-external-esp)
+
+> In case this repository disappears *(not the first time)*, work will continue in the mirrors.
+
 ## Showcase
 
 > Click the picture below to go to the showcase video
@@ -10,7 +16,7 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 ## 🌳 Simple Use
 
-1. You can download it from [**Releases**](./releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
+1. You can download it from [**Releases**](https://github.com/IMXNOOBX/cs2-external-esp/releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
 
 2. Open the game & the `cs2-external-esp.exe`, and thats it!
 3. **⭐ The repository if you like the project!**
