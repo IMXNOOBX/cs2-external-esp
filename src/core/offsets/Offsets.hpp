@@ -7,10 +7,6 @@ namespace offsets
 	inline DWORD globalVars;
 	inline DWORD plantedC4;
 
-	//inline DWORD viewAngles;
-	//inline DWORD localPlayerPawn;
-	//inline DWORD csgoInput;
-
 	// engine2.dll
 	inline DWORD buildNumber;
 
@@ -20,14 +16,8 @@ namespace offsets
 		constexpr std::ptrdiff_t m_steamID = 0x780; // uint64
 		constexpr std::ptrdiff_t m_iszPlayerName = 0x6F4; // char[128]
 		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x788; // bool
-		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x800; // CCSPlayerController_InGameMoneyServices*
+		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x808; // CCSPlayerController_InGameMoneyServices*
 		constexpr std::ptrdiff_t m_iAccount = 0x40; // int32 - CCSPlayerController_InGameMoneyServices 
-
-		//constexpr std::ptrdiff_t health = 0x32C;
-		//constexpr std::ptrdiff_t teamId = 0x3BF;
-		//constexpr std::ptrdiff_t isAlive = 0x7DC;
-		//constexpr std::ptrdiff_t playerPawn = 0x5F4;
-		//constexpr std::ptrdiff_t iszPlayerName = 0x628;
 	}
 
 	namespace pawn {

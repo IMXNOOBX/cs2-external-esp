@@ -18,9 +18,8 @@ bool Overlays::InitImpl() {
 	ImFontConfig cfg{};
 	cfg.FontDataOwnedByAtlas = false;
 
-	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
-
+	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
 
 	// Pre allocate buffer
 	this->vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
@@ -270,7 +269,6 @@ void Overlays::RenderSpeedChart() {
 
 	auto snapshot = Cache::CopySnapshot();
 	auto& local = snapshot.local;
-	auto& globals = snapshot.globals;
 
 	const static float padding = 10.0f;
 	const bool is_menu_open = Renderer::IsOpen();
@@ -292,7 +290,7 @@ void Overlays::RenderSpeedChart() {
 	float width = right - left;
 	float height = bottom - top;
 
-	if (!is_menu_open && !globals.in_match)
+	if (!is_menu_open && !local.alive)
 		return;
 
 	if (is_menu_open) {
