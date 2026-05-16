@@ -3,6 +3,7 @@
 #include "core/engine/cache/Cache.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
+#include "assets/fonts/Icons.h";
 
 
 bool Menu::Init() {
@@ -73,7 +74,7 @@ void Menu::RenderImpl() {
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
 
-					if (ImGui::Button(tab.label, ImVec2(-1, 32)))
+					if (ImGui::Button(tab.label.c_str(), ImVec2(-1, 32)))
 						active_tab = tab.id;
 
 					if (is_active)
@@ -85,9 +86,12 @@ void Menu::RenderImpl() {
 
 				ImGui::Checkbox("Enable", &cfg::enabled);
 
-				ImGui::TextLinkOpenURL("Source", "https://github.com/IMXNOOBX/cs2-external-esp");
+				ImGui::TextLinkOpenURL(Icons::GITHUB, "https://github.com/IMXNOOBX/cs2-external-esp");
+
 				ImGui::SameLine();
-				ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
+
+				ImGui::TextLinkOpenURL(Icons::DISCORD, "https://discord.gg/pRew8ZDkyp");
+
 			}
 			ImGui::EndChild();
 
@@ -285,6 +289,7 @@ void Menu::RenderImpl() {
 					}
 
 					ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
+					ImGui::Checkbox("Force Show Flags", &cfg::dev::force_show_flags);
 #endif
 				}
 			}
@@ -374,6 +379,26 @@ void Menu::SetupStyles() {
 
 	io.Fonts->Clear();
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
+
+	ImFontConfig merge_icon_cfg{};
+	merge_icon_cfg.FontDataOwnedByAtlas = false;
+	merge_icon_cfg.MergeMode = true;
+
+	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
+	io.Fonts->AddFontFromMemoryTTF(icons_font, icons_font_len, 16.f, &merge_icon_cfg, icon_ranges);
+
+	// you can use the merged font or use the seperate font
+	// merged font inherits font scale of the base font so use this if you need another size
+	ImFontConfig icon_cfg{};
+	icon_cfg.FontDataOwnedByAtlas = false;
+	this->font_icons = io.Fonts->AddFontFromMemoryTTF(
+		icons_font, 
+		icons_font_len, 
+		24.f, 
+		&icon_cfg, 
+		icon_ranges
+	);
+	
 }
 
 void Menu::RenderStartupHelpImpl() {
