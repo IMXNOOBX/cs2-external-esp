@@ -3,6 +3,7 @@
 #include "updater/Updater.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/frontend/menu/Menu.hpp" // Circular dependency
+#include "assets/fonts/WeaponIcons.h"
 
 bool Overlays::Init() {
 	return GetInstance().InitImpl();
@@ -18,8 +19,15 @@ bool Overlays::InitImpl() {
 	ImFontConfig cfg{};
 	cfg.FontDataOwnedByAtlas = false;
 
-	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
+	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
+	
+	ImFontConfig merge_icon_cfg{};
+	merge_icon_cfg.FontDataOwnedByAtlas = false;
+	merge_icon_cfg.MergeMode = true;
+
+	static const ImWchar icon_ranges[] = { 0xE000, 0xE046, 0 };
+	io.Fonts->AddFontFromMemoryTTF(weapon_icon_font, weapon_icon_font_len, 12.f, &merge_icon_cfg, icon_ranges);
 
 	// Pre allocate buffer
 	this->vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
@@ -399,9 +407,10 @@ void Overlays::RenderDebugWindow() {
 
 	for (auto& player : players)
 		debug_string += std::format(
-			"- [{}] {} {}hp {}\n", 
+			"- [{}] {} {}hp {} {}\n", 
 			player.index, player.name, 
-			player.health, player.weapon.name
+			player.health, player.weapon.name,
+			player.weapon.icon
 		);
 
 	auto size = ImGui::CalcTextSize(debug_string.data());

@@ -68,50 +68,61 @@ const char* Weapon::ToIcon() const
 
         // wxyz don't have icons
 
-    case weapon_deagle:             return WeaponIcons::DEAGLE;
-    case weapon_elite:              return WeaponIcons::ELITE;
-    case weapon_fiveseven:          return WeaponIcons::FIVESEVEN;
-    case weapon_glock:              return WeaponIcons::GLOCK;
-    case weapon_hkp2000:            return WeaponIcons::HKP2000;
-    case weapon_p250:               return WeaponIcons::P250;
-    case weapon_usp_silencer:       return WeaponIcons::USP_SILENCER;
-    case weapon_tec9:               return WeaponIcons::TEC9;
-    case weapon_cz75a:              return WeaponIcons::CZ75A;
-    case weapon_revolver:           return WeaponIcons::REVOLVER;
+    case weapon_deagle:               return WeaponIcons::DEAGLE;
+    case weapon_elite:                return WeaponIcons::ELITE;
+    case weapon_fiveseven:            return WeaponIcons::FIVESEVEN;
+    case weapon_glock:                return WeaponIcons::GLOCK;
+    case weapon_hkp2000:              return WeaponIcons::HKP2000;
+    case weapon_p250:                 return WeaponIcons::P250;
+    case weapon_usp_silencer:         return WeaponIcons::USP_SILENCER;
+    case weapon_tec9:                 return WeaponIcons::TEC9;
+    case weapon_cz75a:                return WeaponIcons::CZ75A;
+    case weapon_revolver:             return WeaponIcons::REVOLVER;
 
-    case weapon_mac10:              return WeaponIcons::MAC10;
-    case weapon_ump45:              return WeaponIcons::UMP45;
-    case weapon_bizon:              return WeaponIcons::BIZON;
-    case weapon_mp7:                return WeaponIcons::MP7;
-    case weapon_mp9:                return WeaponIcons::MP9;
-    case weapon_p90:                return WeaponIcons::P90;
+    case weapon_mac10:                return WeaponIcons::MAC10;
+    case weapon_ump45:                return WeaponIcons::UMP45;
+    case weapon_bizon:                return WeaponIcons::BIZON;
+    case weapon_mp7:                  return WeaponIcons::MP7;
+    case weapon_mp9:                  return WeaponIcons::MP9;
+    case weapon_p90:                  return WeaponIcons::P90;
 
-    case weapon_galilar:            return WeaponIcons::GALILAR;
-    case weapon_famas:              return WeaponIcons::FAMAS;
-    case weapon_m4a1:               return WeaponIcons::M4A1;
-    case weapon_m4a1_silencer:      return WeaponIcons::M4A1_SILENCER;
-    case weapon_aug:                return WeaponIcons::AUG;
-    case weapon_sg556:              return WeaponIcons::SG556;
-    case weapon_ak47:               return WeaponIcons::AK47;
+    case weapon_galilar:              return WeaponIcons::GALILAR;
+    case weapon_famas:                return WeaponIcons::FAMAS;
+    case weapon_m4a1:                 return WeaponIcons::M4A1;
+    case weapon_m4a1_silencer:        return WeaponIcons::M4A1_SILENCER;
+    case weapon_aug:                  return WeaponIcons::AUG;
+    case weapon_sg556:                return WeaponIcons::SG556;
+    case weapon_ak47:                 return WeaponIcons::AK47;
 
-    case weapon_g3sg1:              return WeaponIcons::G3SG1;
-    case weapon_scar20:             return WeaponIcons::SCAR20;
-    case weapon_awp:                return WeaponIcons::AWP;
+    case weapon_g3sg1:                return WeaponIcons::G3SG1;
+    case weapon_scar20:               return WeaponIcons::SCAR20;
+    case weapon_awp:                  return WeaponIcons::AWP;
 
-    case weapon_knife_cord:         return WeaponIcons::KNIFE_CORD;
-    case weapon_knife_flip:         return WeaponIcons::KNIFE_FLIP;
-    case weapon_knife_gut:          return WeaponIcons::KNIFE_GUT;
-    case weapon_knife_karambit:     return WeaponIcons::KNIFE_KARAMBIT;
-    case weapon_knife_bayonet:      return WeaponIcons::KNIFE_BAYONET;
-    case weapon_knife_tactical:     return WeaponIcons::KNIFE_TACTICAL;
-    case weapon_knife_survival_bowie:return WeaponIcons::KNIFE_BOWIE;
-    case weapon_knife_butterfly:    return WeaponIcons::KNIFE_BUTTERFLY;
-    case weapon_knife_push:         return WeaponIcons::KNIFE_PUSH;
-    case weapon_knife_falchion:     return WeaponIcons::KNIFE_FALCHION;
-    case weapon_knife_t:            return WeaponIcons::KNIFE_T;
-    case weapon_knife:              return WeaponIcons::KNIFE_CT;
-
-    default:                        return WeaponIcons::unknown;
+    case weapon_knife_cord:           return WeaponIcons::KNIFE_CORD;
+    case weapon_knife_flip:           return WeaponIcons::KNIFE_FLIP;
+    case weapon_knife_gut:            return WeaponIcons::KNIFE_GUT;
+    case weapon_knife_karambit:       return WeaponIcons::KNIFE_KARAMBIT;
+    case weapon_knife_bayonet:        return WeaponIcons::KNIFE_BAYONET;
+    case weapon_knife_tactical:       return WeaponIcons::KNIFE_TACTICAL;
+    case weapon_knife_survival_bowie: return WeaponIcons::KNIFE_BOWIE;
+    case weapon_knife_butterfly:      return WeaponIcons::KNIFE_BUTTERFLY;
+    case weapon_knife_push:           return WeaponIcons::KNIFE_PUSH;
+    case weapon_knife_falchion:       return WeaponIcons::KNIFE_FALCHION;
+    case weapon_knife_t:              return WeaponIcons::KNIFE_T;
+    case weapon_knife:                return WeaponIcons::KNIFE_CT;
+    // knives without a font entry
+    case weapon_knife_m9_bayonet:     return WeaponIcons::KNIFE_T;
+    case weapon_knife_canis:          return WeaponIcons::KNIFE_T;
+    case weapon_knife_css:            return WeaponIcons::KNIFE_T;
+    case weapon_knife_ghost:          return WeaponIcons::KNIFE_T;
+    case weapon_knife_gypsy_jackknife:return WeaponIcons::KNIFE_T;
+    case weapon_knife_ursus:          return WeaponIcons::KNIFE_T;
+    case weapon_knife_stiletto:       return WeaponIcons::KNIFE_T;
+    case weapon_knife_widowmaker:     return WeaponIcons::KNIFE_T;
+    case weapon_knife_skeleton:       return WeaponIcons::KNIFE_T;
+    case weapon_knife_kukri:          return WeaponIcons::KNIFE_T;
+    case weapon_knife_outdoor:        return WeaponIcons::KNIFE_T;
+    default:                          return WeaponIcons::unknown;
     }
 }
 
@@ -204,7 +215,7 @@ const char* Weapon::ToString() const
     case weapon_knife_gypsy_jackknife: return "Navaja Knife";
     case weapon_knife_outdoor: return "Nomad Knife";
     case weapon_knife_stiletto: return "Stiletto Knife";
-    case weapon_knife_widowmaker: return "Widowmaker Knife";
+    case weapon_knife_widowmaker: return "Talon Knife";
     case weapon_knife_skeleton: return "Skeleton Knife";
     case weapon_knife_kukri: return "Kukri Knife";
     default: return "unknown";
