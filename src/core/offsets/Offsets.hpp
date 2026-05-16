@@ -20,7 +20,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_steamID = 0x780; // uint64
 		constexpr std::ptrdiff_t m_iszPlayerName = 0x6F4; // char[128]
 		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x788; // bool
-		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x800; // CCSPlayerController_InGameMoneyServices*
+		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x808; // CCSPlayerController_InGameMoneyServices*
 		constexpr std::ptrdiff_t m_iAccount = 0x40; // int32 - CCSPlayerController_InGameMoneyServices 
 
 		//constexpr std::ptrdiff_t health = 0x32C;
@@ -40,7 +40,6 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vecAbsVelocity = 0x3FC; // Vector
 
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
-		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
 		
 		constexpr std::ptrdiff_t m_entitySpottedState = 0x1C38; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t

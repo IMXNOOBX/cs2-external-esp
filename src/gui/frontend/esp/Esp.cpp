@@ -1,6 +1,8 @@
 #include "Esp.hpp"
 
 #include "gui/renderer/Renderer.hpp"
+#include "assets/fonts/WeaponIcons.h"
+#include "assets/fonts/Icons.h"
 
 bool Esp::Init() {
 	return GetInstance().InitImpl();
@@ -16,7 +18,29 @@ bool Esp::InitImpl() {
 	ImFontConfig cfg{};
 	cfg.FontDataOwnedByAtlas = false;
 
+	LOGF(INFO, "Loading fonts in ESP");
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
+
+	ImFontConfig icon_cfg{};
+	icon_cfg.FontDataOwnedByAtlas = false;
+
+	this->font_merged_icons = io.Fonts->AddFontFromMemoryTTF(
+		weapon_icon_font,
+		weapon_icon_font_len,
+		16.0f,
+		&icon_cfg
+		);
+
+	icon_cfg.MergeMode = true;
+
+	static const ImWchar general_ranges[] = { 0xE100, 0xE108, 0 };
+	io.Fonts->AddFontFromMemoryTTF(
+		icons_font,
+		icons_font_len,
+		16.0f,
+		&icon_cfg,
+		general_ranges
+	);
 
 	return true;
 }
@@ -231,19 +255,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
-	if (cfg::esp::flags::weapon) {
-		auto weapon_size = ImGui::CalcTextSize(player.weapon.name.data());
-
-		d->AddText(
-			Vec2_t(
-				(bounds.first.x + bounds.second.x) / 2 - weapon_size.x / 2,
-				bounds.second.y + 5
-			), 
-			IM_COL32(255, 255, 255, 255),
-			player.weapon.name.data()
-		);
-	}
-
 	if (cfg::esp::flags::ammo && player.ammo != -1) {
 		auto txt = std::to_string(player.ammo);
 		auto ammo_size = ImGui::CalcTextSize(txt.c_str());
@@ -251,7 +262,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		d->AddText(
 			Vec2_t(
 				(bounds.first.x + bounds.second.x) / 2 - ammo_size.x / 2,
-				bounds.second.y + 15
+				bounds.second.y + 20
 			),
 			IM_COL32(255, 255, 255, 255),
 			txt.data()
@@ -281,45 +292,63 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		offset -= offset_mult;
 	}
 
-	if (cfg::esp::flags::flashed && player.flashed) {
+	ImGui::PushFont(this->font_merged_icons);
+
+	if (cfg::esp::flags::flashed && player.flashed || cfg::dev::force_show_flags) {
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(100, 255, 100, 255),
-			"flashed"
+			IM_COL32(80, 0, 80, 255),
+			Icons::BLIND
 		);
 
 		offset -= offset_mult;
 	}
 
-	if (cfg::esp::flags::defusing && player.defusing) {
+	if (cfg::esp::flags::reloading && player.is_reloading || cfg::dev::force_show_flags) {
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(255, 100, 100, 255),
-			"defusing"
+			IM_COL32(80, 0, 80, 255),
+			Icons::RELOAD
 		);
 
 		offset -= offset_mult;
 	}
 
-	if (cfg::esp::flags::scoped && player.scoped)
-	{
+	if (cfg::esp::flags::defusing && player.defusing || cfg::dev::force_show_flags) {
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(100, 100, 255, 255),
-			"scoped");
+			IM_COL32(80, 0, 80, 255),
+			WeaponIcons::CUTTERS
+		);
 
 		offset -= offset_mult;
 	}
 
-	if (cfg::esp::flags::reloading && player.is_reloading)
+	if (cfg::esp::flags::scoped && player.scoped || cfg::dev::force_show_flags)
 	{
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(200, 200, 100, 255),
-			"reloading");
+			IM_COL32(80, 0, 80, 255),
+			WeaponIcons::SCOPE
+		);
 
 		offset -= offset_mult;
 	}
+
+	if (cfg::esp::flags::weapon) {
+		auto weapon_size = ImGui::CalcTextSize(player.weapon.icon);
+
+		d->AddText(
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - weapon_size.x / 2,
+				bounds.second.y + 6
+			),
+			IM_COL32(255, 255, 255, 255),
+			player.weapon.icon
+		);
+	}
+
+	ImGui::PopFont();
 }
 
 void Esp::RenderCrosshair(Player local)
