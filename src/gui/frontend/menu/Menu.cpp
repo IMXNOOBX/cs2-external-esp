@@ -47,7 +47,7 @@ void Menu::RenderImpl() {
 	static auto title = "cs2-external-esp | recode";
 #endif
 
-	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(600, 370), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x / 2 - 300, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
 
 	ImGui::GetWindowPos();
@@ -175,9 +175,45 @@ void Menu::RenderImpl() {
 
 					ImGui::BeginGroup();
 					{
-						ImGui::Checkbox("Name", &cfg::esp::flags::name);
+						ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+						ImGui::BeginDisabled(!cfg::esp::flags::flashed);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team flashed color", cfg::esp::colors::flags::flashed_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy flashed color", cfg::esp::colors::flags::flashed_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Reloading", &cfg::esp::flags::reloading);
+						ImGui::BeginDisabled(!cfg::esp::flags::reloading);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team reloading color", cfg::esp::colors::flags::reloading_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy reloading color", cfg::esp::colors::flags::reloading_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
 						ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-						ImGui::Checkbox("Money", &cfg::esp::flags::money);
+						ImGui::BeginDisabled(!cfg::esp::flags::defusing);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team defusing color", cfg::esp::colors::flags::defusing_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy defusing color", cfg::esp::colors::flags::defusing_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
+						ImGui::BeginDisabled(!cfg::esp::flags::scoped);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team scoped color", cfg::esp::colors::flags::scoped_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy scoped color", cfg::esp::colors::flags::scoped_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
 					}
 					ImGui::EndGroup();
 
@@ -185,18 +221,10 @@ void Menu::RenderImpl() {
 
 					ImGui::BeginGroup();
 					{
+						ImGui::Checkbox("Name", &cfg::esp::flags::name);
+						ImGui::Checkbox("Money", &cfg::esp::flags::money);
 						ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
 						ImGui::Checkbox("Ammo", &cfg::esp::flags::ammo);
-						ImGui::Checkbox("Reload indicator", &cfg::esp::flags::reloading);
-					}
-					ImGui::EndGroup();
-
-					ImGui::SameLine();
-
-					ImGui::BeginGroup();
-					{
-						ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
-						ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
 						ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
 					}
 					ImGui::EndGroup();

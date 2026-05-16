@@ -295,9 +295,11 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	ImGui::PushFont(this->font_merged_icons);
 
 	if (cfg::esp::flags::flashed && player.flashed || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::flashed_team : cfg::esp::colors::flags::flashed_enemy;
+
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(80, 0, 80, 255),
+			ImColor(color),
 			Icons::BLIND
 		);
 
@@ -305,9 +307,11 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::reloading && player.is_reloading || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::reloading_team : cfg::esp::colors::flags::reloading_enemy;
+
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(80, 0, 80, 255),
+			ImColor(color),
 			Icons::RELOAD
 		);
 
@@ -315,20 +319,23 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	if (cfg::esp::flags::defusing && player.defusing || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::defusing_team : cfg::esp::colors::flags::defusing_enemy;
+
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(80, 0, 80, 255),
+			ImColor(color),
 			WeaponIcons::CUTTERS
 		);
 
 		offset -= offset_mult;
 	}
 
-	if (cfg::esp::flags::scoped && player.scoped || cfg::dev::force_show_flags)
-	{
+	if (cfg::esp::flags::scoped && player.scoped || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::scoped_team : cfg::esp::colors::flags::scoped_enemy;
+
 		d->AddText(
 			bounds.first - Vec2_t((bounds.first.x - bounds.second.x) - 10, offset),
-			IM_COL32(80, 0, 80, 255),
+			ImColor(color),
 			WeaponIcons::SCOPE
 		);
 
