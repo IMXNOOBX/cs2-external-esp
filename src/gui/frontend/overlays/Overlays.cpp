@@ -45,6 +45,7 @@ void Overlays::RenderImpl() {
 	{
 		RenderSpectatorList();
 		RenderSpeedChart();
+		RenderRadar();
 	}
 	ImGui::PopFont();
 }
@@ -427,3 +428,108 @@ void Overlays::RenderDebugWindow() {
 	);
 }
 #endif
+
+void Overlays::RenderRadar() {
+	if (!cfg::world::radar::enabled)
+		return;
+
+	auto snapshot = Cache::CopySnapshot();
+	auto& local = snapshot.local;
+	auto& players = snapshot.players;
+	auto& matrix = snapshot.game.view_matrix;
+
+	const bool is_menu_open = Renderer::IsOpen();
+
+	if (!is_menu_open && !local.alive)
+		return;
+
+	auto& pos = cfg::world::radar::pos;
+	auto& size = cfg::world::radar::size;
+	float range = cfg::world::radar::range;
+
+	if (is_menu_open) {
+		ImGui::SetNextWindowBgAlpha(0.0f);
+		ImGui::SetNextWindowPos(pos, ImGuiCond_Once);
+		ImGui::SetNextWindowSize(size, ImGuiCond_Once);
+		if (ImGui::Begin("Radar", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar)) {
+			pos = ImGui::GetWindowPos();
+			size = ImGui::GetWindowSize();
+			ImGui::End();
+		}
+	}
+
+	auto d = ImGui::GetBackgroundDrawList();
+
+	const float cx = pos.x + size.x * 0.5f;
+	const float cy = pos.y + size.y * 0.5f;
+	const float rx = size.x * 0.5f;
+	const float ry = size.y * 0.5f;
+	const float radius = std::min(rx, ry);
+
+	d->AddRectFilled(
+		ImVec2(pos.x, pos.y),
+		ImVec2(pos.x + size.x, pos.y + size.y),
+		IM_COL32(0, 0, 0, 180),
+		6.f
+	);
+
+	d->AddRect(
+		ImVec2(pos.x, pos.y),
+		ImVec2(pos.x + size.x, pos.y + size.y),
+		IM_COL32(80, 80, 80, 200),
+		6.f
+	);
+
+	d->AddCircle(ImVec2(cx, cy), radius * 0.333f, IM_COL32(50, 50, 50, 120));
+	d->AddCircle(ImVec2(cx, cy), radius * 0.666f, IM_COL32(50, 50, 50, 120));
+	d->AddLine(ImVec2(pos.x + 4.f, cy), ImVec2(pos.x + size.x - 4.f, cy), IM_COL32(50, 50, 50, 120));
+	d->AddLine(ImVec2(cx, pos.y + 4.f), ImVec2(cx, pos.y + size.y - 4.f), IM_COL32(50, 50, 50, 120));
+
+	for (auto& player : players) {
+		if (!player.alive)
+			continue;
+
+		if (player.localplayer)
+			continue;
+
+		Vec3_t delta = player.pos - local.pos;
+		float dist = sqrtf(delta.x * delta.x + delta.y * delta.y);
+
+		if (dist > range)
+			continue;
+
+		float nx = delta.x / range;
+		float ny = delta.y / range;
+
+		float sx, sy;
+		if (!cfg::world::radar::no_rotate) {
+			float rx = matrix[0][0];
+			float ry = matrix[0][1];
+			float len = sqrtf(rx * rx + ry * ry);
+			if (len > 0.001f) { rx /= len; ry /= len; }
+			float fx = -ry;
+			float fy =  rx;
+			float rad_x = nx * rx + ny * ry;
+			float rad_y = nx * fx + ny * fy;
+			sx = cx + rad_x * (size.x * 0.5f - 6.f);
+			sy = cy - rad_y * (size.y * 0.5f - 6.f);
+		} else {
+			sx = cx + nx * (size.x * 0.5f - 6.f);
+			sy = cy - ny * (size.y * 0.5f - 6.f);
+		}
+
+		bool mate = player.team == local.team;
+		ImU32 col = mate
+			? IM_COL32(0, 220, 80, 255)
+			: IM_COL32(220, 50, 50, 255);
+
+		d->AddCircleFilled(ImVec2(sx, sy), 4.f, col);
+		d->AddCircle(ImVec2(sx, sy), 4.f, IM_COL32(0, 0, 0, 180));
+	}
+
+	d->AddCircleFilled(ImVec2(cx, cy), 5.f, IM_COL32(100, 180, 255, 255));
+	d->AddCircle(ImVec2(cx, cy), 5.f, IM_COL32(0, 0, 0, 180));
+
+	const char* label = "Radar";
+	d->AddText(ImVec2(pos.x + 6.f, pos.y + 4.f), IM_COL32(180, 180, 180, 200), label);
+}

@@ -34,6 +34,7 @@ private:
 
     void RenderNotice();
     void RenderWatermark();
+    void RenderRadar();
     void RenderSpeedChart();
     void RenderDebugWindow();
     void RenderSpectatorList();
