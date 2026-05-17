@@ -216,6 +216,8 @@
     <ClCompile Include="core\engine\classes\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assets\fonts\Icons.h" />
+    <ClInclude Include="assets\fonts\WeaponIcons.h" />
     <ClInclude Include="common.hpp" />
     <ClInclude Include="config\Config.hpp" />
     <ClInclude Include="config\Current.hpp" />
