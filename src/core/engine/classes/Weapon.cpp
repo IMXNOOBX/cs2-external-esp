@@ -50,6 +50,7 @@ const char* Weapon::ToIcon() const
     case weapon_taser:               return WeaponIcons::TASER;
     case weapon_flashbang:           return WeaponIcons::FLASHBANG;
     case weapon_frag_grenade:        return WeaponIcons::FRAG_GRENADE;
+    case weapon_hegrenade:           return WeaponIcons::FRAG_GRENADE;
     case weapon_smokegrenade:        return WeaponIcons::SMOKEGRENADE;
     case weapon_molotov:             return WeaponIcons::MOLOTOV;
     case weapon_decoy:               return WeaponIcons::DECOY;
@@ -195,7 +196,7 @@ const char* Weapon::ToString() const
     case weapon_knife_ghost: return "knife_ghost";
     case weapon_firebomb: return "firebomb";
     case weapon_diversion: return "diversion";
-    case weapon_frag_grenade: return "frag_grenade";
+    case weapon_frag_grenade: return "Grenade";
     case weapon_snowball: return "snowball";
     case weapon_bumpmine: return "bumpmine";
     case weapon_knife_bayonet: return "Bayonet";
