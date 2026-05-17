@@ -96,7 +96,7 @@ namespace cfg {
 		inline bool free_cpu = true;
 	}
 
-#ifdef _DEBUG
+
 	// Not stored, just for testing
 	namespace dev {
 		inline bool console = true;
@@ -104,5 +104,4 @@ namespace cfg {
 		inline int cache_refresh_rate = 5;
 		inline bool force_show_flags = false;
 	}
-#endif
 }
