@@ -221,3 +221,14 @@ void pProcess::Close()
 {
 	CloseHandle(handle_);
 }
+
+std::wstring pProcess::GetExePath() const {
+	if (!handle_)
+		return {};
+
+	wchar_t path[MAX_PATH]{};
+	DWORD size = MAX_PATH;
+	if (!QueryFullProcessImageNameW(handle_, 0, path, &size))
+		return {};
+	return std::wstring(path, size);
+}

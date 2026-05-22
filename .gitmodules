@@ -10,3 +10,6 @@
 [submodule "src/external/curl"]
 	path = src/external/curl
 	url = https://github.com/curl/curl
+[submodule "src/external/sourcepp"]
+	path = src/external/sourcepp
+	url = https://github.com/craftablescience/sourcepp

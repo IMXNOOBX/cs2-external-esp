@@ -156,14 +156,49 @@ void Menu::RenderImpl() {
 							ImGui::Checkbox("Health Number", &cfg::esp::health_number);
 						ImGui::Checkbox("Armor", &cfg::esp::armor);
 
-						ImGui::Checkbox("Spotted", &cfg::esp::spotted);
-						ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
-
 						ImGui::Checkbox("Show Team", &cfg::esp::team);
 					}
 					ImGui::EndGroup();
 
-					//ImGui::SameLine();
+					ImGui::Spacing();
+
+					if (ImGui::CollapsingHeader("Spotted")) {
+						ImGui::SetItemTooltip("Highlights players visible to you (line of sight)");
+						ImGui::PushID("Spotted");
+
+						ImGui::Checkbox("Box", &cfg::esp::spotted::box);
+						ImGui::BeginDisabled(!cfg::esp::spotted::box);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team spotted box", cfg::esp::spotted::colors::box_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy spotted box", cfg::esp::spotted::colors::box_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Skeleton", &cfg::esp::spotted::skeleton);
+						ImGui::BeginDisabled(!cfg::esp::spotted::skeleton);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team spotted skeleton", cfg::esp::spotted::colors::skeleton_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy spotted skeleton", cfg::esp::spotted::colors::skeleton_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Head Tracker", &cfg::esp::spotted::head_tracker);
+						ImGui::BeginDisabled(!cfg::esp::spotted::head_tracker);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team spotted tracker", cfg::esp::spotted::colors::tracker_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy spotted tracker", cfg::esp::spotted::colors::tracker_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::PopID();
+					}
+
 					ImGui::Spacing();
 
 					ImGui::Text("Flags");

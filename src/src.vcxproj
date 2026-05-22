@@ -80,12 +80,12 @@
     <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(SolutionDir)src\external\sourcepp\include;$(SolutionDir)src\external\sourcepp\ext\half\include;$(SolutionDir)build\sourcepp\_deps\tsl_hat_trie-src\include;$(SolutionDir)build\sourcepp\src\sourcepp\parser\include;$(SolutionDir)build\sourcepp\src\sourcepp\compression\include;$(SolutionDir)build\sourcepp\src\sourcepp\crypto\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)build\sourcepp\Release;$(SolutionDir)build\sourcepp\_deps\minizip-ng-build\Release;$(SolutionDir)build\sourcepp\_deps\zstd-build\lib\Release;$(SolutionDir)build\sourcepp\_deps\zlib-build\Release;$(SolutionDir)build\sourcepp\_deps\liblzma-build\Release;$(SolutionDir)build\sourcepp\_deps\miniz-build\Release;$(SolutionDir)build\sourcepp\_deps\libtomcrypt-build\Release;$(SolutionDir)build\sourcepp\_deps\libtommath-build\Release;$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(SolutionDir)src\external\sourcepp\include;$(SolutionDir)src\external\sourcepp\ext\half\include;$(SolutionDir)build\sourcepp\_deps\tsl_hat_trie-src\include;$(SolutionDir)build\sourcepp\src\sourcepp\parser\include;$(SolutionDir)build\sourcepp\src\sourcepp\compression\include;$(SolutionDir)build\sourcepp\src\sourcepp\crypto\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)build\sourcepp\Release;$(SolutionDir)build\sourcepp\_deps\minizip-ng-build\Release;$(SolutionDir)build\sourcepp\_deps\zstd-build\lib\Release;$(SolutionDir)build\sourcepp\_deps\zlib-build\Release;$(SolutionDir)build\sourcepp\_deps\liblzma-build\Release;$(SolutionDir)build\sourcepp\_deps\miniz-build\Release;$(SolutionDir)build\sourcepp\_deps\libtomcrypt-build\Release;$(SolutionDir)build\sourcepp\_deps\libtommath-build\Release;$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -133,6 +133,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PreBuildEvent>
+      <Command>call "$(SolutionDir)scripts\build_sourcepp.bat" "$(SolutionDir)"</Command>
+    </PreBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -147,12 +150,30 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sourcepp_vpkpp.lib;sourcepp_kvpp.lib;sourcepp_parser.lib;sourcepp_compression.lib;sourcepp_crypto.lib;sourcepp.lib;minizip-ng.lib;zstd_static.lib;zlibstatic-ng.lib;lzma.lib;miniz.lib;bzip2.lib;ppmd.lib;tomcrypt.lib;tommath.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Command>call "$(SolutionDir)scripts\build_sourcepp.bat" "$(SolutionDir)"</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>dotnet publish "$(SolutionDir)src\external\VrfExtract\VrfExtract.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "$(OutDir)VrfPublish"
+if exist "$(OutDir)VrfPublish\VrfExtract.exe" copy /Y "$(OutDir)VrfPublish\VrfExtract.exe" "$(OutDir)VrfExtract.exe"
+if exist "$(OutDir)VrfPublish" rmdir /S /Q "$(OutDir)VrfPublish"
+del /Q "$(OutDir)ValveResourceFormat*.dll" 2&gt;nul
+del /Q "$(OutDir)SharpGLTF*.dll" 2&gt;nul
+del /Q "$(OutDir)SkiaSharp*.dll" 2&gt;nul
+del /Q "$(OutDir)TinyBCSharp*.dll" 2&gt;nul
+del /Q "$(OutDir)ZstdSharp*.dll" 2&gt;nul
+del /Q "$(OutDir)K4os*.dll" 2&gt;nul
+del /Q "$(OutDir)System.*.dll" 2&gt;nul
+del /Q "$(OutDir)Microsoft.*.dll" 2&gt;nul
+del /Q "$(OutDir)Newtonsoft.Json.dll" 2&gt;nul
+del /Q "$(OutDir)VrfExtract.pdb" 2&gt;nul</Command>
+    </PostBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -169,7 +190,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sourcepp_vpkpp.lib;sourcepp_kvpp.lib;sourcepp_parser.lib;sourcepp_compression.lib;sourcepp_crypto.lib;sourcepp.lib;minizip-ng.lib;zstd_static.lib;zlibstatic-ng.lib;lzma.lib;miniz.lib;bzip2.lib;ppmd.lib;tomcrypt.lib;tommath.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
@@ -191,6 +212,10 @@
     <ClCompile Include="core\engine\classes\Player.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
+    <ClCompile Include="core\vischeck\PathUtil.cpp" />
+    <ClCompile Include="core\vischeck\VisCheck.cpp" />
+    <ClCompile Include="core\vischeck\VisCheckManager.cpp" />
+    <ClCompile Include="core\vischeck\VpkMapExtractor.cpp" />
     <ClCompile Include="core\offsets\Dumper.cpp" />
     <ClCompile Include="external\AsyncLogger\src\LogCapture.cpp" />
     <ClCompile Include="external\AsyncLogger\src\Logger.cpp" />
@@ -235,6 +260,11 @@
     <ClInclude Include="core\engine\classes\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
     <ClInclude Include="core\memory\Memory.hpp" />
+    <ClInclude Include="core\vischeck\Math.hpp" />
+    <ClInclude Include="core\vischeck\PathUtil.h" />
+    <ClInclude Include="core\vischeck\VisCheck.h" />
+    <ClInclude Include="core\vischeck\VisCheckManager.h" />
+    <ClInclude Include="core\vischeck\VpkMapExtractor.h" />
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />

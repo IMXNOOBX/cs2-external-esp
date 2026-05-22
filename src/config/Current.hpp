@@ -13,9 +13,22 @@ namespace cfg {
 		inline bool head_tracker = true;
 		inline bool health_number = false;
 
-		inline bool spotted = false;
-
 		inline bool tracers = false;
+
+		namespace spotted {
+			inline bool box = true;
+			inline bool skeleton = false;
+			inline bool head_tracker = false;
+
+			namespace colors {
+				inline color_t box_team{ 1.f, 1.f, 0.f, 0.8f };
+				inline color_t box_enemy{ 0.f, 1.f, 1.f, 0.8f };
+				inline color_t skeleton_team{ 1.f, 1.f, 0.f, 0.8f };
+				inline color_t skeleton_enemy{ 0.f, 1.f, 1.f, 0.8f };
+				inline color_t tracker_team{ 1.f, 1.f, 0.f, 0.5f };
+				inline color_t tracker_enemy{ 0.f, 1.f, 1.f, 0.5f };
+			}
+		}
 
 		namespace flags {
 			inline bool name = true;

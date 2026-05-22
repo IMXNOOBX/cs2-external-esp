@@ -1,5 +1,6 @@
 #include "Esp.hpp"
 
+#include "core/vischeck/VisCheckManager.h"
 #include "gui/renderer/Renderer.hpp"
 
 bool Esp::Init() {
@@ -41,6 +42,11 @@ void Esp::RenderImpl() {
 
 	RenderBomb(local, bomb);
 
+	const bool any_spotted = cfg::esp::spotted::box || cfg::esp::spotted::skeleton || cfg::esp::spotted::head_tracker;
+	const Vec3_t eye = local.pos + Vec3_t(0.f, 0.f, local.view_offset_z);
+	const bool visReady = any_spotted && VisCheckManager::IsReady();
+	static uint8_t visHold[64]{};
+
 	for (auto& player : players) {
 		if (!player.alive)
 			continue;
@@ -53,9 +59,7 @@ void Esp::RenderImpl() {
 		if (!cfg::esp::team && mate)
 			continue;
 
-		if (cfg::esp::spotted && !player.spotted)
-			continue;
-
+		
 		// Are we spectating the player in first person? then dont render
 		// TODO: Exception here when spectating someone
 		if (
@@ -64,15 +68,30 @@ void Esp::RenderImpl() {
 		)
 			continue;
 
+		bool visible = false;
+		if (visReady && player.bone_list.size() > bone_index::chest) {
+			const auto& bones = player.bone_list;
+			const bool hasLineOfSight = VisCheckManager::IsVisible(eye, bones[bone_index::head].pos)
+				|| VisCheckManager::IsVisible(eye, bones[bone_index::chest].pos);
+
+			auto& visibilityHold = visHold[player.index & 63];
+			if (hasLineOfSight)
+				visibilityHold = 6;
+			else if (visibilityHold)
+				--visibilityHold;
+
+			visible = visibilityHold > 0;
+		}
+
 		RenderPlayerTracers(local, player, mate);
-		RenderPlayer(player, mate);
+		RenderPlayer(player, mate, visible);
 	}
 
 	RenderCrosshair(local);
 	ImGui::PopFont();
 }
 
-void Esp::RenderPlayer(Player player, bool mate) {
+void Esp::RenderPlayer(Player player, bool mate, bool visible) {
 	// Needed for flags & item sizing, so even if the box is not enabled
 	// Should be calculated
 	std::pair<Vec2_t, Vec2_t> bounds;
@@ -83,8 +102,10 @@ void Esp::RenderPlayer(Player player, bool mate) {
 	if (!player.alive)
 		return;
 
-	if (cfg::esp::box) {
+	if (cfg::esp::box || (visible && cfg::esp::spotted::box)) {
 		auto color = mate ? cfg::esp::colors::box_team : cfg::esp::colors::box_enemy;
+		if (visible && cfg::esp::spotted::box)
+			color = mate ? cfg::esp::spotted::colors::box_team : cfg::esp::spotted::colors::box_enemy;
 
 		d->AddRect(
 			bounds.first,
@@ -93,18 +114,20 @@ void Esp::RenderPlayer(Player player, bool mate) {
 		);
 	}
 
-	if (cfg::esp::skeleton)
-		RenderPlayerBones(player, mate);
+	if (cfg::esp::skeleton || (visible && cfg::esp::spotted::skeleton))
+		RenderPlayerBones(player, mate, visible);
 
-	if (cfg::esp::head_tracker)
-		RenderPlayerTracker(player, bounds, mate);
+	if (cfg::esp::head_tracker || (visible && cfg::esp::spotted::head_tracker))
+		RenderPlayerTracker(player, bounds, mate, visible);
 
 	RenderPlayerBars(player, bounds);
 	RenderPlayerFalgs(player, bounds, mate);
 }
 
-void Esp::RenderPlayerBones(Player player, bool mate) {
+void Esp::RenderPlayerBones(Player player, bool mate, bool visible) {
 	auto color = mate ? cfg::esp::colors::skeleton_team : cfg::esp::colors::skeleton_enemy;
+	if (visible && cfg::esp::spotted::skeleton)
+		color = mate ? cfg::esp::spotted::colors::skeleton_team : cfg::esp::spotted::colors::skeleton_enemy;
 
 	auto bone_count = player.bone_list.size();
 	for (const auto& bone : connections) {
@@ -133,7 +156,7 @@ void Esp::RenderPlayerBones(Player player, bool mate) {
 	}
 }
 
-void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
+void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate, bool visible) {
 	if (player.bone_list.empty())
 		return;
 
@@ -145,6 +168,8 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 
 	auto width = bounds.second.x - bounds.first.x;
 	auto color = mate ? cfg::esp::colors::tracker_team : cfg::esp::colors::tracker_enemy;
+	if (visible && cfg::esp::spotted::head_tracker)
+		color = mate ? cfg::esp::spotted::colors::tracker_team : cfg::esp::spotted::colors::tracker_enemy;
 
 	d->AddCircle(
 		head,

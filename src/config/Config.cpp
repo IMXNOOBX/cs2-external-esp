@@ -39,7 +39,6 @@ bool Config::ReadImpl() {
 		cfg::esp::team = data["esp"].value("team", true);
 		cfg::esp::armor = data["esp"].value("armor", true);
 		cfg::esp::health = data["esp"].value("health", true);
-		cfg::esp::spotted = data["esp"].value("spotted", false);
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 		cfg::esp::health_number = data["esp"].value("health_number", false);
@@ -66,6 +65,22 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 1.f, 1.f, 1.f, 0.3f });
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
+		if (data["esp"].contains("spotted")) {
+			const auto& sp = data["esp"]["spotted"];
+			cfg::esp::spotted::box = sp.value("box", true);
+			cfg::esp::spotted::skeleton = sp.value("skeleton", false);
+			cfg::esp::spotted::head_tracker = sp.value("head_tracker", false);
+			if (sp.contains("colors")) {
+				const auto& sc = sp["colors"];
+				cfg::esp::spotted::colors::box_team = JsonToColor(sc, "box_team", cfg::esp::spotted::colors::box_team);
+				cfg::esp::spotted::colors::box_enemy = JsonToColor(sc, "box_enemy", cfg::esp::spotted::colors::box_enemy);
+				cfg::esp::spotted::colors::skeleton_team = JsonToColor(sc, "skeleton_team", cfg::esp::spotted::colors::skeleton_team);
+				cfg::esp::spotted::colors::skeleton_enemy = JsonToColor(sc, "skeleton_enemy", cfg::esp::spotted::colors::skeleton_enemy);
+				cfg::esp::spotted::colors::tracker_team = JsonToColor(sc, "tracker_team", cfg::esp::spotted::colors::tracker_team);
+				cfg::esp::spotted::colors::tracker_enemy = JsonToColor(sc, "tracker_enemy", cfg::esp::spotted::colors::tracker_enemy);
+			}
+		}
 
 		// world
 		// spectator list
@@ -121,8 +136,11 @@ bool Config::WriteImpl() {
 	data["esp"]["health_number"] = cfg::esp::health_number;
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
-	data["esp"]["spotted"] = cfg::esp::spotted;
 	data["esp"]["tracers"] = cfg::esp::tracers;
+
+	data["esp"]["spotted"]["box"] = cfg::esp::spotted::box;
+	data["esp"]["spotted"]["skeleton"] = cfg::esp::spotted::skeleton;
+	data["esp"]["spotted"]["head_tracker"] = cfg::esp::spotted::head_tracker;
 
 	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
@@ -166,6 +184,14 @@ bool Config::WriteImpl() {
 	ColorToJson(col, "tracker_enemy", cfg::esp::colors::tracker_enemy);
 	ColorToJson(col, "tracer_team", cfg::esp::colors::tracer_team);
 	ColorToJson(col, "tracer_enemy", cfg::esp::colors::tracer_enemy);
+
+	auto& sc = data["esp"]["spotted"]["colors"];
+	ColorToJson(sc, "box_team", cfg::esp::spotted::colors::box_team);
+	ColorToJson(sc, "box_enemy", cfg::esp::spotted::colors::box_enemy);
+	ColorToJson(sc, "skeleton_team", cfg::esp::spotted::colors::skeleton_team);
+	ColorToJson(sc, "skeleton_enemy", cfg::esp::spotted::colors::skeleton_enemy);
+	ColorToJson(sc, "tracker_team", cfg::esp::spotted::colors::tracker_team);
+	ColorToJson(sc, "tracker_enemy", cfg::esp::spotted::colors::tracker_enemy);
 
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;
