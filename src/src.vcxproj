@@ -136,6 +136,9 @@
     <PreBuildEvent>
       <Command>call "$(SolutionDir)scripts\build_sourcepp.bat" "$(SolutionDir)"</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>call "$(SolutionDir)scripts\build_vrfextract.bat" "$(SolutionDir)" "$(OutDir)"</Command>
+    </PostBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -160,19 +163,7 @@
       <Command>call "$(SolutionDir)scripts\build_sourcepp.bat" "$(SolutionDir)"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>dotnet publish "$(SolutionDir)src\external\VrfExtract\VrfExtract.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o "$(OutDir)VrfPublish"
-if exist "$(OutDir)VrfPublish\VrfExtract.exe" copy /Y "$(OutDir)VrfPublish\VrfExtract.exe" "$(OutDir)VrfExtract.exe"
-if exist "$(OutDir)VrfPublish" rmdir /S /Q "$(OutDir)VrfPublish"
-del /Q "$(OutDir)ValveResourceFormat*.dll" 2&gt;nul
-del /Q "$(OutDir)SharpGLTF*.dll" 2&gt;nul
-del /Q "$(OutDir)SkiaSharp*.dll" 2&gt;nul
-del /Q "$(OutDir)TinyBCSharp*.dll" 2&gt;nul
-del /Q "$(OutDir)ZstdSharp*.dll" 2&gt;nul
-del /Q "$(OutDir)K4os*.dll" 2&gt;nul
-del /Q "$(OutDir)System.*.dll" 2&gt;nul
-del /Q "$(OutDir)Microsoft.*.dll" 2&gt;nul
-del /Q "$(OutDir)Newtonsoft.Json.dll" 2&gt;nul
-del /Q "$(OutDir)VrfExtract.pdb" 2&gt;nul</Command>
+      <Command>call "$(SolutionDir)scripts\build_vrfextract.bat" "$(SolutionDir)" "$(OutDir)"</Command>
     </PostBuildEvent>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
