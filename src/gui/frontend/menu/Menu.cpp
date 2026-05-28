@@ -414,9 +414,9 @@ void Menu::SetupStyles() {
 
 	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
 	io.Fonts->AddFontFromMemoryTTF(icons_font, icons_font_len, 16.f, &merge_icon_cfg, icon_ranges);
-
-	// you can use the merged font or use the seperate font
-	// merged font inherits font scale of the base font so use this if you need another size
+	// the icons will use the size specified when getting added so it ignores the base size
+	
+	/* if you need it in a seperate font
 	ImFontConfig icon_cfg{};
 	icon_cfg.FontDataOwnedByAtlas = false;
 	this->font_icons = io.Fonts->AddFontFromMemoryTTF(
@@ -425,7 +425,7 @@ void Menu::SetupStyles() {
 		24.f, 
 		&icon_cfg, 
 		icon_ranges
-	);
+	);*/
 	
 }
 

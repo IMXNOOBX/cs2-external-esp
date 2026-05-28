@@ -67,7 +67,6 @@ const char* Weapon::ToIcon() const
     case -3:                        return WeaponIcons::WRENCH;
     case -4:                        return WeaponIcons::GEARS;
 
-        // wxyz don't have icons
 
     case weapon_deagle:               return WeaponIcons::DEAGLE;
     case weapon_elite:                return WeaponIcons::ELITE;
@@ -111,18 +110,17 @@ const char* Weapon::ToIcon() const
     case weapon_knife_falchion:       return WeaponIcons::KNIFE_FALCHION;
     case weapon_knife_t:              return WeaponIcons::KNIFE_T;
     case weapon_knife:                return WeaponIcons::KNIFE_CT;
-    // knives without a font entry
-    case weapon_knife_m9_bayonet:     return WeaponIcons::KNIFE_T;
-    case weapon_knife_canis:          return WeaponIcons::KNIFE_T;
-    case weapon_knife_css:            return WeaponIcons::KNIFE_T;
+    case weapon_knife_m9_bayonet:     return WeaponIcons::KNIFE_M9_BAYONET;
+    case weapon_knife_canis:          return WeaponIcons::KNIFE_CANIS;
+    case weapon_knife_css:            return WeaponIcons::KNIFE_CSS;
     case weapon_knife_ghost:          return WeaponIcons::KNIFE_T;
-    case weapon_knife_gypsy_jackknife:return WeaponIcons::KNIFE_T;
-    case weapon_knife_ursus:          return WeaponIcons::KNIFE_T;
-    case weapon_knife_stiletto:       return WeaponIcons::KNIFE_T;
-    case weapon_knife_widowmaker:     return WeaponIcons::KNIFE_T;
-    case weapon_knife_skeleton:       return WeaponIcons::KNIFE_T;
-    case weapon_knife_kukri:          return WeaponIcons::KNIFE_T;
-    case weapon_knife_outdoor:        return WeaponIcons::KNIFE_T;
+    case weapon_knife_gypsy_jackknife:return WeaponIcons::KNIFE_GYPSY_JACKKNIFE;
+    case weapon_knife_ursus:          return WeaponIcons::KNIFE_URSUS;
+    case weapon_knife_stiletto:       return WeaponIcons::KNIFE_STILLETO;
+    case weapon_knife_widowmaker:     return WeaponIcons::KNIFE_WIDOWMAKER;
+    case weapon_knife_skeleton:       return WeaponIcons::KNIFE_SKELETON;
+    case weapon_knife_kukri:          return WeaponIcons::KNIFE_KUKRI;
+    case weapon_knife_outdoor:        return WeaponIcons::KNIFE_OUTDOOR;
     default:                          return WeaponIcons::unknown;
     }
 }
