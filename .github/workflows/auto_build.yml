@@ -13,6 +13,7 @@ on:
       - '**/*.hpp'
       - '**/*.c'
       - '**/*.h'
+      - '**/*.csproj'
 
 jobs:
   build:
@@ -26,6 +27,11 @@ jobs:
         fetch-depth: 0
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1
+
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
 
     - name: Build solution
       env:

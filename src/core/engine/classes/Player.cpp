@@ -102,6 +102,7 @@ bool Player::UpdatePawn() {
 		return true;
 
 	this->pos = p->read<Vec3_t>(pawn + offsets::pawn::m_vOldOrigin);
+	this->view_offset_z = p->read<float>(pawn + offsets::pawn::m_vecViewOffsetZ);
 
 	if (this->pos.zero())
 		return false;
@@ -112,7 +113,6 @@ bool Player::UpdatePawn() {
 
 	this->armor = p->read<int>(pawn + offsets::pawn::m_ArmorValue);
 	this->defusing = p->read<bool>(pawn + offsets::pawn::m_bIsDefusing);
-	this->spotted = p->read<bool>(pawn + offsets::pawn::m_entitySpottedState + offsets::pawn::m_bSpottedByMask);
 	this->flashed = p->read<float>(pawn + offsets::pawn::m_flFlashOverlayAlpha) > 0;
 	this->scoped = p->read<bool>(pawn + offsets::pawn::m_bIsScoped);
 

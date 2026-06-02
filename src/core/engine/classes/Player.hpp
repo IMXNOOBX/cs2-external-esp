@@ -15,6 +15,7 @@ public:
     int8_t index = -1; // To use as invalid/un-initialize check
 
     Vec3_t pos;
+    float view_offset_z{};
     Vec3_t vel;
 
     int ping = 0;
@@ -27,7 +28,6 @@ public:
     bool alive = false;
     bool scoped = false;
     bool flashed = false;
-    bool spotted = false;
     bool defusing = false;
     bool localplayer = false;
 

@@ -22,6 +22,7 @@ namespace offsets
 
 	namespace pawn {
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x1390; // Vector
+		constexpr std::ptrdiff_t m_vecViewOffsetZ = 0xE90; // CNetworkViewOffsetVector.m_vecZ
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
 		constexpr std::ptrdiff_t m_bIsScoped = 0x1C50; // bool
