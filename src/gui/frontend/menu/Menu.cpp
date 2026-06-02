@@ -225,13 +225,25 @@ void Menu::RenderImpl() {
 
 					ImGui::Checkbox("Crosshair", &cfg::world::crosshair::enabled);
 					ImGui::Checkbox("Velocity Graph", &cfg::world::velocity::enabled);
-
-				#ifdef _DEBUG
+				#ifdef _DEBUG // Part of the velocity graph for developers
 					if (cfg::world::velocity::enabled) {
 						ImGui::SliderInt("Sample rate", &cfg::world::velocity::sample_rate, 1, 100);
 						ImGui::SliderFloat("Sample length", &cfg::world::velocity::sample_length, 1, 20, "%.1f");
 					}
 				#endif
+					ImGui::Spacing();
+
+					ImGui::Text("Radar");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Radar", &cfg::world::radar::enabled);
+					ImGui::BeginDisabled(!cfg::world::radar::enabled);
+					{
+						ImGui::SameLine();
+						ImGui::SliderFloat("Range", &cfg::world::radar::range, 100.f, 8000.f, "%.0f u");
+						ImGui::Checkbox("Disable Rotation", &cfg::world::radar::no_rotate);
+					}
+					ImGui::EndDisabled();
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{

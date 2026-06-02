@@ -81,6 +81,13 @@ bool Config::ReadImpl() {
 		// crosshair
 		cfg::world::crosshair::enabled = data["world"]["crosshair"].value("enabled", false); 
 
+		// radar
+		cfg::world::radar::enabled = data["world"]["radar"].value("enabled", true);
+		cfg::world::radar::no_rotate = data["world"]["radar"].value("no_rotate", false);
+		cfg::world::radar::range = data["world"]["radar"].value("range", 2000.f);
+		cfg::world::radar::pos = JsonToVec2(data["world"]["radar"], "pos", { 10.f, 10.f });
+		cfg::world::radar::size = JsonToVec2(data["world"]["radar"], "size", { 200.f, 200.f });
+
 		// velocity
 		cfg::world::velocity::enabled = data["world"]["velocity"].value("enabled", false);
 		cfg::world::velocity::sample_rate = data["world"]["velocity"].value("sample_rate", 10);
@@ -148,6 +155,13 @@ bool Config::WriteImpl() {
 
 	// crosshair
 	data["world"]["crosshair"]["enabled"] = cfg::world::crosshair::enabled;
+
+	// radar
+	data["world"]["radar"]["enabled"] = cfg::world::radar::enabled;
+	data["world"]["radar"]["no_rotate"] = cfg::world::radar::no_rotate;
+	data["world"]["radar"]["range"] = cfg::world::radar::range;
+	Vec2ToJson(data["world"]["radar"], "pos", cfg::world::radar::pos);
+	Vec2ToJson(data["world"]["radar"], "size", cfg::world::radar::size);
 
 	// velocity
 	data["world"]["velocity"]["enabled"] = cfg::world::velocity::enabled;
