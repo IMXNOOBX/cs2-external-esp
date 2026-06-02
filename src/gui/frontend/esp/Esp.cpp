@@ -18,7 +18,6 @@ bool Esp::InitImpl() {
 	ImFontConfig cfg{};
 	cfg.FontDataOwnedByAtlas = false;
 
-	LOGF(INFO, "Loading fonts in ESP");
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
 	ImFontConfig icon_cfg{};
