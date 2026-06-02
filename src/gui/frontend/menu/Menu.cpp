@@ -63,6 +63,7 @@ void Menu::RenderImpl() {
 
 			ImGui::BeginChild("##tab_buttons", ImVec2(120, size.y), true);
 			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1f, 0.5f));
 				for (const auto& tab : tabs)
 				{
 					bool is_active = (active_tab == tab.id);
@@ -74,24 +75,25 @@ void Menu::RenderImpl() {
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
 
-					if (ImGui::Button(tab.label.c_str(), ImVec2(-1, 32)))
+					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 25)))
 						active_tab = tab.id;
 
-					if (is_active)
+					if (is_active) 
 						ImGui::PopStyleColor(3);
 				}
+				ImGui::PopStyleVar(1);
 
 				auto space = ImGui::GetContentRegionAvail().y;
-				ImGui::SetCursorPosY(ImGui::GetCursorPos().y + space - 15.f * 3);
+				ImGui::SetCursorPosY(ImGui::GetCursorPos().y + space - 16.f * 3);
+
+				ImGui::Dummy(ImVec2(11, 0)); ImGui::SameLine();
+				ImGui::TextLinkOpenURL(Icons::DISCORD, "https://discord.gg/pRew8ZDkyp");
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(11, 0)); ImGui::SameLine();
+				ImGui::TextLinkOpenURL(Icons::GITHUB, "https://github.com/IMXNOOBX/cs2-external-esp");
+				ImGui::Separator();
 
 				ImGui::Checkbox("Enable", &cfg::enabled);
-
-				ImGui::TextLinkOpenURL(Icons::GITHUB, "https://github.com/IMXNOOBX/cs2-external-esp");
-
-				ImGui::SameLine();
-
-				ImGui::TextLinkOpenURL(Icons::DISCORD, "https://discord.gg/pRew8ZDkyp");
-
 			}
 			ImGui::EndChild();
 
@@ -424,21 +426,9 @@ void Menu::SetupStyles() {
 	merge_icon_cfg.FontDataOwnedByAtlas = false;
 	merge_icon_cfg.MergeMode = true;
 
-	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
-	io.Fonts->AddFontFromMemoryTTF(icons_font, icons_font_len, 16.f, &merge_icon_cfg, icon_ranges);
 	// the icons will use the size specified when getting added so it ignores the base size
-	
-	/* if you need it in a seperate font
-	ImFontConfig icon_cfg{};
-	icon_cfg.FontDataOwnedByAtlas = false;
-	this->font_icons = io.Fonts->AddFontFromMemoryTTF(
-		icons_font, 
-		icons_font_len, 
-		24.f, 
-		&icon_cfg, 
-		icon_ranges
-	);*/
-	
+	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
+	io.Fonts->AddFontFromMemoryTTF(icons_font, icons_font_len, 20.f, &merge_icon_cfg, icon_ranges);
 }
 
 void Menu::RenderStartupHelpImpl() {
