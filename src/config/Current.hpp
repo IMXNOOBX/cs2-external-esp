@@ -41,6 +41,21 @@ namespace cfg {
 
 			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
+
+			namespace flags {
+				inline color_t flashed_team{ 1.f, 1.f, 1.f, 0.5f };
+				inline color_t flashed_enemy{ 1.f, 1.f, 1.f, 0.8f };
+
+				inline color_t reloading_team{ 1.f, 1.f, 1.f, 0.5f };
+				inline color_t reloading_enemy{ 1.f, 1.f, 1.f, 0.8f };
+
+				inline color_t defusing_team{ 1.f, 1.f, 1.f, 0.5f };
+				inline color_t defusing_enemy{ 1.f, 1.f, 1.f, 0.8f };
+
+				inline color_t scoped_team{ 1.f, 1.f, 1.f, 0.5f };
+				inline color_t scoped_enemy{ 1.f, 1.f, 1.f, 0.8f };
+			}
+			
 		}
 
 	}
@@ -89,12 +104,12 @@ namespace cfg {
 		inline bool free_cpu = true;
 	}
 
-#ifdef _DEBUG
+
 	// Not stored, just for testing
 	namespace dev {
 		inline bool console = true;
 		inline int open_menu_key = false;
 		inline int cache_refresh_rate = 5;
+		inline bool force_show_flags = false;
 	}
-#endif
 }
