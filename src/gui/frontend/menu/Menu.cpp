@@ -75,7 +75,7 @@ void Menu::RenderImpl() {
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
 
-					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 25)))
+					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 28)))
 						active_tab = tab.id;
 
 					if (is_active) 
@@ -425,6 +425,7 @@ void Menu::SetupStyles() {
 	ImFontConfig merge_icon_cfg{};
 	merge_icon_cfg.FontDataOwnedByAtlas = false;
 	merge_icon_cfg.MergeMode = true;
+	merge_icon_cfg.GlyphOffset = Vec2_t(0, 3.5f);
 
 	// the icons will use the size specified when getting added so it ignores the base size
 	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
