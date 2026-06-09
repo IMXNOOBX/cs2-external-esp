@@ -389,13 +389,19 @@
     <ClInclude Include="core\engine\classes\Bomb.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="core\engine\classes\Weapons.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\engine\classes\Weapon.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="core\engine\classes\ObserverServices.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\engine\types\Weapons.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\fonts\Icons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="assets\fonts\WeaponIcons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

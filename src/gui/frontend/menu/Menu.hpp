@@ -1,4 +1,25 @@
 #pragma once
+#include "assets/fonts/Icons.h"
+
+enum Tab {
+    PLAYER,
+    WORLD,
+    SETTINGS
+};
+
+struct TabItem
+{
+    Tab id;
+    std::string label;
+    std::string icon;
+};
+
+static const TabItem tabs[] =
+{
+    { Tab::PLAYER,      "Player",   Icons::PERSON },
+    { Tab::WORLD,       "World",    Icons::GLOBE },
+    { Tab::SETTINGS,    "Settings", Icons::SETTINGS }
+};
 
 class Menu {
 public:
@@ -34,23 +55,6 @@ private:
 
     ImVec2 pos;
     ImVec2 size;
-};
-
-enum Tab {
-    PLAYER,
-    WORLD,
-    SETTINGS
-};
-
-struct TabItem
-{
-    const char* label;
-    Tab id;
-};
-
-static constexpr TabItem tabs[] =
-{
-    { "Player",   Tab::PLAYER   },
-    { "World",    Tab::WORLD    },
-    { "Settings", Tab::SETTINGS }
+    
+    ImFont* font_icons;
 };
