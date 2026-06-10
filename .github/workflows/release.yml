@@ -50,8 +50,10 @@ jobs:
         with:
           node-version: 20
       - name: Generate changelog
+        id: changelog
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD")
+          # Get the previous tag (before the one we just created)
+          LAST_TAG=$(git describe --tags --abbrev=0 --exclude="${{ steps.tag.outputs.tag }}" 2>/dev/null || echo "$(git rev-list --max-parents=0 HEAD)")
           REPO_OWNER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
           RUN_ID="${{ github.run_id }}"
