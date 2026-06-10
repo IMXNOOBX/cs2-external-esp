@@ -81,8 +81,10 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "- **Workflow:** [auto_build.yml](https://github.com/IMXNOOBX/cs2-external-esp/blob/main/.github/workflows/auto_build.yml)" >> CHANGELOG.md
           echo "- **Source:** [Repository](https://github.com/$REPO_OWNER/$REPO_NAME)" >> CHANGELOG.md
-          echo "- **Build ID:** \`$RUN_ID\`" >> CHANGELOG.md
+          echo "- **Build ID:** $RUN_ID" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
+        shell: bash
+        
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
