@@ -30,7 +30,6 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vecAbsVelocity = 0x3FC; // Vector
 
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
-		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
 		
 		constexpr std::ptrdiff_t m_entitySpottedState = 0x1C38; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t

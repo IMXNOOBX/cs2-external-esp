@@ -3,6 +3,7 @@
 #include "core/engine/cache/Cache.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
+#include "assets/fonts/Icons.h";
 
 
 bool Menu::Init() {
@@ -46,7 +47,7 @@ void Menu::RenderImpl() {
 	static auto title = "cs2-external-esp | recode";
 #endif
 
-	ImGui::SetNextWindowSize(ImVec2(600, 350), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(600, 370), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowPos(ImVec2(screen.x / 2 - 300, screen.y / 2 - 150), ImGuiCond_FirstUseEver);
 
 	ImGui::GetWindowPos();
@@ -62,6 +63,7 @@ void Menu::RenderImpl() {
 
 			ImGui::BeginChild("##tab_buttons", ImVec2(120, size.y), true);
 			{
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.1f, 0.5f));
 				for (const auto& tab : tabs)
 				{
 					bool is_active = (active_tab == tab.id);
@@ -73,21 +75,25 @@ void Menu::RenderImpl() {
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
 					}
 
-					if (ImGui::Button(tab.label, ImVec2(-1, 32)))
+					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 28)))
 						active_tab = tab.id;
 
-					if (is_active)
+					if (is_active) 
 						ImGui::PopStyleColor(3);
 				}
+				ImGui::PopStyleVar(1);
 
 				auto space = ImGui::GetContentRegionAvail().y;
-				ImGui::SetCursorPosY(ImGui::GetCursorPos().y + space - 15.f * 3);
+				ImGui::SetCursorPosY(ImGui::GetCursorPos().y + space - 16.f * 3);
+
+				ImGui::Dummy(ImVec2(11, 0)); ImGui::SameLine();
+				ImGui::TextLinkOpenURL(Icons::DISCORD, "https://discord.gg/pRew8ZDkyp");
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(11, 0)); ImGui::SameLine();
+				ImGui::TextLinkOpenURL(Icons::GITHUB, "https://github.com/IMXNOOBX/cs2-external-esp");
+				ImGui::Separator();
 
 				ImGui::Checkbox("Enable", &cfg::enabled);
-
-				ImGui::TextLinkOpenURL("Source", "https://github.com/IMXNOOBX/cs2-external-esp");
-				ImGui::SameLine();
-				ImGui::TextLinkOpenURL("Discord", "https://discord.gg/pRew8ZDkyp");
 			}
 			ImGui::EndChild();
 
@@ -171,9 +177,45 @@ void Menu::RenderImpl() {
 
 					ImGui::BeginGroup();
 					{
-						ImGui::Checkbox("Name", &cfg::esp::flags::name);
+						ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+						ImGui::BeginDisabled(!cfg::esp::flags::flashed);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team flashed color", cfg::esp::colors::flags::flashed_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy flashed color", cfg::esp::colors::flags::flashed_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Reloading", &cfg::esp::flags::reloading);
+						ImGui::BeginDisabled(!cfg::esp::flags::reloading);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team reloading color", cfg::esp::colors::flags::reloading_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy reloading color", cfg::esp::colors::flags::reloading_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
 						ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-						ImGui::Checkbox("Money", &cfg::esp::flags::money);
+						ImGui::BeginDisabled(!cfg::esp::flags::defusing);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team defusing color", cfg::esp::colors::flags::defusing_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy defusing color", cfg::esp::colors::flags::defusing_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
+						ImGui::BeginDisabled(!cfg::esp::flags::scoped);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team scoped color", cfg::esp::colors::flags::scoped_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy scoped color", cfg::esp::colors::flags::scoped_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
 					}
 					ImGui::EndGroup();
 
@@ -181,18 +223,10 @@ void Menu::RenderImpl() {
 
 					ImGui::BeginGroup();
 					{
+						ImGui::Checkbox("Name", &cfg::esp::flags::name);
+						ImGui::Checkbox("Money", &cfg::esp::flags::money);
 						ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
 						ImGui::Checkbox("Ammo", &cfg::esp::flags::ammo);
-						ImGui::Checkbox("Reload indicator", &cfg::esp::flags::reloading);
-					}
-					ImGui::EndGroup();
-
-					ImGui::SameLine();
-
-					ImGui::BeginGroup();
-					{
-						ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
-						ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
 						ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
 					}
 					ImGui::EndGroup();
@@ -297,6 +331,7 @@ void Menu::RenderImpl() {
 					}
 
 					ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
+					ImGui::Checkbox("Force Show Flags", &cfg::dev::force_show_flags);
 #endif
 				}
 			}
@@ -386,6 +421,15 @@ void Menu::SetupStyles() {
 
 	io.Fonts->Clear();
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
+
+	ImFontConfig merge_icon_cfg{};
+	merge_icon_cfg.FontDataOwnedByAtlas = false;
+	merge_icon_cfg.MergeMode = true;
+	merge_icon_cfg.GlyphOffset = Vec2_t(0, 3.5f);
+
+	// the icons will use the size specified when getting added so it ignores the base size
+	static const ImWchar icon_ranges[] = { 0xE100, 0xE108, 0 };
+	io.Fonts->AddFontFromMemoryTTF(icons_font, icons_font_len, 20.f, &merge_icon_cfg, icon_ranges);
 }
 
 void Menu::RenderStartupHelpImpl() {

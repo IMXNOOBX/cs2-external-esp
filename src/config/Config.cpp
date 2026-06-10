@@ -60,12 +60,30 @@ bool Config::ReadImpl() {
 		const auto& col = data["esp"]["colors"];
 		cfg::esp::colors::box_team = JsonToColor(col, "box_team", { 0.f, 1.f, 0.29f, 0.5f });
 		cfg::esp::colors::box_enemy = JsonToColor(col, "box_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
 		cfg::esp::colors::skeleton_team = JsonToColor(col, "skeleton_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::skeleton_enemy = JsonToColor(col, "skeleton_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
 		cfg::esp::colors::tracker_team = JsonToColor(col, "tracker_team", { 1.f, 1.f, 1.f, 0.3f });
 		cfg::esp::colors::tracker_enemy = JsonToColor(col, "tracker_enemy", { 1.f, 1.f, 1.f, 0.3f });
+
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
+		// flag colors
+		const auto& fcol = data["esp"]["colors"]["flags"];
+
+		cfg::esp::colors::flags::flashed_team = JsonToColor(fcol, "flashed_team", { 1.f, 1.f, 1.f, 0.5f });
+		cfg::esp::colors::flags::flashed_enemy = JsonToColor(fcol, "flashed_enemy", { 1.f, 1.f, 1.f, 0.8f });
+
+		cfg::esp::colors::flags::reloading_team = JsonToColor(fcol, "reloading_team", { 1.f, 1.f, 1.f, 0.5f });
+		cfg::esp::colors::flags::reloading_enemy = JsonToColor(fcol, "reloading_enemy", { 1.f, 1.f, 1.f, 0.8f });
+
+		cfg::esp::colors::flags::defusing_team = JsonToColor(fcol, "defusing_team", { 1.f, 1.f, 1.f, 0.5f });
+		cfg::esp::colors::flags::defusing_enemy = JsonToColor(fcol, "defusing_enemy", { 1.f, 1.f, 1.f, 0.8f });
+
+		cfg::esp::colors::flags::scoped_team = JsonToColor(fcol, "scoped_team", { 1.f, 1.f, 1.f, 0.5f });
+		cfg::esp::colors::flags::scoped_enemy = JsonToColor(fcol, "scoped_enemy", { 1.f, 1.f, 1.f, 0.8f });
 
 		// world
 		// spectator list
@@ -174,12 +192,30 @@ bool Config::WriteImpl() {
 	auto& col = data["esp"]["colors"];
 	ColorToJson(col, "box_team", cfg::esp::colors::box_team);
 	ColorToJson(col, "box_enemy", cfg::esp::colors::box_enemy);
+
 	ColorToJson(col, "skeleton_team", cfg::esp::colors::skeleton_team);
 	ColorToJson(col, "skeleton_enemy", cfg::esp::colors::skeleton_enemy);
+
 	ColorToJson(col, "tracker_team", cfg::esp::colors::tracker_team);
 	ColorToJson(col, "tracker_enemy", cfg::esp::colors::tracker_enemy);
+
 	ColorToJson(col, "tracer_team", cfg::esp::colors::tracer_team);
 	ColorToJson(col, "tracer_enemy", cfg::esp::colors::tracer_enemy);
+
+	// flag colors
+	auto& fcol = col["flags"];
+
+	ColorToJson(fcol, "blinded_team", cfg::esp::colors::flags::flashed_team);
+	ColorToJson(fcol, "blinded_enemy", cfg::esp::colors::flags::flashed_enemy);
+
+	ColorToJson(fcol, "reloading_team", cfg::esp::colors::flags::reloading_team);
+	ColorToJson(fcol, "reloading_enemy", cfg::esp::colors::flags::reloading_enemy);
+
+	ColorToJson(fcol, "defusing_team", cfg::esp::colors::flags::defusing_team);
+	ColorToJson(fcol, "defusing_enemy", cfg::esp::colors::flags::defusing_enemy);
+
+	ColorToJson(fcol, "scoped_team", cfg::esp::colors::flags::scoped_team);
+	ColorToJson(fcol, "scoped_enemy", cfg::esp::colors::flags::scoped_enemy);
 
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;

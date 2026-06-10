@@ -16,6 +16,7 @@ public:
 private:
     ImGuiIO io;
     ImFont* font;
+    ImFont* font_merged_icons;
     ImDrawList* d;
 
     // Temporary storage for ease
