@@ -354,6 +354,34 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
+	if (cfg::esp::flags::has_c4 && player.has_c4 || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::c4_team : cfg::esp::colors::flags::c4_enemy;
+
+		ImGui::PushFont(this->font_merged_icons);
+		auto icon_size = ImGui::CalcTextSize(WeaponIcons::C4);
+		ImGui::PopFont();
+
+		// Flash the icon if they're holding the C4, presumably planting since nobody just holds it really
+		ImColor draw_color = ImColor(color);
+		if (player.weapon.item_index == weapon_c4) {
+			float alpha = 0.5f + 0.5f * sinf((float)ImGui::GetTime() * 8.0f);
+			draw_color = ImColor(color.r, color.g, color.b, alpha);
+		}
+
+		d->AddText(
+			this->font_merged_icons,
+			16.0f,
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - icon_size.x / 2,
+				bounds.first.y - 20 - icon_size.y - 2
+			),
+			draw_color,
+			WeaponIcons::C4
+		);
+
+		offset -= offset_mult;
+	}
+
 	ImGui::PopFont();
 }
 
@@ -468,10 +496,10 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 
 	float width = 20.f;
 	float height = 20.f;
-	float rounding = 10.f;
+	float rounding = 4.f;
 
-	static int margin = 10;
-	static int padding = 10;
+	static int margin = 4;
+	static int padding = 4;
 
 	//auto distance_str = std::format("{}pt", (int)distance);
 	auto duration_str = std::format("{}s", bomb.time_left);
@@ -497,23 +525,42 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 	auto text_size = ImGui::CalcTextSize(bomb_string.data());
 	width = text_size.x; height = text_size.y;
 
+	// Measure C4 icon size
+	ImGui::PushFont(this->font_merged_icons);
+	auto icon_size = ImGui::CalcTextSize(WeaponIcons::C4);
+	ImGui::PopFont();
+
+	static float icon_gap = 2.f; // gap between icon and text box
+	float box_width = std::max(width, icon_size.x);
+
 	d->AddRectFilled(
 		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
+		ImVec2(pos.x + box_width + margin + padding, pos.y - 20 - margin + padding),
 		IM_COL32(0, 0, 0, 200),
 		rounding
 	);
 
 	d->AddRect(
 		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
+		ImVec2(pos.x + box_width + margin + padding, pos.y - 20 - margin + padding),
 		IM_COL32(100, 100, 100, 200),
 		rounding
 	);
 
 	d->AddText(
-		ImVec2(pos.x + margin, pos.y - height - 20 - margin),
+		ImVec2(pos.x + margin + (box_width - width) * 0.5f, pos.y - height - 20 - margin),
 		IM_COL32(255, 255, 255, 255),
 		bomb_string.data()
+	);
+
+	d->AddText(
+		this->font_merged_icons,
+		16.0f,
+		ImVec2(
+			pos.x + margin - padding + (box_width + padding * 2 - icon_size.x) * 0.5f,
+			pos.y - height - 20 - margin - padding - icon_size.y - icon_gap
+		),
+		IM_COL32(255, 200, 50, 255),
+		WeaponIcons::C4
 	);
 }
