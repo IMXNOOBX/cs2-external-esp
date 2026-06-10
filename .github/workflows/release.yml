@@ -84,12 +84,13 @@ jobs:
           echo "- **Build ID:** $RUN_ID" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
         shell: bash
-        
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release (v${{ github.run_number }})
+          body_path: CHANGELOG.md
           files: release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
