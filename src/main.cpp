@@ -55,6 +55,8 @@ int main()
         goto exit;
     }
 
+    LOGF(INFO, "Everything setup and ready, just... make sure you are not in \"Full Screen\"!");
+
     // Locking
     Renderer::Thread();
 
