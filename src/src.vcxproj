@@ -312,10 +312,6 @@
     <ClInclude Include="updater\Updater.hpp" />
     <ClInclude Include="core\engine\classes\Weapon.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\fonts\icons.sfd" />
-    <None Include="assets\fonts\weapons.sfd" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
