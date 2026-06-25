@@ -27,6 +27,7 @@ namespace cfg {
 			inline bool money = false;
 			inline bool flashed = false;
 			inline bool scoped = false;
+			inline bool has_c4 = false;
 		}
 
 		namespace colors {
@@ -54,6 +55,9 @@ namespace cfg {
 
 				inline color_t scoped_team{ 1.f, 1.f, 1.f, 0.5f };
 				inline color_t scoped_enemy{ 1.f, 1.f, 1.f, 0.8f };
+
+				inline color_t c4_team{ 1.f, 0.84f, 0.f, 1.f };
+				inline color_t c4_enemy{ 1.f, 0.84f, 0.f, 1.f };
 			}
 			
 		}
@@ -73,6 +77,7 @@ namespace cfg {
 		namespace bomb {
 			inline bool location = true;
 			inline bool timer = true;
+			inline Vec2_t pos{ 10.f, 300.f };
 		}
 
 		namespace crosshair {

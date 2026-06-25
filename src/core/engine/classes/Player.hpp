@@ -30,6 +30,7 @@ public:
     bool spotted = false;
     bool defusing = false;
     bool localplayer = false;
+    bool has_c4 = false;
 
     char name[32];
     //std::string name;

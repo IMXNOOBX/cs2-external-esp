@@ -55,6 +55,7 @@ bool Config::ReadImpl() {
 		cfg::esp::flags::scoped = data["esp"]["flags"].value("scoped", false);
 		cfg::esp::flags::defusing = data["esp"]["flags"].value("defusing", false);
 		cfg::esp::flags::flashed = data["esp"]["flags"].value("flashed", false);
+		cfg::esp::flags::has_c4 = data["esp"]["flags"].value("has_c4", false);
 
 		// colors
 		const auto& col = data["esp"]["colors"];
@@ -85,6 +86,9 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::flags::scoped_team = JsonToColor(fcol, "scoped_team", { 1.f, 1.f, 1.f, 0.5f });
 		cfg::esp::colors::flags::scoped_enemy = JsonToColor(fcol, "scoped_enemy", { 1.f, 1.f, 1.f, 0.8f });
 
+		cfg::esp::colors::flags::c4_team = JsonToColor(fcol, "c4_team", { 1.f, 0.84f, 0.f, 1.f });
+		cfg::esp::colors::flags::c4_enemy = JsonToColor(fcol, "c4_enemy", { 1.f, 0.84f, 0.f, 1.f });
+
 		// world
 		// spectator list
 		cfg::world::spectators::enabled = data["world"]["spectators"].value("enabled", true);
@@ -95,6 +99,7 @@ bool Config::ReadImpl() {
 		// bomb
 		cfg::world::bomb::location = data["world"]["bomb"].value("bomb_location", true);
 		cfg::world::bomb::timer = data["world"]["bomb"].value("bomb_timer", true);
+		cfg::world::bomb::pos = JsonToVec2(data["world"]["bomb"], "pos", { 10.f, 300.f });
 
 		// crosshair
 		cfg::world::crosshair::enabled = data["world"]["crosshair"].value("enabled", false); 
@@ -159,6 +164,7 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["reloading"] = cfg::esp::flags::reloading;
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
+	data["esp"]["flags"]["has_c4"] = cfg::esp::flags::has_c4;
 
 	// world
 	// spectator list
@@ -170,6 +176,7 @@ bool Config::WriteImpl() {
 	// bomb
 	data["world"]["bomb"]["location"] = cfg::world::bomb::location;
 	data["world"]["bomb"]["timer"] = cfg::world::bomb::timer;
+	Vec2ToJson(data["world"]["bomb"], "pos", cfg::world::bomb::pos);
 
 	// crosshair
 	data["world"]["crosshair"]["enabled"] = cfg::world::crosshair::enabled;
@@ -216,6 +223,9 @@ bool Config::WriteImpl() {
 
 	ColorToJson(fcol, "scoped_team", cfg::esp::colors::flags::scoped_team);
 	ColorToJson(fcol, "scoped_enemy", cfg::esp::colors::flags::scoped_enemy);
+
+	ColorToJson(fcol, "c4_team", cfg::esp::colors::flags::c4_team);
+	ColorToJson(fcol, "c4_enemy", cfg::esp::colors::flags::c4_enemy);
 
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;

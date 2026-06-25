@@ -20,24 +20,21 @@ bool Esp::InitImpl() {
 
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
-	ImFontConfig icon_cfg{};
-	icon_cfg.FontDataOwnedByAtlas = false;
-
 	this->font_merged_icons = io.Fonts->AddFontFromMemoryTTF(
 		weapon_icon_font,
 		weapon_icon_font_len,
 		16.0f,
-		&icon_cfg
-		);
+		&cfg
+	);
 
-	icon_cfg.MergeMode = true;
+	cfg.MergeMode = true;
 
 	static const ImWchar general_ranges[] = { 0xE100, 0xE108, 0 };
 	io.Fonts->AddFontFromMemoryTTF(
 		icons_font,
 		icons_font_len,
 		16.0f,
-		&icon_cfg,
+		&cfg,
 		general_ranges
 	);
 
@@ -61,8 +58,6 @@ void Esp::RenderImpl() {
 	this->d = ImGui::GetBackgroundDrawList();
 
 	this->matrix = game.view_matrix;
-
-	RenderBomb(local, bomb);
 
 	for (auto& player : players) {
 		if (!player.alive)
@@ -354,6 +349,34 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 		);
 	}
 
+	if (cfg::esp::flags::has_c4 && player.has_c4 || cfg::dev::force_show_flags) {
+		auto color = mate ? cfg::esp::colors::flags::c4_team : cfg::esp::colors::flags::c4_enemy;
+
+		ImGui::PushFont(this->font_merged_icons);
+		auto icon_size = ImGui::CalcTextSize(WeaponIcons::C4);
+		ImGui::PopFont();
+
+		// Flash the icon if they're holding the C4, presumably planting since nobody just holds it really
+		ImColor draw_color = ImColor(color);
+		if (player.weapon.item_index == weapon_c4) {
+			float alpha = 0.5f + 0.5f * sinf((float)ImGui::GetTime() * 8.0f);
+			draw_color = ImColor(color.r, color.g, color.b, alpha);
+		}
+
+		d->AddText(
+			this->font_merged_icons,
+			16.0f,
+			Vec2_t(
+				(bounds.first.x + bounds.second.x) / 2 - icon_size.x / 2,
+				bounds.first.y - 20 - icon_size.y - 2
+			),
+			draw_color,
+			WeaponIcons::C4
+		);
+
+		offset -= offset_mult;
+	}
+
 	ImGui::PopFont();
 }
 
@@ -442,78 +465,5 @@ void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 		screenPos,
 		ImColor(color),
 		1.0f
-	);
-}
-
-void Esp::RenderBomb(Player local, Bomb bomb) {
-	if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
-		return;
-
-	if (!bomb.is_planted)
-		return;
-
-	if (!bomb.pos.length())
-		return;
-
-	auto marker = bomb.pos + Vec3_t(0, 0, 20);
-
-	Vec2_t pos;
-	if (!matrix.wts(bomb.pos, io.DisplaySize, pos))
-		return;
-
-	if (!local.alive)
-		return;
-
-	auto distance = bomb.pos.dist_to(local.pos);
-
-	float width = 20.f;
-	float height = 20.f;
-	float rounding = 10.f;
-
-	static int margin = 10;
-	static int padding = 10;
-
-	//auto distance_str = std::format("{}pt", (int)distance);
-	auto duration_str = std::format("{}s", bomb.time_left);
-	auto bombsite_str = std::string(bomb.site == BombSite::A ? "A" : "B");
-
-	std::string bomb_string = "";
-
-	if (cfg::world::bomb::location)
-	{
-		bomb_string += bombsite_str;
-	}
-
-	if (cfg::world::bomb::timer)
-	{
-		if (cfg::world::bomb::location)
-			bomb_string += " - ";
-		else
-			bomb_string += " ";
-
-		bomb_string += duration_str;
-	}
-
-	auto text_size = ImGui::CalcTextSize(bomb_string.data());
-	width = text_size.x; height = text_size.y;
-
-	d->AddRectFilled(
-		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
-		IM_COL32(0, 0, 0, 200),
-		rounding
-	);
-
-	d->AddRect(
-		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + width + margin + padding, pos.y - 20 - margin + padding),
-		IM_COL32(100, 100, 100, 200),
-		rounding
-	);
-
-	d->AddText(
-		ImVec2(pos.x + margin, pos.y - height - 20 - margin),
-		IM_COL32(255, 255, 255, 255),
-		bomb_string.data()
 	);
 }
