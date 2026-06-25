@@ -46,18 +46,6 @@ bool Cache::RefreshImpl() {
     globals.Update();
     bomb.Update();
 
-    // Resolve the C4 carrier via the global weaponC4 pointer
-    // client.base + weaponC4 -> ptr to C4 entity -> m_hOwnerEntity (0x520) = pawn handle
-    uintptr_t c4_carrier_pawn = 0;
-    {
-        auto c4_ptr = p->read<uintptr_t>(client.base + offsets::weaponC4);
-        if (c4_ptr) {
-            auto c4_entity = p->read<uintptr_t>(c4_ptr);
-            if (c4_entity)
-                c4_carrier_pawn = (uintptr_t)p->read<int>(c4_entity + 0x520);
-        }
-    }
-
     std::vector<Player> scan;
     scan.reserve(globals.max_clients);
     for (int i = 0; i < globals.max_clients; i++) {
@@ -69,15 +57,7 @@ bool Cache::RefreshImpl() {
         if (player.localplayer)
             this->local = player;
 
-        player.has_c4 = (c4_carrier_pawn != 0 && (uintptr_t)player.pawn_controller_addr == c4_carrier_pawn);
-
-#ifdef _DEBUG
-        static int p_tick = 0;
-        if (c4_carrier_pawn != 0 && ++p_tick % 60 == 0) {
-            LOGF(VERBOSE, "[C4] player#{} pawn_ctrl=0x{:X} has_c4={}", 
-                (int)player.index, (uintptr_t)player.pawn_controller_addr, player.has_c4);
-        }
-#endif
+        player.has_c4 = (bomb.carrier != 0 && (uintptr_t)player.pawn_controller_addr == bomb.carrier);
 
         // TODO: Handle or at least alert, in case of multiple lp
         //if (player.localplayer && (this->local.index == -1 || this->local.index == player.index))
