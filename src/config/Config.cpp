@@ -99,6 +99,7 @@ bool Config::ReadImpl() {
 		// bomb
 		cfg::world::bomb::location = data["world"]["bomb"].value("bomb_location", true);
 		cfg::world::bomb::timer = data["world"]["bomb"].value("bomb_timer", true);
+		cfg::world::bomb::pos = JsonToVec2(data["world"]["bomb"], "pos", { 10.f, 300.f });
 
 		// crosshair
 		cfg::world::crosshair::enabled = data["world"]["crosshair"].value("enabled", false); 
@@ -175,6 +176,7 @@ bool Config::WriteImpl() {
 	// bomb
 	data["world"]["bomb"]["location"] = cfg::world::bomb::location;
 	data["world"]["bomb"]["timer"] = cfg::world::bomb::timer;
+	Vec2ToJson(data["world"]["bomb"], "pos", cfg::world::bomb::pos);
 
 	// crosshair
 	data["world"]["crosshair"]["enabled"] = cfg::world::crosshair::enabled;

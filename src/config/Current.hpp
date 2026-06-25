@@ -77,6 +77,7 @@ namespace cfg {
 		namespace bomb {
 			inline bool location = true;
 			inline bool timer = true;
+			inline Vec2_t pos{ 10.f, 300.f };
 		}
 
 		namespace crosshair {

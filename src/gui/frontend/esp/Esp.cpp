@@ -20,24 +20,21 @@ bool Esp::InitImpl() {
 
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
-	ImFontConfig icon_cfg{};
-	icon_cfg.FontDataOwnedByAtlas = false;
-
 	this->font_merged_icons = io.Fonts->AddFontFromMemoryTTF(
 		weapon_icon_font,
 		weapon_icon_font_len,
 		16.0f,
-		&icon_cfg
-		);
+		&cfg
+	);
 
-	icon_cfg.MergeMode = true;
+	cfg.MergeMode = true;
 
 	static const ImWchar general_ranges[] = { 0xE100, 0xE108, 0 };
 	io.Fonts->AddFontFromMemoryTTF(
 		icons_font,
 		icons_font_len,
 		16.0f,
-		&icon_cfg,
+		&cfg,
 		general_ranges
 	);
 
@@ -61,8 +58,6 @@ void Esp::RenderImpl() {
 	this->d = ImGui::GetBackgroundDrawList();
 
 	this->matrix = game.view_matrix;
-
-	RenderBomb(local, bomb);
 
 	for (auto& player : players) {
 		if (!player.alive)
@@ -470,97 +465,5 @@ void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 		screenPos,
 		ImColor(color),
 		1.0f
-	);
-}
-
-void Esp::RenderBomb(Player local, Bomb bomb) {
-	if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
-		return;
-
-	if (!bomb.is_planted)
-		return;
-
-	if (!bomb.pos.length())
-		return;
-
-	auto marker = bomb.pos + Vec3_t(0, 0, 20);
-
-	Vec2_t pos;
-	if (!matrix.wts(bomb.pos, io.DisplaySize, pos))
-		return;
-
-	if (!local.alive)
-		return;
-
-	auto distance = bomb.pos.dist_to(local.pos);
-
-	float width = 20.f;
-	float height = 20.f;
-	float rounding = 4.f;
-
-	static int margin = 4;
-	static int padding = 4;
-
-	//auto distance_str = std::format("{}pt", (int)distance);
-	auto duration_str = std::format("{}s", bomb.time_left);
-	auto bombsite_str = std::string(bomb.site == BombSite::A ? "A" : "B");
-
-	std::string bomb_string = "";
-
-	if (cfg::world::bomb::location)
-	{
-		bomb_string += bombsite_str;
-	}
-
-	if (cfg::world::bomb::timer)
-	{
-		if (cfg::world::bomb::location)
-			bomb_string += " - ";
-		else
-			bomb_string += " ";
-
-		bomb_string += duration_str;
-	}
-
-	auto text_size = ImGui::CalcTextSize(bomb_string.data());
-	width = text_size.x; height = text_size.y;
-
-	// Measure C4 icon size
-	ImGui::PushFont(this->font_merged_icons);
-	auto icon_size = ImGui::CalcTextSize(WeaponIcons::C4);
-	ImGui::PopFont();
-
-	static float icon_gap = 2.f; // gap between icon and text box
-	float box_width = std::max(width, icon_size.x);
-
-	d->AddRectFilled(
-		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + box_width + margin + padding, pos.y - 20 - margin + padding),
-		IM_COL32(0, 0, 0, 200),
-		rounding
-	);
-
-	d->AddRect(
-		ImVec2(pos.x + margin - padding, pos.y - height - 20 - margin - padding),
-		ImVec2(pos.x + box_width + margin + padding, pos.y - 20 - margin + padding),
-		IM_COL32(100, 100, 100, 200),
-		rounding
-	);
-
-	d->AddText(
-		ImVec2(pos.x + margin + (box_width - width) * 0.5f, pos.y - height - 20 - margin),
-		IM_COL32(255, 255, 255, 255),
-		bomb_string.data()
-	);
-
-	d->AddText(
-		this->font_merged_icons,
-		16.0f,
-		ImVec2(
-			pos.x + margin - padding + (box_width + padding * 2 - icon_size.x) * 0.5f,
-			pos.y - height - 20 - margin - padding - icon_size.y - icon_gap
-		),
-		IM_COL32(255, 200, 50, 255),
-		WeaponIcons::C4
 	);
 }
