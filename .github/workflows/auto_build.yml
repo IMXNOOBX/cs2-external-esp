@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-      - cs2-recode
-    #   - auto-build # testing
+      # - cs2-recode
+      # - auto-build # testing
     paths:
       - '**/*.sln'
       - '**/*.cpp'
