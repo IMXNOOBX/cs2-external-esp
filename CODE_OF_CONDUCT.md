@@ -8,7 +8,7 @@ This isn’t an exhaustive list of things that you can’t do. Rather, take it i
 
 This code of conduct applies to all spaces managed by the cs2-external-esp project or related repositories. This includes IRC, the mailing lists, the issue tracker, DSF events, and any other forums created by the project team which the community uses for communication. In addition, violations of this code outside these spaces may affect a person's ability to participate within them.
 
-If you believe someone is violating the code of conduct, we ask that you report it on [The Discord Server](discord.gg/pRew8ZDkyp). For more details please join our Discord
+If you believe someone is violating the code of conduct, we ask that you report it on the [support server](discord.gg/pRew8ZDkyp). For more details please join our Discord
 
 - **Be friendly and patient.**
 - **Be welcoming.** We strive to be a community that welcomes and supports people of all backgrounds and identities. This includes, but is not limited to members of any race, ethnicity, culture, national origin, colour, immigration status, social and economic class, educational level, sex, sexual orientation, gender identity and expression, age, size, family status, political belief, religion, and mental and physical ability.
@@ -29,4 +29,4 @@ Original text courtesy of the [Speak Up! project](http://web.archive.org/web/201
 
 ## Questions?
 
-If you have questions, please see [Faq](https://github.com/IMXNOOBX/cs2-external-esp). If that doesn't answer your questions, feel free to [contact us](discord.gg/pRew8ZDkyp).
+If you have questions, please see [`CONTRIBUTING.md`](https://github.com/IMXNOOBX/cs2-external-esp/blob/main/CONTRIBUTING.md). If that doesn't answer your questions, feel free to [contact us](discord.gg/pRew8ZDkyp).
