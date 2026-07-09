@@ -13,6 +13,7 @@ public:
     bool Update();
 public:
     Vec3_t pos;
+    uintptr_t carrier;
     float time_left = 0.f;
     bool is_planted = false;
     BombSite site = BombSite::Unknown;

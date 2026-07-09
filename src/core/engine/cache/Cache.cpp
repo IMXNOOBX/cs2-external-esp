@@ -57,6 +57,8 @@ bool Cache::RefreshImpl() {
         if (player.localplayer)
             this->local = player;
 
+        player.has_c4 = (bomb.carrier != 0 && (uintptr_t)player.pawn_controller_addr == bomb.carrier);
+
         // TODO: Handle or at least alert, in case of multiple lp
         //if (player.localplayer && (this->local.index == -1 || this->local.index == player.index))
         //    this->local = player;

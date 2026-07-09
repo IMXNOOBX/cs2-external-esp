@@ -16,6 +16,7 @@ public:
 private:
     ImFont* font;
     ImFont* font_alt;
+    ImFont* font_icons;
 
     size_t vel_index = 0;
     std::vector<int> vel_buffer;
@@ -32,9 +33,10 @@ private:
     bool InitImpl();
     void RenderImpl();
 
+    void RenderBomb();
+    void RenderRadar();
     void RenderNotice();
     void RenderWatermark();
-    void RenderRadar();
     void RenderSpeedChart();
     void RenderDebugWindow();
     void RenderSpectatorList();

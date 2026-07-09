@@ -60,6 +60,15 @@ bool Dumper::InitImpl() {
     offsets::plantedC4 = temp - client.base;
     LOGF(VERBOSE, "Found 'weaponC4' offset at 0x{:X}", offsets::plantedC4);
 
+    // C4 carrier pointer
+    if (!(temp = Scan(offsets::signatures::weaponC4, client))) {
+        LOGF(FATAL, "Could not find offset for 'weaponC4 carrier'");
+        return false;
+    }
+
+    offsets::weaponC4 = temp - client.base;
+    LOGF(VERBOSE, "Found 'weaponC4 carrier' offset at 0x{:X}", offsets::weaponC4);
+
 #if 0
     // Local Player Pawn (tbh idk how to read it :1)
     if (temp = Scan(offsets::signatures::localPlayerPawn, client); !temp) {

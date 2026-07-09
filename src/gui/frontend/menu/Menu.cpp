@@ -216,6 +216,16 @@ void Menu::RenderImpl() {
 							ImGui::ColorEdit4("Enemy scoped color", cfg::esp::colors::flags::scoped_enemy.data(), color_flags);
 						}
 						ImGui::EndDisabled();
+
+						ImGui::Checkbox("Has C4", &cfg::esp::flags::has_c4);
+						ImGui::BeginDisabled(!cfg::esp::flags::has_c4);
+						{
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team C4 color", cfg::esp::colors::flags::c4_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy C4 color", cfg::esp::colors::flags::c4_enemy.data(), color_flags);
+						}
+						ImGui::EndDisabled();
 					}
 					ImGui::EndGroup();
 

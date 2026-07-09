@@ -6,6 +6,7 @@ namespace offsets
 	inline DWORD localPlayerController;
 	inline DWORD globalVars;
 	inline DWORD plantedC4;
+	inline DWORD weaponC4;
 
 	// engine2.dll
 	inline DWORD buildNumber;

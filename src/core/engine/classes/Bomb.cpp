@@ -12,6 +12,14 @@ bool Bomb::Update() {
 
 	auto client = Engine::GetClient();
 
+	// Resolve the C4 carrier via the global weaponC4 pointer
+	// client.base + weaponC4 -> ptr to C4 entity -> m_hOwnerEntity (0x520) = pawn handle
+	auto c4_ptr = p->read<uintptr_t>(client.base + offsets::weaponC4);
+	if (c4_ptr) {
+		if (auto e = p->read<uintptr_t>(c4_ptr))
+			carrier = (uintptr_t)p->read<int>(e + 0x520 /* Magic Offset? */);
+	}
+
 	this->is_planted = p->read<uintptr_t>(client.base + offsets::plantedC4 - offsets::bomb::m_isPlanted);
 
 	if (!this->is_planted) {

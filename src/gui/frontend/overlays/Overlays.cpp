@@ -19,8 +19,9 @@ bool Overlays::InitImpl() {
     ImFontConfig cfg{};
     cfg.FontDataOwnedByAtlas = false;
 
-	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
+	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
+    this->font_icons = io.Fonts->AddFontFromMemoryTTF(weapon_icon_font, weapon_icon_font_len, 16.0f,  &cfg);
 	
 	ImFontConfig merge_icon_cfg{};
 	merge_icon_cfg.FontDataOwnedByAtlas = false;
@@ -54,6 +55,7 @@ void Overlays::RenderImpl() {
         RenderSpectatorList();
         RenderSpeedChart();
         RenderRadar();
+        RenderBomb();
     }
     ImGui::PopFont();
 }
@@ -540,4 +542,154 @@ void Overlays::RenderRadar() {
     d->AddCircle(ImVec2(cx, cy), 5.f, IM_COL32(0, 0, 0, 180));
 
     d->AddText(ImVec2(pos.x + 6.f, pos.y + 4.f), IM_COL32(180, 180, 180, 200), "Radar");
+}
+
+void Overlays::RenderBomb() {
+    if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
+        return;
+
+    auto& io = ImGui::GetIO();
+    auto snapshot = Cache::CopySnapshot();
+
+    auto& bomb = snapshot.bomb;
+    auto& local = snapshot.local;
+    auto& matrix = snapshot.game.view_matrix;
+
+    const bool is_menu_open = Renderer::IsOpen();
+
+    float width = 20.f;
+    float height = 20.f;
+    float rounding = 4.f;
+
+    static int margin = 4;
+    static int padding = 6;
+    float bar_height = 3.f;
+    float element_gap = 6.f;
+
+    auto duration_str = std::format("{}s", bomb.is_planted ? bomb.time_left : 40.0f);
+    auto bombsite_str = std::string(!bomb.is_planted || bomb.site == BombSite::A ? "A" : "B");
+
+    std::string bomb_string = "";
+
+    if (cfg::world::bomb::location)
+        bomb_string += "SITE " + bombsite_str;
+
+    if (cfg::world::bomb::timer)
+    {
+        if (cfg::world::bomb::location)
+            bomb_string += " | ";
+
+        bomb_string += duration_str;
+    }
+
+    auto text_size = ImGui::CalcTextSize(bomb_string.data());
+
+    ImGui::PushFont(this->font_icons);
+    auto icon_size = ImGui::CalcTextSize(WeaponIcons::C4);
+    ImGui::PopFont();
+
+    float content_width = icon_size.x + element_gap + text_size.x;
+    float content_height = std::max(icon_size.y, text_size.y);
+
+    width = content_width + (padding * 2);
+    height = content_height + (padding * 2) + (cfg::world::bomb::timer ? bar_height + 2.f : 0.f);
+
+    if (is_menu_open) {
+        ImGui::SetNextWindowBgAlpha(0.0f);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+        float title_bar_height = ImGui::GetFrameHeight();
+        ImGui::SetNextWindowPos(cfg::world::bomb::pos, ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(width, height + title_bar_height), ImGuiCond_Always);
+
+        if (ImGui::Begin("Bomb Window", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize)) {
+            cfg::world::bomb::pos = ImGui::GetWindowPos();
+            ImGui::End();
+        }
+
+        ImGui::PopStyleVar();
+    }
+
+    if (!bomb.is_planted && !is_menu_open)
+        return;
+
+    if (bomb.is_planted && !bomb.pos.length() && !is_menu_open)
+        return;
+
+    if (!local.alive && !is_menu_open)
+        return;
+
+    Vec2_t screen_pos;
+    bool on_top = bomb.is_planted ? matrix.wts(bomb.pos, io.DisplaySize, screen_pos) : false;
+
+    auto dist = local.pos.dist_to(bomb.pos);
+
+    if (is_menu_open) on_top = false;
+    if (dist > 1500.f) on_top = false;
+
+    float render_x = 0.f;
+    float render_y = 0.f;
+
+    if (on_top && bomb.is_planted) {
+        render_x = screen_pos.x - (width * 0.5f);
+        render_y = screen_pos.y + margin;
+    }
+    else {
+        float title_bar_height = ImGui::GetFrameHeight();
+        render_x = cfg::world::bomb::pos.x;
+        render_y = cfg::world::bomb::pos.y + title_bar_height;
+    }
+
+    auto d = ImGui::GetBackgroundDrawList();
+
+    d->AddRectFilled(
+        ImVec2(render_x, render_y),
+        ImVec2(render_x + width, render_y + height),
+        IM_COL32(15, 15, 15, 220),
+        rounding
+    );
+
+    d->AddRect(
+        ImVec2(render_x, render_y),
+        ImVec2(render_x + width, render_y + height),
+        IM_COL32(45, 45, 45, 255),
+        rounding
+    );
+
+    d->AddText(
+        this->font_icons,
+        16.0f,
+        ImVec2(render_x + padding, render_y + padding + (content_height - icon_size.y) * 0.5f),
+        IM_COL32(255, 60, 60, 255),
+        WeaponIcons::C4
+    );
+
+    d->AddText(
+        ImVec2(render_x + padding + icon_size.x + element_gap, render_y + padding + (content_height - text_size.y) * 0.5f),
+        IM_COL32(240, 240, 240, 255),
+        bomb_string.data()
+    );
+
+    if (cfg::world::bomb::timer)
+    {
+        float time_left = bomb.is_planted ? bomb.time_left : 40.f;
+        float progress = std::clamp(time_left / 40.f, 0.f, 1.f);
+
+        ImU32 bar_color = progress > 0.5f
+            ? IM_COL32((int)((1.f - progress) * 2.f * 255), 220, 50, 255)
+            : IM_COL32(220, (int)(progress * 2.f * 220), 50, 255);
+
+        ImVec2 bar_start(render_x + rounding, render_y + height - bar_height - 4.f);
+        ImVec2 bar_end(render_x + width - rounding, render_y + height - bar_height - 4.f);
+        float max_bar_width = bar_end.x - bar_start.x;
+
+        d->AddLine(bar_start, bar_end, IM_COL32(40, 40, 40, 255), bar_height);
+
+        if (progress > 0.f)
+        {
+            ImVec2 bar_filled_end(bar_start.x + (max_bar_width * progress), bar_end.y);
+            d->AddLine(bar_start, bar_filled_end, bar_color, bar_height);
+        }
+    }
 }
