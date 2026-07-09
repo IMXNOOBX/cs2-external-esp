@@ -37,6 +37,7 @@ private:
     void RenderPlayerBones(Player player, bool mate = false);
     void RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds);
     void RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
+    void RenderBombBox(Bomb bomb);
     void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
     void RenderPlayerTracers(Player source, Player player, bool mate = false);
 

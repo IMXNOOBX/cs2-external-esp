@@ -631,7 +631,7 @@ void Overlays::RenderBomb() {
     float render_x = 0.f;
     float render_y = 0.f;
 
-    if (on_top && bomb.is_planted) {
+    if (on_top && bomb.is_planted && !cfg::world::bomb::hud) {
         render_x = screen_pos.x - (width * 0.5f);
         render_y = screen_pos.y + margin;
     }
