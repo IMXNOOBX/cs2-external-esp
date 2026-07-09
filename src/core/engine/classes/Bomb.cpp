@@ -20,18 +20,13 @@ bool Bomb::Update() {
 			carrier = (uintptr_t)p->read<int>(e + 0x520 /* Magic Offset? */);
 	}
 
-	this->is_planted = p->read<uintptr_t>(client.base + offsets::plantedC4 - offsets::bomb::m_isPlanted);
+	this->address = p->read<uintptr_t>(client.base + offsets::plantedC4);
+	this->is_planted = (this->address != 0);
 
 	if (!this->is_planted) {
 		Bomb::prev_is_planted = false;
 		return true;
 	}
-
-	this->address = p->read<uintptr_t>(client.base + offsets::plantedC4);
-	this->address = p->read<uintptr_t>(this->address);
-
-	if (!this->address)
-		return false;
 
 	auto site = p->read<uint32_t>(this->address + offsets::bomb::m_nBombSite);
 	this->site = (site == 1) ? BombSite::B : BombSite::A;
