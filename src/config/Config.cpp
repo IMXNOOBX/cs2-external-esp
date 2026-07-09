@@ -97,8 +97,8 @@ bool Config::ReadImpl() {
 		cfg::world::spectators::pos = JsonToVec2(data["world"]["spectators"], "pos", {10.f, 100.f});
 
 		// bomb
-		cfg::world::bomb::location = data["world"]["bomb"].value("bomb_location", true);
-		cfg::world::bomb::timer = data["world"]["bomb"].value("bomb_timer", true);
+		cfg::world::bomb::location = false;//data["world"]["bomb"].value("bomb_location", true);
+		cfg::world::bomb::timer = false;//data["world"]["bomb"].value("bomb_timer", true);
 		cfg::world::bomb::pos = JsonToVec2(data["world"]["bomb"], "pos", { 10.f, 300.f });
 
 		// crosshair
