@@ -1,10 +1,12 @@
 #pragma once
 #include "assets/fonts/Icons.h"
+#include "gui/frontend/theme/Theme.hpp"
 
 enum Tab {
     PLAYER,
     WORLD,
-    SETTINGS
+    SETTINGS,
+    MACROS
 };
 
 struct TabItem
@@ -18,7 +20,8 @@ static const TabItem tabs[] =
 {
     { Tab::PLAYER,      "Player",   Icons::PERSON },
     { Tab::WORLD,       "World",    Icons::GLOBE },
-    { Tab::SETTINGS,    "Settings", Icons::SETTINGS }
+    { Tab::SETTINGS,    "Settings", Icons::SETTINGS },
+    { Tab::MACROS,      "Macros",   Icons::RELOAD }
 };
 
 class Menu {

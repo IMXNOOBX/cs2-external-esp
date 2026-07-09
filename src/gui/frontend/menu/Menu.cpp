@@ -1,5 +1,7 @@
 #include "Menu.hpp"
-
+#include <cstring>
+#include "core/scripting/Scripting.hpp"
+#include "core/scripting/Scripting.hpp"
 #include "core/engine/cache/Cache.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
@@ -28,6 +30,7 @@ ImVec2 Menu::GetSize() {
 
 bool Menu::InitImpl() {
 	SetupStyles();
+	theme::ThemeManager::Get().Init();
 
 	LOGF(INFO, "Successfully initialized menu...");
 	return true;
@@ -294,6 +297,64 @@ void Menu::RenderImpl() {
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{
+					ImGui::Text("UI Theme");
+					ImGui::Separator();
+
+					auto& theme_mgr = theme::ThemeManager::Get();
+					static std::vector<std::string> theme_names = theme_mgr.GetThemeNames();
+					static int selected_theme = 0;
+					
+					// Create combo items
+					std::string combo_preview = theme_names.empty() ? "No themes" : theme_mgr.GetCurrentThemeName();
+					
+					if (ImGui::BeginCombo("Theme", combo_preview.c_str())) {
+						for (size_t i = 0; i < theme_names.size(); i++) {
+							bool is_selected = (theme_mgr.GetCurrentThemeName() == theme_names[i]);
+							if (ImGui::Selectable(theme_names[i].c_str(), is_selected)) {
+								theme_mgr.ApplyTheme(theme_names[i]);
+							}
+							if (is_selected) {
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+
+					if (ImGui::Button("Reload Themes")) {
+						theme_mgr.LoadThemesFromDirectory();
+						theme_names = theme_mgr.GetThemeNames();
+						LOGF(INFO, "Reloaded themes - found {} themes", theme_names.size());
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Export Current")) {
+						static char filename[64] = "my_theme";
+						ImGui::OpenPopup("Export Theme");
+						
+						if (ImGui::BeginPopup("Export Theme")) {
+							ImGui::Text("Enter theme name:");
+							ImGui::InputText("##filename", filename, sizeof(filename));
+							if (ImGui::Button("Save")) {
+								theme_mgr.SaveCurrentTheme(filename);
+								ImGui::CloseCurrentPopup();
+							}
+							ImGui::SameLine();
+							if (ImGui::Button("Cancel")) {
+								ImGui::CloseCurrentPopup();
+							}
+							ImGui::EndPopup();
+						}
+					}
+
+					// Show current theme info
+					const theme::ThemeInfo* info = theme_mgr.GetThemeInfo(theme_mgr.GetCurrentThemeName());
+					if (info) {
+						ImGui::Text("Author: %s", info->author.empty() ? "Unknown" : info->author.c_str());
+						if (!info->description.empty()) {
+							ImGui::TextWrapped("%s", info->description.c_str());
+						}
+					}
+
+					ImGui::Spacing();
 					ImGui::Text("Misc");
 					ImGui::Separator();
 
@@ -346,6 +407,128 @@ void Menu::RenderImpl() {
 					ImGui::SliderInt("Cache Refresh Rate", &cfg::dev::cache_refresh_rate, 0, 100, "%dms");
 					ImGui::Checkbox("Force Show Flags", &cfg::dev::force_show_flags);
 #endif
+				}
+				else if (active_tab == Tab::MACROS)
+				{
+					ImGui::Text("Script Macros");
+					ImGui::Separator();
+
+					ImGui::TextWrapped("Execute macros defined in scripts.txt. Only macros prefixed with @ in the definition are shown here.");
+					ImGui::Spacing();
+
+					if (ImGui::Button("Reload Scripts Now"))
+					{
+						scripting::Scripting::Get().LoadScripts();
+					}
+					ImGui::SetItemTooltip("Manually reload scripts.txt\n(Auto-reloads when file is modified)");
+
+					ImGui::Spacing();
+					ImGui::Separator();
+					ImGui::Text("Available Macros:");
+					ImGui::Separator();
+
+					const auto& macros = scripting::Scripting::Get().GetMacros();
+					
+					int gui_macro_count = 0;
+					for (const auto& [name, macro] : macros) {
+						if (macro.gui_accessible) gui_macro_count++;
+					}
+					
+					if (gui_macro_count == 0)
+					{
+						ImGui::TextWrapped("No GUI-accessible macros found. Create macros with @ prefix in scripts.txt.");
+						ImGui::Spacing();
+						ImGui::TextWrapped("Example:\nmacro @my_macro {\n    set esp.box true\n    set esp.skeleton true\n}");
+					}
+					else
+					{
+						ImGui::Text("Click a macro button to execute it:");
+						ImGui::Spacing();
+
+						float available_width = ImGui::GetContentRegionAvail().x;
+						float button_width = 150.0f;
+						float spacing = ImGui::GetStyle().ItemSpacing.x;
+						int buttons_per_row = (int)((available_width + spacing) / (button_width + spacing));
+						if (buttons_per_row < 1) buttons_per_row = 1;
+
+						int col = 0;
+						for (const auto& [name, macro] : macros)
+						{
+							if (!macro.gui_accessible) continue;
+							
+							if (col > 0 && col < buttons_per_row)
+								ImGui::SameLine();
+
+							std::string button_label = "@" + name;
+							if (ImGui::Button(button_label.c_str(), ImVec2(button_width, 30)))
+							{
+								scripting::Scripting::Get().ExecuteCommand(name);
+								LOGF(INFO, "Executed macro: @{}", name);
+							}
+
+							// tooltip with macro commands
+							if (ImGui::IsItemHovered())
+							{
+								ImGui::BeginTooltip();
+								ImGui::Text("Macro: @%s", name.c_str());
+								ImGui::Separator();
+								ImGui::Text("Commands:");
+								for (const auto& cmd : macro.commands)
+								{
+									ImGui::Text("  %s", cmd.c_str());
+								}
+								ImGui::EndTooltip();
+							}
+
+							col++;
+							if (col >= buttons_per_row) col = 0;
+						}
+					}
+
+					ImGui::Spacing();
+					ImGui::Separator();
+					ImGui::Text("Manual Execution:");
+					ImGui::Separator();
+
+					static char macro_input[256] = "@";
+					float input_width = ImGui::GetContentRegionAvail().x - 100.0f; // Leave space for button
+					ImGui::SetNextItemWidth(input_width);
+					ImGui::InputText("##macro_input", macro_input, IM_ARRAYSIZE(macro_input));
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip("Enter macro name with @ prefix (e.g., @my_macro)");
+
+					ImGui::SameLine();
+					if (ImGui::Button("Execute", ImVec2(90, 0)))
+					{
+						if (macro_input[0] == '@' && strlen(macro_input) > 1)
+						{
+							std::string macro_name = std::string(macro_input + 1); // Skip @ prefix
+							
+							// Check if this macro exists and is GUI accessible
+							const auto& all_macros = scripting::Scripting::Get().GetMacros();
+							auto it = all_macros.find(macro_name);
+							if (it != all_macros.end())
+							{
+								if (it->second.gui_accessible)
+								{
+									scripting::Scripting::Get().ExecuteCommand(macro_name);
+									LOGF(INFO, "Executed macro: @{}", macro_name);
+								}
+								else
+								{
+									LOGF(WARNING, "Macro '{}' is not GUI-accessible (must be defined with @ prefix)", macro_name);
+								}
+							}
+							else
+							{
+								LOGF(WARNING, "Macro '{}' not found", macro_name);
+							}
+						}
+						else
+						{
+							LOGF(WARNING, "Invalid macro name. Must start with @");
+						}
+					}
 				}
 			}
 			ImGui::EndChild();
