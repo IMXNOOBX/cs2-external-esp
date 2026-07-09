@@ -247,8 +247,12 @@ void Menu::RenderImpl() {
 					
 					ImGui::Separator();
 
+					ImGui::BeginDisabled();
 					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
+					ImGui::SetItemTooltip("Disabled until replacement is found");
 					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);
+					ImGui::SetItemTooltip("Disabled until replacement is found");
+					ImGui::EndDisabled();
 
 					ImGui::Spacing();
 
