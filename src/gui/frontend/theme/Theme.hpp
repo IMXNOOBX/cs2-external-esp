@@ -41,10 +41,9 @@ namespace theme {
         ImGuiCol GetColorIndexFromName(const std::string& name) const;
         
         std::unordered_map<std::string, ThemeInfo> themes;
-        std::string current_theme_name = "Default";
+        std::string current_theme_name = "default";
         
-        // Map color names to ImGuiCol indices
         std::unordered_map<std::string, ImGuiCol> color_name_map;
     };
 
-} // namespace theme
+}

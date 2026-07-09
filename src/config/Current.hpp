@@ -17,8 +17,6 @@ namespace cfg {
 		inline bool bomb = true;
 		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
-		inline bool bomb = true;
-
 		inline bool tracers = false;
 
 		namespace flags {
@@ -81,11 +79,7 @@ namespace cfg {
 		namespace bomb {
 			inline bool location = true;
 			inline bool timer = true;
-<<<<<<< Updated upstream
 			inline bool hud = false;
-=======
-			inline bool hud = false; // force draggable HUD window instead of 3D follow
->>>>>>> Stashed changes
 			inline Vec2_t pos{ 10.f, 300.f };
 		}
 
