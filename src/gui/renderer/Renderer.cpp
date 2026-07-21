@@ -120,6 +120,7 @@ bool Renderer::HandleState() {
         LOGF(VERBOSE, "Captured global VK_INSERT or VK_RSHIFT, toggling menu state to {}", this->isOpen);
 
         // Not the best way, but wont bother the user
+        // As far as i know, no one has complained about the config saving system :D
         std::thread(Config::Write).detach(); // Not needed, but just in case
     }
 
@@ -145,12 +146,14 @@ bool Renderer::HandleWindowOrder() {
     this->isFocused = (foreground == Window::hwnd || foreground == p->hwnd_);
 
     if (!this->isFocused && overlay_visible) {
+        LOGF(VERBOSE, "Hiding overlay window as the game its not focused");
         ShowWindow(Window::hwnd, SW_HIDE);
         overlay_visible = false;
         return true;
     }
 
     if (!overlay_visible && this->isFocused) {  
+        LOGF(VERBOSE, "Showing overlay window as the game is focused");
         ShowWindow(Window::hwnd, SW_SHOW);
         overlay_visible = true;
         return true;
