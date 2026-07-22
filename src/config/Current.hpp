@@ -14,6 +14,8 @@ namespace cfg {
 		inline bool health_number = false;
 
 		inline bool spotted = false;
+		inline bool bomb = true;
+		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
 		inline bool tracers = false;
 
@@ -77,6 +79,7 @@ namespace cfg {
 		namespace bomb {
 			inline bool location = true;
 			inline bool timer = true;
+			inline bool hud = false;
 			inline Vec2_t pos{ 10.f, 300.f };
 		}
 
@@ -108,7 +111,6 @@ namespace cfg {
 		inline bool vsync = false;
 		inline bool free_cpu = true;
 	}
-
 
 	// Not stored, just for testing
 	namespace dev {

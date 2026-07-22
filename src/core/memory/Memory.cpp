@@ -68,7 +68,11 @@ HWND pProcess::GetWindowHandleFromProcessId(DWORD ProcessId) {
 		DWORD _;
 
 		handle_ = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION |
-                                PROCESS_VM_READ, FALSE, pid_);
+                                PROCESS_VM_READ
+							#ifdef _DEBUG
+								| PROCESS_VM_WRITE
+							#endif
+								, FALSE, pid_);
 
 		if (!handle_)
 			return false;

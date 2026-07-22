@@ -87,6 +87,8 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
+		if (cfg::esp::bomb)
+			RenderBombBox(bomb);
 	ImGui::PopFont();
 }
 
@@ -378,6 +380,56 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 
 	ImGui::PopFont();
+}
+
+void Esp::RenderBombBox(Bomb bomb) {
+	if (!bomb.is_planted)
+		return;
+
+	// Bomb dimensions
+	float w = 10.f, l = 5.f, h = 10.f;
+	Vec3_t half_size = { w / 2.f, h / 2.f, l / 2.f };
+
+	Vec3_t corners[8] = {
+		{ bomb.pos.x - half_size.x, bomb.pos.y - half_size.y, bomb.pos.z - half_size.z },
+		{ bomb.pos.x + half_size.x, bomb.pos.y - half_size.y, bomb.pos.z - half_size.z },
+		{ bomb.pos.x + half_size.x, bomb.pos.y - half_size.y, bomb.pos.z + half_size.z },
+		{ bomb.pos.x - half_size.x, bomb.pos.y - half_size.y, bomb.pos.z + half_size.z },
+		{ bomb.pos.x - half_size.x, bomb.pos.y + half_size.y, bomb.pos.z - half_size.z },
+		{ bomb.pos.x + half_size.x, bomb.pos.y + half_size.y, bomb.pos.z - half_size.z },
+		{ bomb.pos.x + half_size.x, bomb.pos.y + half_size.y, bomb.pos.z + half_size.z },
+		{ bomb.pos.x - half_size.x, bomb.pos.y + half_size.y, bomb.pos.z + half_size.z },
+	};
+
+	Vec2_t projected[8];
+	bool visible[8] = { false };
+	int visible_count = 0;
+
+	for (int i = 0; i < 8; ++i) {
+		if (matrix.wts(corners[i], io.DisplaySize, projected[i])) {
+			visible[i] = true;
+			visible_count++;
+		}
+	}
+
+	if (visible_count == 0)
+		return;
+
+	auto color = cfg::esp::bomb_color;
+
+	int edges[12][2] = {
+		{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, // Bottom
+		{ 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, // Top
+		{ 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 }  // Verticals
+	};
+
+	for (auto& edge : edges) {
+		int i = edge[0];
+		int j = edge[1];
+		if (visible[i] && visible[j]) {
+			this->d->AddLine(projected[i], projected[j], ImColor(color), 1.0f);
+		}
+	}
 }
 
 void Esp::RenderCrosshair(Player local)

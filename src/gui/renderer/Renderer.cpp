@@ -4,7 +4,8 @@
 #include "core/engine/Engine.hpp"
 #include "gui/frontend/esp/Esp.hpp"
 #include "gui/frontend/menu/Menu.hpp"
-#include "gui/frontend/overlays/Overlays.hpp"
+#include "gui\frontend\overlays\Overlays.hpp"
+#include "core\scripting\Scripting.hpp"
 
 bool Renderer::Init() {
     return GetInstance().InitImpl();
@@ -41,6 +42,7 @@ bool Renderer::InitImpl() {
     Menu::Init();
     Esp::Init();
     Overlays::Init();
+    scripting::Scripting::Get().Init();
 
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);
@@ -96,6 +98,7 @@ void Renderer::Render() {
 
 bool Renderer::HandleState() {
     isRunning = Window::shouldRun; // From the window event handler
+    scripting::Scripting::Get().Update();
 
     static bool was_holding = false;
 
