@@ -37,6 +37,6 @@ private:
 private:
     Status status;
     bool isSetup = false;
-    int current_version = 107;
+    int current_version = 115;
     std::string status_url = "https://github.com/IMXNOOBX/cs2-external-esp/raw/refs/heads/main/.github/status.json";
 };
