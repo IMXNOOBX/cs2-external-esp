@@ -16,6 +16,8 @@ namespace cfg {
 		inline bool spotted = false;
 
 		inline bool tracers = false;
+		
+		inline bool bomb = true;
 
 		namespace flags {
 			inline bool name = true;
@@ -43,6 +45,8 @@ namespace cfg {
 			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 
+			inline color_t bomb{ 1.f, 0.84f, 0.f, 1.f };
+			
 			namespace flags {
 				inline color_t flashed_team{ 1.f, 1.f, 1.f, 0.5f };
 				inline color_t flashed_enemy{ 1.f, 1.f, 1.f, 0.8f };
@@ -108,7 +112,6 @@ namespace cfg {
 		inline bool vsync = false;
 		inline bool free_cpu = true;
 	}
-
 
 	// Not stored, just for testing
 	namespace dev {

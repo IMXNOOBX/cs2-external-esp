@@ -44,7 +44,8 @@ bool Config::ReadImpl() {
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 		cfg::esp::health_number = data["esp"].value("health_number", false);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
-
+		cfg::esp::bomb = data["esp"].value("bomb", true);
+		
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
 		cfg::esp::flags::ping = data["esp"]["flags"].value("ping", false);
@@ -70,6 +71,8 @@ bool Config::ReadImpl() {
 
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
+
+		cfg::esp::colors::bomb = JsonToColor(col, "bomb", { 1.f, 0.84f, 0.f, 1.f });	
 
 		// flag colors
 		const auto& fcol = data["esp"]["colors"]["flags"];
@@ -153,6 +156,7 @@ bool Config::WriteImpl() {
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
 	data["esp"]["spotted"] = cfg::esp::spotted;
 	data["esp"]["tracers"] = cfg::esp::tracers;
+	data["esp"]["bomb"] = cfg::esp::bomb;
 
 	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
@@ -208,6 +212,8 @@ bool Config::WriteImpl() {
 
 	ColorToJson(col, "tracer_team", cfg::esp::colors::tracer_team);
 	ColorToJson(col, "tracer_enemy", cfg::esp::colors::tracer_enemy);
+
+	ColorToJson(col, "bomb", cfg::esp::colors::bomb);
 
 	// flag colors
 	auto& fcol = col["flags"];

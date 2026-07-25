@@ -244,9 +244,12 @@ void Menu::RenderImpl() {
 				else if (active_tab == Tab::WORLD)
 				{
 					ImGui::Text("Bomb");
-					
 					ImGui::Separator();
-
+					{
+						ImGui::Checkbox("Bomb ESP", &cfg::esp::bomb);
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Bomb color", cfg::esp::colors::bomb.data(), color_flags);
+					}
 					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
 					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);
 

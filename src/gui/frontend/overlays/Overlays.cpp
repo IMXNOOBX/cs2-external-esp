@@ -631,7 +631,8 @@ void Overlays::RenderBomb() {
     float render_x = 0.f;
     float render_y = 0.f;
 
-    if (on_top && bomb.is_planted) {
+    // If we use bomb esp the overlay will be sticky
+    if (on_top && bomb.is_planted && !cfg::esp::bomb) {
         render_x = screen_pos.x - (width * 0.5f);
         render_y = screen_pos.y + margin;
     }

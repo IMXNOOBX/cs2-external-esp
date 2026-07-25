@@ -22,6 +22,10 @@ bool Renderer::IsOpen() {
     return GetInstance().isOpen;
 }
 
+bool Renderer::IsFocused() {
+    return GetInstance().isFocused;
+}
+
 bool Renderer::InitImpl() {
     if (!Window::SpawnWindow()) {
         LOGF(FATAL, "Failed to create window");
