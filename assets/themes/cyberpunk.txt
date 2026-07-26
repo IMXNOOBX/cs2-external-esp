@@ -1,0 +1,96 @@
+name Cyberpunk
+author 3 cats
+description Neon pink and cyan aesthetic
+
+# Text
+text 0.0 1.0 1.0 1.0
+textdisabled 0.3 0.5 0.5 1.0
+textselectedbg 1.0 0.0 1.0 0.35
+
+# Window
+windowbg 0.05 0.05 0.15 1.0
+childbg 0.05 0.05 0.15 1.0
+popupbg 0.08 0.08 0.2 1.0
+
+# Border
+border 1.0 0.0 1.0 0.5
+bordershadow 0.0 0.0 0.0 0.0
+
+# Frame
+framebg 0.2 0.0 0.4 1.0
+framebghovered 0.3 0.0 0.5 1.0
+framebgactive 0.4 0.0 0.6 0.8
+
+# Title
+titlebg 0.1 0.0 0.2 1.0
+titlebgactive 0.15 0.0 0.3 1.0
+titlebgcollapsed 0.0 0.0 0.0 0.51
+
+# Menu
+menubarbg 0.1 0.0 0.2 1.0
+
+# Scrollbar
+scrollbarbg 0.05 0.05 0.15 0.53
+scrollbargrab 1.0 0.0 1.0 1.0
+scrollbargrabhovered 1.0 0.2 1.0 1.0
+scrollbargrabactive 1.0 0.4 1.0 1.0
+
+# Checkmark & Slider
+checkmark 0.0 1.0 1.0 1.0
+slidergrab 0.0 1.0 1.0 1.0
+slidergrabactive 0.0 0.8 0.8 1.0
+
+# Button
+button 0.8 0.0 0.8 1.0
+buttonhovered 1.0 0.0 1.0 1.0
+buttonactive 1.0 0.3 1.0 0.8
+
+# Header
+header 0.3 0.0 0.5 1.0
+headerhovered 0.4 0.0 0.6 1.0
+headeractive 0.5 0.0 0.7 1.0
+
+# Separator
+separator 1.0 0.0 1.0 0.5
+separatorhovered 1.0 0.2 1.0 0.8
+separatoractive 0.0 1.0 1.0 0.95
+
+# Resize Grip
+resizegrip 1.0 0.0 1.0 0.2
+resizegriphovered 1.0 0.0 1.0 0.6
+resizegripactive 1.0 0.0 1.0 0.95
+
+# Tabs
+tab 0.2 0.0 0.4 0.83
+tabhovered 0.4 0.0 0.6 0.83
+tabactive 0.3 0.0 0.5 1.0
+tabunfocused 0.1 0.0 0.2 1.0
+tabunfocusedactive 0.15 0.0 0.3 1.0
+
+# Docking
+dockingpreview 0.0 1.0 1.0 0.7
+dockingemptybg 0.05 0.05 0.15 1.0
+
+# Plots
+plotlines 0.0 1.0 1.0 1.0
+plotlineshovered 1.0 0.0 1.0 1.0
+plothistogram 1.0 0.0 1.0 1.0
+plothistogramhovered 1.0 0.4 1.0 1.0
+
+# Tables
+tableheaderbg 0.2 0.0 0.4 1.0
+tablebordersstrong 1.0 0.0 1.0 0.5
+tableborderslight 0.5 0.0 0.7 0.3
+tablerowbg 0.0 0.0 0.0 0.0
+tablerowbgalt 1.0 0.0 1.0 0.06
+
+# Drag & Drop
+dragdroptarget 0.0 1.0 1.0 1.0
+
+# Navigation
+navhighlight 0.0 1.0 1.0 1.0
+navwindowinghighlight 1.0 0.0 1.0 0.7
+navwindowingdimbg 0.8 0.0 0.8 0.2
+
+# Modal
+modalwindowdimbg 0.3 0.0 0.5 0.35

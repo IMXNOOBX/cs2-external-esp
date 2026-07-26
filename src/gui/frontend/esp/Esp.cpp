@@ -1,5 +1,6 @@
 #include "Esp.hpp"
 
+#include "core/vischeck/VisCheckManager.h"
 #include "gui/renderer/Renderer.hpp"
 #include "assets/fonts/WeaponIcons.h"
 #include "assets/fonts/Icons.h"
@@ -59,6 +60,157 @@ void Esp::RenderImpl() {
 
 	this->matrix = game.view_matrix;
 
+	auto now = std::chrono::steady_clock::now();
+
+	for (auto& player : players) {
+		if (!player.alive)
+			continue;
+		if (player.localplayer)
+			continue;
+
+		bool mate = player.team == local.team;
+
+		auto& track = tracks[player.index];
+		track.last_seen = now;
+
+		if (cfg::esp::sound) {
+			if (!cfg::esp::team && mate)
+				goto skip_sound;
+
+			if (cfg::esp::sound_footsteps) {
+				float speed = player.vel.length();
+				constexpr float step_threshold = 5.0f;
+				if (speed > step_threshold) {
+					auto elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(
+						now - track.last_footstep
+					).count();
+					if (elapsed > 0.35f) {
+						track.last_footstep = now;
+						sound_markers.push_back({ player.pos, now, mate, 0 });
+					}
+				}
+			}
+
+			if (cfg::esp::sound_gunfire && player.ammo != -1) {
+				if (track.last_ammo >= 0 && player.ammo < track.last_ammo) {
+					sound_markers.push_back({ player.pos, now, mate, 1 });
+				}
+			}
+
+			if (cfg::esp::sound_gunfire) {
+				if (player.is_reloading && !track.was_reloading) {
+					sound_markers.push_back({ player.pos, now, mate, 2 });
+				}
+				track.was_reloading = player.is_reloading;
+			}
+		}
+		skip_sound:
+
+		if (cfg::esp::hit_markers) {
+			if (track.last_health > 0 && player.health < track.last_health) {
+				int damage = track.last_health - player.health;
+				Vec3_t hit_pos = player.pos;
+				if ((int)player.bone_list.size() > bone_index::chest)
+					hit_pos = player.bone_list[bone_index::chest].pos;
+				hit_markers.push_back({ hit_pos, now, mate, damage });
+			}
+		}
+
+		if (cfg::esp::hit_markers)
+			track.last_health = player.health;
+		if (cfg::esp::sound_gunfire)
+			track.last_ammo = static_cast<float>(player.ammo);
+	}
+
+	if (cfg::esp::sound) {
+		auto fade_duration = std::chrono::duration<float>(cfg::esp::sound_fade);
+		for (auto it = sound_markers.begin(); it != sound_markers.end(); ) {
+			auto age = std::chrono::duration_cast<std::chrono::duration<float>>(now - it->birth);
+			if (age >= fade_duration) {
+				it = sound_markers.erase(it);
+				continue;
+			}
+
+			Vec2_t screen;
+			if (matrix.wts(it->pos, io.DisplaySize, screen)) {
+				float alpha_ratio = 1.0f - (age.count() / cfg::esp::sound_fade);
+				color_t base_color;
+				switch (it->kind) {
+					case 0: base_color = it->mate ? cfg::esp::colors::sound::footstep_team : cfg::esp::colors::sound::footstep_enemy; break;
+					case 1: base_color = it->mate ? cfg::esp::colors::sound::gunfire_team : cfg::esp::colors::sound::gunfire_enemy; break;
+					case 2: base_color = it->mate ? cfg::esp::colors::sound::reload_team : cfg::esp::colors::sound::reload_enemy; break;
+					default: base_color = it->mate ? cfg::esp::colors::sound::footstep_team : cfg::esp::colors::sound::footstep_enemy; break;
+				}
+				ImColor col(base_color.r, base_color.g, base_color.b, base_color.a * alpha_ratio);
+
+				float radius = 10.0f + (1.0f - alpha_ratio) * 15.0f;
+				int segments = 12;
+				d->AddCircle(screen, radius, col, segments);
+				d->AddCircle(screen, radius * 0.65f, col, segments);
+
+				const char* label;
+				switch (it->kind) {
+					case 0: label = "step"; break;
+					case 1: label = "fire"; break;
+					case 2: label = "reload"; break;
+					default: label = "?"; break;
+				}
+				auto txt_sz = ImGui::CalcTextSize(label);
+				d->AddText(
+					Vec2_t(screen.x - txt_sz.x * 0.5f, screen.y - radius - txt_sz.y - 2),
+					ImColor(1.0f, 1.0f, 1.0f, alpha_ratio),
+					label
+				);
+			}
+			++it;
+		}
+	}
+
+	if (cfg::esp::hit_markers) {
+		auto hm_fade = std::chrono::duration<float>(cfg::esp::hit_marker_fade);
+		for (auto it = hit_markers.begin(); it != hit_markers.end(); ) {
+			auto age = std::chrono::duration_cast<std::chrono::duration<float>>(now - it->birth);
+			if (age >= hm_fade) {
+				it = hit_markers.erase(it);
+				continue;
+			}
+
+			Vec2_t screen;
+			if (matrix.wts(it->pos, io.DisplaySize, screen)) {
+				float alpha = 1.0f - (age.count() / cfg::esp::hit_marker_fade);
+				auto col = cfg::esp::colors::hit_marker;
+				ImColor c(col.r, col.g, col.b, col.a * alpha);
+				constexpr float size = 5.f;
+
+				d->AddLine(
+					Vec2_t(screen.x - size, screen.y - size),
+					Vec2_t(screen.x + size, screen.y + size),
+					c, 1.5f
+				);
+				d->AddLine(
+					Vec2_t(screen.x + size, screen.y - size),
+					Vec2_t(screen.x - size, screen.y + size),
+					c, 1.5f
+				);
+
+				auto txt = std::to_string(it->damage);
+				auto txt_sz = ImGui::CalcTextSize(txt.c_str());
+				d->AddText(
+					Vec2_t(screen.x - txt_sz.x * 0.5f, screen.y - size - txt_sz.y - 2),
+					ImColor(1.f, 1.f, 1.f, alpha),
+					txt.c_str()
+				);
+			}
+			++it;
+		}
+	}
+
+	const Vec3_t eye_pos = local.bone_list.size() > bone_index::head
+		? local.bone_list[bone_index::head].pos
+		: local.pos + Vec3_t(0, 0, 64.f);
+	const bool vis_ready = (cfg::esp::spotted || cfg::esp::los_spotted) && VisCheckManager::IsReady();
+	static uint8_t vis_hold[64]{};
+
 	for (auto& player : players) {
 		if (!player.alive)
 			continue;
@@ -71,19 +223,46 @@ void Esp::RenderImpl() {
 		if (!cfg::esp::team && mate)
 			continue;
 
-		if (cfg::esp::spotted && !player.spotted)
-			continue;
-
-		// Are we spectating the player in first person? then dont render
-		// TODO: Exception here when spectating someone
 		if (
 			local.observer_services.target == player.pawn_controller_addr
 			&& local.observer_services.mode == ObserverMode::First
 		)
 			continue;
 
+		bool visible = false;
+		if (vis_ready && player.bone_list.size() > bone_index::pelvis) {
+			const auto& bones = player.bone_list;
+			bool has_los = VisCheckManager::IsVisible(eye_pos, bones[bone_index::head].pos)
+				|| VisCheckManager::IsVisible(eye_pos, bones[bone_index::chest].pos);
+
+			if (cfg::esp::los_extra_bones) {
+				has_los = has_los
+					|| VisCheckManager::IsVisible(eye_pos, bones[bone_index::shoulder_L].pos)
+					|| VisCheckManager::IsVisible(eye_pos, bones[bone_index::shoulder_R].pos)
+					|| VisCheckManager::IsVisible(eye_pos, bones[bone_index::pelvis].pos);
+			}
+
+			auto& h = vis_hold[player.index & 63];
+			if (has_los)
+				h = 6;
+			else if (h)
+				--h;
+
+			visible = h > 0;
+		}
+
+		if (cfg::esp::spotted && !visible)
+			continue;
+
 		RenderPlayerTracers(local, player, mate);
-		RenderPlayer(player, mate);
+		RenderPlayer(player, mate, visible);
+	}
+
+	for (auto it = tracks.begin(); it != tracks.end(); ) {
+		if (now - it->second.last_seen > std::chrono::seconds(3))
+			it = tracks.erase(it);
+		else
+			++it;
 	}
 
 	RenderCrosshair(local);
@@ -91,39 +270,39 @@ void Esp::RenderImpl() {
 	ImGui::PopFont();
 }
 
-void Esp::RenderPlayer(Player player, bool mate) {
-	// Needed for flags & item sizing, so even if the box is not enabled
-	// Should be calculated
+void Esp::RenderPlayer(Player player, bool mate, bool visible) {
 	std::pair<Vec2_t, Vec2_t> bounds;
 	if (!player.GetBounds(matrix, io.DisplaySize, bounds))
 		return;
-
-	// Causes hp bars across the screen when they respawn
 	if (!player.alive)
 		return;
 
+	const bool use_vis = visible && cfg::esp::los_spotted && cfg::esp::los_use_visible_colors;
+
 	if (cfg::esp::box) {
 		auto color = mate ? cfg::esp::colors::box_team : cfg::esp::colors::box_enemy;
-
-		d->AddRect(
-			bounds.first,
-			bounds.second,
-			ImColor(color)
-		);
+		if (use_vis)
+			color = mate ? cfg::esp::colors::los_visible_team : cfg::esp::colors::los_visible_enemy;
+		d->AddRect(bounds.first, bounds.second, ImColor(color));
 	}
 
+	if (cfg::esp::box && cfg::esp::box_3d)
+		RenderPlayerBox3D(player, bounds, mate, use_vis);
+
 	if (cfg::esp::skeleton)
-		RenderPlayerBones(player, mate);
+		RenderPlayerBones(player, mate, use_vis);
 
 	if (cfg::esp::head_tracker)
-		RenderPlayerTracker(player, bounds, mate);
+		RenderPlayerTracker(player, bounds, mate, use_vis);
 
 	RenderPlayerBars(player, bounds);
 	RenderPlayerFalgs(player, bounds, mate);
 }
 
-void Esp::RenderPlayerBones(Player player, bool mate) {
+void Esp::RenderPlayerBones(Player player, bool mate, bool use_vis) {
 	auto color = mate ? cfg::esp::colors::skeleton_team : cfg::esp::colors::skeleton_enemy;
+	if (use_vis)
+		color = mate ? cfg::esp::colors::los_visible_team : cfg::esp::colors::los_visible_enemy;
 
 	auto bone_count = player.bone_list.size();
 	for (const auto& bone : connections) {
@@ -152,7 +331,7 @@ void Esp::RenderPlayerBones(Player player, bool mate) {
 	}
 }
 
-void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate) {
+void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate, bool use_vis) {
 	if (player.bone_list.empty())
 		return;
 
@@ -164,6 +343,8 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 
 	auto width = bounds.second.x - bounds.first.x;
 	auto color = mate ? cfg::esp::colors::tracker_team : cfg::esp::colors::tracker_enemy;
+	if (use_vis)
+		color = mate ? cfg::esp::colors::los_visible_team : cfg::esp::colors::los_visible_enemy;
 
 	d->AddCircle(
 		head,
@@ -175,8 +356,8 @@ void Esp::RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, b
 
 void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 	if (cfg::esp::health) {
-		auto x_start = bounds.first.x - 4; // -4 is padding
-		auto x_end = x_start - 2; // -2 is the inner space of the rect
+		auto x_start = bounds.first.x - 4;
+		auto x_end = x_start - 2;
 
 		auto y_start = bounds.first.y;
 		auto y_end = bounds.second.y;
@@ -212,8 +393,8 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 	}
 
 	if (cfg::esp::armor) {
-		auto y_start = bounds.second.y + 4; // 4 is padding
-		auto y_end = y_start + 2; // 2 is the inner space of the rect
+		auto y_start = bounds.second.y + 4;
+		auto y_end = y_start + 2;
 
 		auto x_start = bounds.first.x;
 		auto x_end = bounds.second.x;
@@ -385,11 +566,9 @@ void Esp::RenderBombBox(Bomb bomb) {
 	if (!cfg::esp::bomb)
 		return;
 
-
 	if (!bomb.is_planted)
 		return;
 
-	// Bomb dimensions
 	float w = 10.f, l = 5.f, h = 10.f;
 	Vec3_t half_size = { w / 2.f, h / 2.f, l / 2.f };
 
@@ -481,13 +660,59 @@ void Esp::RenderCrosshair(Player local)
 		ImVec2(center.x - size, center.y),
 		ImVec2(center.x + size + 1, center.y),
 		IM_COL32(255, 255, 255, 255),
-
 		thickness);
 	d->AddLine(
 		ImVec2(center.x, center.y - size),
 		ImVec2(center.x, center.y + size + 1),
 		IM_COL32(255, 255, 255, 255),
 		thickness);
+}
+
+void Esp::RenderPlayerBox3D(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate, bool use_vis) {
+	float height = 72.0f;
+	float width = 32.0f;
+	float depth = 32.0f;
+
+	Vec3_t base = player.pos;
+	Vec3_t top = base + Vec3_t(0, 0, height);
+
+	Vec3_t corners[8] = {
+		{ base.x - width / 2, base.y - depth / 2, base.z },
+		{ base.x + width / 2, base.y - depth / 2, base.z },
+		{ base.x + width / 2, base.y + depth / 2, base.z },
+		{ base.x - width / 2, base.y + depth / 2, base.z },
+		{ top.x - width / 2, top.y - depth / 2, top.z },
+		{ top.x + width / 2, top.y - depth / 2, top.z },
+		{ top.x + width / 2, top.y + depth / 2, top.z },
+		{ top.x - width / 2, top.y + depth / 2, top.z },
+	};
+
+	Vec2_t projected[8];
+	for (int i = 0; i < 8; ++i) {
+		if (!matrix.wts(corners[i], io.DisplaySize, projected[i]))
+			return;
+	}
+
+	auto color = mate ? cfg::esp::colors::box_team : cfg::esp::colors::box_enemy;
+	if (use_vis)
+		color = mate ? cfg::esp::colors::los_visible_team : cfg::esp::colors::los_visible_enemy;
+	ImColor col(color);
+	float thickness = 1.5f;
+
+	d->AddLine(projected[0], projected[1], col, thickness);
+	d->AddLine(projected[1], projected[2], col, thickness);
+	d->AddLine(projected[2], projected[3], col, thickness);
+	d->AddLine(projected[3], projected[0], col, thickness);
+
+	d->AddLine(projected[4], projected[5], col, thickness);
+	d->AddLine(projected[5], projected[6], col, thickness);
+	d->AddLine(projected[6], projected[7], col, thickness);
+	d->AddLine(projected[7], projected[4], col, thickness);
+
+	d->AddLine(projected[0], projected[4], col, thickness);
+	d->AddLine(projected[1], projected[5], col, thickness);
+	d->AddLine(projected[2], projected[6], col, thickness);
+	d->AddLine(projected[3], projected[7], col, thickness);
 }
 
 void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {

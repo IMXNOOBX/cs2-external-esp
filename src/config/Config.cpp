@@ -36,15 +36,30 @@ bool Config::ReadImpl() {
 
 		// esp
 		cfg::esp::box = data["esp"].value("box", true);
+		cfg::esp::box_3d = data["esp"].value("box_3d", false);
 		cfg::esp::team = data["esp"].value("team", true);
 		cfg::esp::armor = data["esp"].value("armor", true);
 		cfg::esp::health = data["esp"].value("health", true);
 		cfg::esp::spotted = data["esp"].value("spotted", false);
+		cfg::esp::bomb = data["esp"].value("bomb", true);
+		cfg::esp::bomb_color = JsonToColor(data["esp"], "bomb_color", { 1.f, 0.84f, 0.f, 1.f });	
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 		cfg::esp::health_number = data["esp"].value("health_number", false);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
 		cfg::esp::bomb = data["esp"].value("bomb", true);
+
+		cfg::esp::sound = data["esp"].value("sound", false);
+		cfg::esp::sound_footsteps = data["esp"].value("sound_footsteps", true);
+		cfg::esp::sound_gunfire = data["esp"].value("sound_gunfire", true);
+		cfg::esp::sound_fade = data["esp"].value("sound_fade", 1.5f);
+
+		cfg::esp::hit_markers = data["esp"].value("hit_markers", false);
+		cfg::esp::hit_marker_fade = data["esp"].value("hit_marker_fade", 1.2f);
+
+		cfg::esp::los_spotted = data["esp"].value("los_spotted", false);
+		cfg::esp::los_use_visible_colors = data["esp"].value("los_use_visible_colors", true);
+		cfg::esp::los_extra_bones = data["esp"].value("los_extra_bones", false);
 		
 		// flags
 		cfg::esp::flags::name = data["esp"]["flags"].value("name", true);
@@ -72,7 +87,19 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
 
-		cfg::esp::colors::bomb = JsonToColor(col, "bomb", { 1.f, 0.84f, 0.f, 1.f });	
+		cfg::esp::colors::sound::footstep_team = JsonToColor(col, "sound_footstep_team", { 0.f, 1.f, 0.6f, 0.5f });
+		cfg::esp::colors::sound::footstep_enemy = JsonToColor(col, "sound_footstep_enemy", { 1.f, 0.62f, 0.f, 0.85f });
+		cfg::esp::colors::sound::gunfire_team = JsonToColor(col, "sound_gunfire_team", { 1.f, 0.85f, 0.2f, 0.8f });
+		cfg::esp::colors::sound::gunfire_enemy = JsonToColor(col, "sound_gunfire_enemy", { 1.f, 0.3f, 0.1f, 0.9f });
+		cfg::esp::colors::sound::reload_team = JsonToColor(col, "sound_reload_team", { 0.4f, 0.7f, 1.f, 0.7f });
+		cfg::esp::colors::sound::reload_enemy = JsonToColor(col, "sound_reload_enemy", { 0.6f, 0.3f, 1.f, 0.8f });
+
+		cfg::esp::colors::los_visible_team = JsonToColor(col, "los_visible_team", { 0.f, 0.8f, 1.f, 0.8f });
+		cfg::esp::colors::los_visible_enemy = JsonToColor(col, "los_visible_enemy", { 1.f, 0.84f, 0.f, 0.8f });
+
+		cfg::esp::colors::hit_marker = JsonToColor(col, "hit_marker", { 1.f, 0.2f, 0.2f, 1.f });
+
+		cfg::esp::colors::bomb = JsonToColor(col, "bomb", { 1.f, 0.84f, 0.f, 1.f });
 
 		// flag colors
 		const auto& fcol = data["esp"]["colors"]["flags"];
@@ -102,6 +129,7 @@ bool Config::ReadImpl() {
 		// bomb
 		cfg::world::bomb::location = data["world"]["bomb"].value("location", true);
 		cfg::world::bomb::timer = data["world"]["bomb"].value("timer", true);
+		cfg::world::bomb::hud = data["world"]["bomb"].value("hud", false);
 		cfg::world::bomb::pos = JsonToVec2(data["world"]["bomb"], "pos", { 10.f, 300.f });
 
 		// crosshair
@@ -148,6 +176,7 @@ bool Config::WriteImpl() {
 
 	// esp
 	data["esp"]["box"] = cfg::esp::box;
+	data["esp"]["box_3d"] = cfg::esp::box_3d;
 	data["esp"]["team"] = cfg::esp::team;
 	data["esp"]["armor"] = cfg::esp::armor;
 	data["esp"]["health"] = cfg::esp::health;
@@ -155,8 +184,16 @@ bool Config::WriteImpl() {
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
 	data["esp"]["spotted"] = cfg::esp::spotted;
-	data["esp"]["tracers"] = cfg::esp::tracers;
 	data["esp"]["bomb"] = cfg::esp::bomb;
+	data["esp"]["sound"] = cfg::esp::sound;
+	data["esp"]["sound_footsteps"] = cfg::esp::sound_footsteps;
+	data["esp"]["sound_gunfire"] = cfg::esp::sound_gunfire;
+	data["esp"]["sound_fade"] = cfg::esp::sound_fade;
+	data["esp"]["hit_markers"] = cfg::esp::hit_markers;
+	data["esp"]["hit_marker_fade"] = cfg::esp::hit_marker_fade;
+	data["esp"]["los_spotted"] = cfg::esp::los_spotted;
+	data["esp"]["los_use_visible_colors"] = cfg::esp::los_use_visible_colors;
+	data["esp"]["los_extra_bones"] = cfg::esp::los_extra_bones;
 
 	// flags
 	data["esp"]["flags"]["name"] = cfg::esp::flags::name;
@@ -180,6 +217,7 @@ bool Config::WriteImpl() {
 	// bomb
 	data["world"]["bomb"]["location"] = cfg::world::bomb::location;
 	data["world"]["bomb"]["timer"] = cfg::world::bomb::timer;
+		data["world"]["bomb"]["hud"] = cfg::world::bomb::hud;
 	Vec2ToJson(data["world"]["bomb"], "pos", cfg::world::bomb::pos);
 
 	// crosshair
@@ -213,8 +251,20 @@ bool Config::WriteImpl() {
 	ColorToJson(col, "tracer_team", cfg::esp::colors::tracer_team);
 	ColorToJson(col, "tracer_enemy", cfg::esp::colors::tracer_enemy);
 
-	ColorToJson(col, "bomb", cfg::esp::colors::bomb);
+	ColorToJson(col, "sound_footstep_team", cfg::esp::colors::sound::footstep_team);
+	ColorToJson(col, "sound_footstep_enemy", cfg::esp::colors::sound::footstep_enemy);
+	ColorToJson(col, "sound_gunfire_team", cfg::esp::colors::sound::gunfire_team);
+	ColorToJson(col, "sound_gunfire_enemy", cfg::esp::colors::sound::gunfire_enemy);
+	ColorToJson(col, "sound_reload_team", cfg::esp::colors::sound::reload_team);
+	ColorToJson(col, "sound_reload_enemy", cfg::esp::colors::sound::reload_enemy);
 
+	ColorToJson(col, "los_visible_team", cfg::esp::colors::los_visible_team);
+	ColorToJson(col, "los_visible_enemy", cfg::esp::colors::los_visible_enemy);
+
+	ColorToJson(col, "hit_marker", cfg::esp::colors::hit_marker);
+
+	ColorToJson(col, "bomb", cfg::esp::colors::bomb);
+  
 	// flag colors
 	auto& fcol = col["flags"];
 

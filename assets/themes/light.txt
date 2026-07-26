@@ -1,0 +1,99 @@
+# Light Theme
+# Clean light mode for daytime use
+
+name Light Mode
+author 3 cats
+description Bright and clean light theme
+
+# Text Colors
+text 0.0 0.0 0.0 1.0
+textdisabled 0.5 0.5 0.5 1.0
+textselectedbg 0.26 0.59 0.98 0.35
+
+# Window Colors
+windowbg 0.94 0.94 0.94 1.0
+childbg 0.94 0.94 0.94 1.0
+popupbg 1.0 1.0 1.0 1.0
+
+# Border Colors
+border 0.7 0.7 0.7 1.0
+bordershadow 0.0 0.0 0.0 0.0
+
+# Frame Colors
+framebg 1.0 1.0 1.0 1.0
+framebghovered 0.85 0.85 0.85 1.0
+framebgactive 0.7 0.7 0.7 1.0
+
+# Title Bar
+titlebg 0.96 0.96 0.96 1.0
+titlebgactive 0.82 0.82 0.82 1.0
+titlebgcollapsed 1.0 1.0 1.0 0.51
+
+# Menu Bar
+menubarbg 0.86 0.86 0.86 1.0
+
+# Scrollbar
+scrollbarbg 0.98 0.98 0.98 0.53
+scrollbargrab 0.69 0.69 0.69 1.0
+scrollbargrabhovered 0.59 0.59 0.59 1.0
+scrollbargrabactive 0.49 0.49 0.49 1.0
+
+# Checkmark & Slider
+checkmark 0.26 0.59 0.98 1.0
+slidergrab 0.26 0.59 0.98 1.0
+slidergrabactive 0.06 0.53 0.98 1.0
+
+# Button
+button 0.8 0.8 0.8 1.0
+buttonhovered 0.7 0.7 0.7 1.0
+buttonactive 0.6 0.6 0.6 1.0
+
+# Header
+header 0.78 0.78 0.78 1.0
+headerhovered 0.75 0.75 0.75 1.0
+headeractive 0.67 0.67 0.67 1.0
+
+# Separator
+separator 0.7 0.7 0.7 1.0
+separatorhovered 0.6 0.6 0.6 1.0
+separatoractive 0.26 0.59 0.98 0.95
+
+# Resize Grip
+resizegrip 0.8 0.8 0.8 0.2
+resizegriphovered 0.7 0.7 0.7 0.67
+resizegripactive 0.6 0.6 0.6 0.95
+
+# Tabs
+tab 0.92 0.92 0.92 0.83
+tabhovered 0.67 0.67 0.67 0.83
+tabactive 0.77 0.77 0.77 1.0
+tabunfocused 0.92 0.92 0.92 1.0
+tabunfocusedactive 0.87 0.87 0.87 1.0
+
+# Docking
+dockingpreview 0.26 0.59 0.98 0.7
+dockingemptybg 0.8 0.8 0.8 1.0
+
+# Plots
+plotlines 0.39 0.39 0.39 1.0
+plotlineshovered 1.0 0.43 0.35 1.0
+plothistogram 0.90 0.70 0.0 1.0
+plothistogramhovered 1.0 0.60 0.0 1.0
+
+# Tables
+tableheaderbg 0.78 0.78 0.78 1.0
+tablebordersstrong 0.57 0.57 0.57 1.0
+tableborderslight 0.68 0.68 0.68 1.0
+tablerowbg 0.0 0.0 0.0 0.0
+tablerowbgalt 0.3 0.3 0.3 0.06
+
+# Drag & Drop
+dragdroptarget 0.26 0.59 0.98 1.0
+
+# Navigation
+navhighlight 0.26 0.59 0.98 1.0
+navwindowinghighlight 0.7 0.7 0.7 0.7
+navwindowingdimbg 0.2 0.2 0.2 0.2
+
+# Modal
+modalwindowdimbg 0.2 0.2 0.2 0.35
