@@ -7,6 +7,7 @@ namespace cfg {
 		inline bool team = true;
 
 		inline bool box = true;
+		inline bool box_3d = false;
 		inline bool armor = true;
 		inline bool health = true;
 		inline bool skeleton = true;
@@ -17,7 +18,19 @@ namespace cfg {
 		inline bool bomb = true;
 		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
+		inline bool los_spotted = false;
+		inline bool los_use_visible_colors = true;
+		inline bool los_extra_bones = false;
+
 		inline bool tracers = false;
+
+		inline bool sound = false;
+		inline bool sound_footsteps = true;
+		inline bool sound_gunfire = true;
+		inline float sound_fade = 1.5f;
+
+		inline bool hit_markers = false;
+		inline float hit_marker_fade = 1.2f;
 
 		namespace flags {
 			inline bool name = true;
@@ -45,6 +58,25 @@ namespace cfg {
 			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 
+<<<<<<< Updated upstream
+=======
+		namespace sound {
+			inline color_t footstep_team{ 0.f, 1.f, 0.6f, 0.5f };
+			inline color_t footstep_enemy{ 1.f, 0.62f, 0.f, 0.85f };
+			inline color_t gunfire_team{ 1.f, 0.85f, 0.2f, 0.8f };
+			inline color_t gunfire_enemy{ 1.f, 0.3f, 0.1f, 0.9f };
+			inline color_t reload_team{ 0.4f, 0.7f, 1.f, 0.7f };
+			inline color_t reload_enemy{ 0.6f, 0.3f, 1.f, 0.8f };
+		}
+
+			inline color_t los_visible_team{ 0.f, 0.8f, 1.f, 0.8f };
+			inline color_t los_visible_enemy{ 1.f, 0.84f, 0.f, 0.8f };
+
+			inline color_t hit_marker{ 1.f, 0.2f, 0.2f, 1.f };
+
+			inline color_t bomb{ 1.f, 0.84f, 0.f, 1.f };
+			
+>>>>>>> Stashed changes
 			namespace flags {
 				inline color_t flashed_team{ 1.f, 1.f, 1.f, 0.5f };
 				inline color_t flashed_enemy{ 1.f, 1.f, 1.f, 0.8f };

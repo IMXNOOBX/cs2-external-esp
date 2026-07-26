@@ -192,6 +192,8 @@
     <ClCompile Include="core\scripting\Scripting.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
+    <ClCompile Include="core\vischeck\VisCheck.cpp" />
+    <ClCompile Include="core\vischeck\VisCheckManager.cpp" />
     <ClCompile Include="core\offsets\Dumper.cpp" />
     <ClCompile Include="external\AsyncLogger\src\LogCapture.cpp" />
     <ClCompile Include="external\AsyncLogger\src\Logger.cpp" />
@@ -239,6 +241,9 @@
     <ClInclude Include="core\engine\classes\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
     <ClInclude Include="core\memory\Memory.hpp" />
+    <ClInclude Include="core\vischeck\Math.hpp" />
+    <ClInclude Include="core\vischeck\VisCheck.h" />
+    <ClInclude Include="core\vischeck\VisCheckManager.h" />
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />

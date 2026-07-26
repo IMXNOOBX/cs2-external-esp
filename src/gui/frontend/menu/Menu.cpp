@@ -114,7 +114,7 @@ void Menu::RenderImpl() {
 
 					ImGui::BeginGroup();
 					{
-						ImGui::Checkbox("Box", &cfg::esp::box);
+					ImGui::Checkbox("Box", &cfg::esp::box);
 						ImGui::BeginDisabled(!cfg::esp::box);
 						{
 							ImGui::SameLine();
@@ -123,6 +123,8 @@ void Menu::RenderImpl() {
 							ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
 						}
 						ImGui::EndDisabled();
+
+						ImGui::Checkbox("3D Box", &cfg::esp::box_3d);
 
 						ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
 						ImGui::BeginDisabled(!cfg::esp::skeleton);
@@ -172,7 +174,72 @@ void Menu::RenderImpl() {
 					}
 					ImGui::EndGroup();
 
-					//ImGui::SameLine();
+					ImGui::Spacing();
+
+					if (ImGui::CollapsingHeader("Spotted Only")) {
+						ImGui::SetItemTooltip("Shows ESP only for players visible to you. Needs .tri files in maps/ folder.");
+						ImGui::PushID("SpottedOnly");
+
+						ImGui::Checkbox("Enable LOS Check", &cfg::esp::los_spotted);
+						ImGui::BeginDisabled(!cfg::esp::los_spotted);
+						{
+							ImGui::Checkbox("Visible Color", &cfg::esp::los_use_visible_colors);
+							if (cfg::esp::los_use_visible_colors) {
+								ImGui::SameLine();
+								ImGui::ColorEdit4("T##los_t", cfg::esp::colors::los_visible_team.data(), color_flags);
+								ImGui::SameLine();
+								ImGui::ColorEdit4("E##los_e", cfg::esp::colors::los_visible_enemy.data(), color_flags);
+							}
+							ImGui::Checkbox("Extra Bones", &cfg::esp::los_extra_bones);
+							ImGui::SetItemTooltip("Also check shoulders and pelvis for higher accuracy with a performance hit");
+						}
+						ImGui::EndDisabled();
+
+						ImGui::PopID();
+					}
+
+					ImGui::Spacing();
+
+					ImGui::Text("Sound ESP");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Sound ESP", &cfg::esp::sound);
+					if (cfg::esp::sound) {
+						ImGui::Checkbox("Footsteps", &cfg::esp::sound_footsteps);
+						ImGui::Checkbox("Gunfire & Reload", &cfg::esp::sound_gunfire);
+						ImGui::SliderFloat("Fade Time", &cfg::esp::sound_fade, 0.5f, 5.0f, "%.1f s");
+
+						ImGui::Text("Footstep Colors");
+						ImGui::SameLine();
+						ImGui::ColorEdit4("T##fs_t", cfg::esp::colors::sound::footstep_team.data(), color_flags);
+						ImGui::SameLine();
+						ImGui::ColorEdit4("E##fs_e", cfg::esp::colors::sound::footstep_enemy.data(), color_flags);
+
+						ImGui::Text("Gunfire Colors");
+						ImGui::SameLine();
+						ImGui::ColorEdit4("T##gf_t", cfg::esp::colors::sound::gunfire_team.data(), color_flags);
+						ImGui::SameLine();
+						ImGui::ColorEdit4("E##gf_e", cfg::esp::colors::sound::gunfire_enemy.data(), color_flags);
+
+						ImGui::Text("Reload Colors ");
+						ImGui::SameLine();
+						ImGui::ColorEdit4("T##rl_t", cfg::esp::colors::sound::reload_team.data(), color_flags);
+						ImGui::SameLine();
+						ImGui::ColorEdit4("E##rl_e", cfg::esp::colors::sound::reload_enemy.data(), color_flags);
+					}
+
+					ImGui::Spacing();
+
+					ImGui::Text("Hit Markers");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Hit Markers", &cfg::esp::hit_markers);
+					if (cfg::esp::hit_markers) {
+						ImGui::SliderFloat("Fade Time##hm", &cfg::esp::hit_marker_fade, 0.3f, 3.0f, "%.1f s");
+						ImGui::SameLine();
+						ImGui::ColorEdit4("Color##hm", cfg::esp::colors::hit_marker.data(), color_flags);
+					}
+
 					ImGui::Spacing();
 
 					ImGui::Text("Flags");
