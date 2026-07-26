@@ -23,8 +23,6 @@ namespace cfg {
 		inline bool los_extra_bones = false;
 
 		inline bool tracers = false;
-		
-		inline bool bomb = true;
 
 		inline bool sound = false;
 		inline bool sound_footsteps = true;
