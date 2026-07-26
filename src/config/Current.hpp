@@ -23,6 +23,8 @@ namespace cfg {
 		inline bool los_extra_bones = false;
 
 		inline bool tracers = false;
+		
+		inline bool bomb = true;
 
 		inline bool sound = false;
 		inline bool sound_footsteps = true;
@@ -58,8 +60,6 @@ namespace cfg {
 			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 
-<<<<<<< Updated upstream
-=======
 		namespace sound {
 			inline color_t footstep_team{ 0.f, 1.f, 0.6f, 0.5f };
 			inline color_t footstep_enemy{ 1.f, 0.62f, 0.f, 0.85f };
@@ -76,7 +76,6 @@ namespace cfg {
 
 			inline color_t bomb{ 1.f, 0.84f, 0.f, 1.f };
 			
->>>>>>> Stashed changes
 			namespace flags {
 				inline color_t flashed_team{ 1.f, 1.f, 1.f, 0.5f };
 				inline color_t flashed_enemy{ 1.f, 1.f, 1.f, 0.8f };

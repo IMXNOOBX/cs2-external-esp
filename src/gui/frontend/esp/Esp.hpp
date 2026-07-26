@@ -64,17 +64,9 @@ private:
     void RenderPlayerBones(Player player, bool mate = false, bool use_vis = false);
     void RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds);
     void RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
-<<<<<<< Updated upstream
-    void RenderBombBox(Bomb bomb);
-    void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
-    void RenderPlayerTracers(Player source, Player player, bool mate = false);
-
-=======
     void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false, bool use_vis = false);
     void RenderPlayerTracers(Player source, Player player, bool mate = false);
     void RenderPlayerBox3D(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false, bool use_vis = false);
-    
     void RenderBombBox(Bomb bomb);
->>>>>>> Stashed changes
-	void RenderCrosshair(Player local);
+  	void RenderCrosshair(Player local);
 };

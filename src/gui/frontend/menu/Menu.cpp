@@ -318,7 +318,7 @@ void Menu::RenderImpl() {
 					{
 						ImGui::Checkbox("Bomb ESP", &cfg::esp::bomb);
 						ImGui::SameLine();
-						ImGui::ColorEdit4("Bomb color", cfg::esp::bomb_color.data(), color_flags);
+						ImGui::ColorEdit4("Bomb color", cfg::esp::colors::bomb.data(), color_flags);
 					}
 					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
 					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);

@@ -13,6 +13,7 @@ public:
     static void Thread();
 
     static bool IsOpen();
+    static bool IsFocused();
 private:
     Renderer() {};
 

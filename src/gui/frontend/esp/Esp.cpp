@@ -266,8 +266,7 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-		if (cfg::esp::bomb)
-			RenderBombBox(bomb);
+	RenderBombBox(bomb);
 	ImGui::PopFont();
 }
 
@@ -564,12 +563,9 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 }
 
 void Esp::RenderBombBox(Bomb bomb) {
-<<<<<<< Updated upstream
-=======
 	if (!cfg::esp::bomb)
 		return;
 
->>>>>>> Stashed changes
 	if (!bomb.is_planted)
 		return;
 
@@ -601,23 +597,21 @@ void Esp::RenderBombBox(Bomb bomb) {
 	if (visible_count == 0)
 		return;
 
-	auto color = cfg::esp::bomb_color;
+	auto color = cfg::esp::colors::bomb;
 
 	int edges[12][2] = {
-		{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 },
-		{ 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 },
-		{ 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 }
+		{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, // Bottom
+		{ 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, // Top
+		{ 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 }  // Verticals
 	};
 
 	for (auto& edge : edges) {
 		int i = edge[0];
 		int j = edge[1];
 		if (visible[i] && visible[j]) {
-			this->d->AddLine(projected[i], projected[j], ImColor(color), 1.0f);
+			d->AddLine(projected[i], projected[j], ImColor(color), 1.0f);
 		}
 	}
-<<<<<<< Updated upstream
-=======
 
 	Vec2_t screen;
 	if (!matrix.wts(bomb.pos + Vec3_t(0, 0, 8), io.DisplaySize, screen))
@@ -627,12 +621,14 @@ void Esp::RenderBombBox(Bomb bomb) {
 	d->AddText(
 		this->font_merged_icons,
 		16.0f,
-		Vec2_t(screen.x - 8, screen.y),
+		Vec2_t(
+			screen.x - 8, // lazy
+			screen.y
+		),
 		ImColor(255, 255, 255),
 		WeaponIcons::C4
 	);
 	ImGui::PopFont();
->>>>>>> Stashed changes
 }
 
 void Esp::RenderCrosshair(Player local)
