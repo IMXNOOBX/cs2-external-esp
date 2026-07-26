@@ -32,8 +32,14 @@ namespace {
         return true;
     }
 
+    std::filesystem::path ExeDir() {
+        char buf[MAX_PATH]{};
+        GetModuleFileNameA(nullptr, buf, sizeof(buf));
+        return std::filesystem::path(buf).parent_path();
+    }
+
     std::filesystem::path MapTriPath(const std::string& map) {
-        return "maps" / std::filesystem::path(map + ".tri");
+        return ExeDir() / "maps" / std::filesystem::path(map + ".tri");
     }
 } // namespace
 

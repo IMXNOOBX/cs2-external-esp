@@ -208,7 +208,7 @@ void Esp::RenderImpl() {
 	const Vec3_t eye_pos = local.bone_list.size() > bone_index::head
 		? local.bone_list[bone_index::head].pos
 		: local.pos + Vec3_t(0, 0, 64.f);
-	const bool vis_ready = cfg::esp::los_spotted && VisCheckManager::IsReady();
+	const bool vis_ready = (cfg::esp::spotted || cfg::esp::los_spotted) && VisCheckManager::IsReady();
 	static uint8_t vis_hold[64]{};
 
 	for (auto& player : players) {
@@ -221,9 +221,6 @@ void Esp::RenderImpl() {
 		bool mate = player.team == local.team;
 
 		if (!cfg::esp::team && mate)
-			continue;
-
-		if (cfg::esp::spotted && !player.spotted)
 			continue;
 
 		if (
@@ -253,6 +250,9 @@ void Esp::RenderImpl() {
 
 			visible = h > 0;
 		}
+
+		if (cfg::esp::spotted && !visible)
+			continue;
 
 		RenderPlayerTracers(local, player, mate);
 		RenderPlayer(player, mate, visible);

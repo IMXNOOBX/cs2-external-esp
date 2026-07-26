@@ -15,12 +15,13 @@ namespace cfg {
 		inline bool health_number = false;
 
 		inline bool spotted = false;
-		inline bool bomb = true;
-		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
 		inline bool los_spotted = false;
 		inline bool los_use_visible_colors = true;
 		inline bool los_extra_bones = false;
+
+		inline bool bomb = true;
+		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
 		inline bool tracers = false;
 

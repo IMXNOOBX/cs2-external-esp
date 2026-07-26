@@ -168,7 +168,7 @@ void Menu::RenderImpl() {
 						ImGui::Checkbox("Armor", &cfg::esp::armor);
 
 						ImGui::Checkbox("Spotted", &cfg::esp::spotted);
-						ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
+						ImGui::SetItemTooltip("Only show players visible via line-of-sight");
 
 						ImGui::Checkbox("Show Team", &cfg::esp::team);
 					}
