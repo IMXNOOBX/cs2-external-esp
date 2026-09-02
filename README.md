@@ -55,7 +55,7 @@ git clone --recursive https://github.com/IMXNOOBX/cs2-external-esp
 
 * If you cloned the repository before submodules were added, run this command `git submodule update --init --recursive`
 
-2. Build the app using **Visual Studio 2022** (or later)
+2. Build the app using **Visual Studio 2026**
 	- Build: **`x64 - Release`**
 
 3. Locate your binary file in the folder `<arch>/<configuration>`, e.g., `x64/Release`.

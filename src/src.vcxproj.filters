@@ -120,6 +120,9 @@
     <ClCompile Include="core\engine\classes\ObserverServices.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\scripting\Scripting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\logger\LogHelper.hpp">
@@ -405,6 +408,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="assets\fonts\WeaponIcons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\frontend\theme\Theme.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
