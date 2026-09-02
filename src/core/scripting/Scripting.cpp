@@ -15,10 +15,15 @@
 namespace scripting {
 
     void Scripting::Init() {
-        InitKeyNameMap();
-        RegisterConfigVars();
-        RegisterCommands();
-        LoadScripts();
+        try {
+            InitKeyNameMap();
+            RegisterConfigVars();
+            RegisterCommands();
+            LoadScripts();
+        }
+        catch (std::exception& e) {
+            LOGF(FATAL, "Caught exception while initializing: {}", e.what());
+        }
         
         command_thread = std::thread(&Scripting::CommandWorkerThread, this);
         
@@ -230,10 +235,10 @@ namespace scripting {
     }
 
     void Scripting::Update() {
-        if (std::filesystem::exists("scripts.txt")) {
-            auto current_write_time = std::filesystem::last_write_time("scripts.txt");
+        if (std::filesystem::exists("scripts.mcr")) {
+            auto current_write_time = std::filesystem::last_write_time("scripts.mcr");
             if (current_write_time != last_load_time) {
-                LOGF(INFO, "scripts.txt changed, reloading...");
+                LOGF(INFO, "scripts.mcr changed, reloading...");
                 LoadScripts();
             }
         }
@@ -292,7 +297,12 @@ namespace scripting {
             args.push_back(arg);
         }
 
-        ProcessCommand(cmd, args);
+        try {
+            ProcessCommand(cmd, args);
+        }
+        catch (std::exception& e) {
+            LOGF(FATAL, "Caught exception on command execution: {}", e.what());
+        }
     }
 
     void Scripting::ProcessCommand(const std::string& cmd, const std::vector<std::string>& args) {
@@ -319,9 +329,9 @@ namespace scripting {
     }
 
     void Scripting::LoadScripts() {
-        std::ifstream f("scripts.txt");
+        std::ifstream f("scripts.mcr");
         if (!f.is_open()) {
-            LOGF(INFO, "No scripts.txt found, skipping");
+            LOGF(INFO, "No scripts.mcr found, skipping");
             return;
         }
 
@@ -470,8 +480,8 @@ namespace scripting {
             }
         }
 
-        if (std::filesystem::exists("scripts.txt")) {
-            last_load_time = std::filesystem::last_write_time("scripts.txt");
+        if (std::filesystem::exists("scripts.mcr")) {
+            last_load_time = std::filesystem::last_write_time("scripts.mcr");
         }
 
         // Warn about dangerous scripts

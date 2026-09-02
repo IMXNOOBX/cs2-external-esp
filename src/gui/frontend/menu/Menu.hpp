@@ -20,8 +20,8 @@ static const TabItem tabs[] =
 {
     { Tab::PLAYER,      "Player",   Icons::PERSON },
     { Tab::WORLD,       "World",    Icons::GLOBE },
+    { Tab::MACROS,      "Macros",   Icons::RELOAD },
     { Tab::SETTINGS,    "Settings", Icons::SETTINGS },
-    { Tab::MACROS,      "Macros",   Icons::RELOAD }
 };
 
 class Menu {
