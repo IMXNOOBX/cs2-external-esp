@@ -1,448 +1,155 @@
-# Scripting System Documentation
+# Scripting
 
-<small>Theme documentation generated with AI assistance and reviewed for accuracy.</small>
+<small>Script documentation generated with AI assistance and reviewed for accuracy.</small>
 
-## ⚠️ Security Warning
+Scripts are loaded from `scripts.esp` in the application directory. The file is reloaded automatically when it changes; it can also be reloaded from the **Macros** tab.
 
-**Dangerous Commands** (DEBUG MODE ONLY):
-- `send` - Sends keyboard input (automation detection risk)
-- `!read` - Reads game memory (can crash/trigger anti-cheat)  
-- `!write` - Writes to game memory (can crash/trigger anti-cheat)
+## Quick start
 
-**When loading scripts containing these commands, you will see a warning message.**
-
-These commands are only available when running in DEBUG mode and should only be used by developers who understand the risks.
-
-## Overview
-
-The CS2 External ESP includes a powerful scripting system with:
-- **Bracket-scoped macros** for better organization
-- **GUI access control** with `@` prefix
-- **Color customization** with RGBA values
-- **Variables and arithmetic** for dynamic configurations
-- **Named key bindings** (use `SPACE`, `F1` instead of numbers)
-- **Auto-reload** when script file is modified
-
-## Quick Start
-
-### Basic Macro
-```
-macro @my_config {
+```text
+macro @setup {
     set esp.box true
     set esp.health true
+    setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
 }
 
-bind F1 @my_config
+bind F1 @setup
 ```
 
-### GUI Access Control
-```
-macro @user_visible {     # Shows in GUI
-    set esp.box true
-}
+Macros beginning with `@` are shown in the GUI. Other macros are hidden helpers that can still be called by another macro or keybind.
 
-macro internal_helper {    # Hidden from GUI, keybind-only
-    set world.radar.enabled true
-}
-```
-
-## Script Syntax
-
-### Comments
-```
-# This is a comment
-```
+## Syntax
 
 ### Macros
 
-**Bracket Syntax (Recommended):**
-```
+```text
 macro @name {
     command
     command
 }
 ```
 
-**With Stop Key:**
-```
-macro @bhop {
+An optional key after the closing brace stops a running macro:
+
+```text
+macro @hold_jump {
     send SPACE 50 999999
 } SPACE
-
-# Press SPACE to stop the macro
 ```
 
-**Old Style (Still Works):**
-```
-macro name
-    command
-    command
-```
+Use `#` for comments. The older unbracketed macro format is still supported.
 
-**@ Prefix Rules:**
-- With `@`: Visible in GUI and keybinds
-- Without `@`: Keybind-only, hidden from GUI
+### Variables and expressions
 
-**Stop Key (Optional):**
-- Add a key name after the closing `}` to make that key stop the macro
-- Useful for infinite loops or long-running sequences
-- Example: `} ESC` makes ESC key stop the macro
-- Without stop key, macro runs until completion
-
-### Variables
-```
+```text
 var radius 1000
 var doubled $radius*2
 set world.radar.range $doubled
 ```
 
-### Arithmetic
-```
-var result $a+$b      # Addition
-var result $a-$b      # Subtraction
-var result $a*$b      # Multiplication
-var result $a/$b      # Division
-```
+Supported arithmetic operators are `+`, `-`, `*`, and `/`. Use `$name` to substitute a variable.
 
 ## Commands
 
-### set
-Set configuration value (supports arithmetic).
-```
-set esp.box true
-set world.radar.range 1500
-set world.radar.range $var*100
+| Command | Description | Example |
+| --- | --- | --- |
+| `set` | Set a configuration value. | `set esp.box true` |
+| `setcolor` | Set an RGBA color from `0.0` to `1.0`. | `setcolor esp.color.box_enemy 1 0 0 1` |
+| `resettheme` | Restore the default UI colors. | `resettheme` |
+| `var` | Create or update a variable. | `var range 1500` |
+| `get` | Read a configuration value into a variable. | `get esp.box current` |
+| `echo` | Print a message to the console. | `echo Range: $range` |
+| `run` | Run another macro. | `run setup` |
+| `bind` | Bind a macro to a key. | `bind F1 @setup` |
+
+For UI themes and the full list of UI color names, see [`THEMES.md`](THEMES.md).
+
+### Global variables
+
+The following read-only values are updated automatically and can be used with `$name`:
+
+```text
+$client.base    # client.dll base address, in hexadecimal
+$engine2.base   # engine2.dll base address, in hexadecimal
+$menu.open          # true while the menu is open
+$menu.pos.x         # menu X position
+$menu.pos.y         # menu Y position
 ```
 
-### setcolor
-Set an RGBA color (0.0 to 1.0, arithmetic/`$var` supported). Works for ESP colors (`esp.color.*`, `esp.bomb_color`) **and** menu/UI colors (`windowbg`, `checkmark`, `text`, ...). UI color names are case-insensitive.
-```
-setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0   # ESP box color
-setcolor windowbg 0.05 0.05 0.05 1.0            # menu background
-setcolor checkmark 0.0 1.0 0.0 1.0              # menu accent
+For example:
+
+```text
+echo Menu position: $menu.pos.x $menu.pos.y
 ```
 
-### UI Themes (Scripted)
+Global variables cannot be changed with `var`; their values are refreshed by the application.
 
-The scripting system is the way to customize the **menu/UI colors**. UI colors take effect on the next rendered frame and are **not** saved to config — they last until changed or reset.
+### Keyboard input
 
-#### resettheme
-Restore the default UI look (the one at app startup).
-```
-resettheme
-```
+`send` is available in debug builds only and sends keyboard input:
 
-#### Theme packs
-
-A "theme pack" is just a macro. Put `resettheme` at the top so every pack starts from a clean default, then `setcolor` the colors you want to change:
-
-```
-macro @ui_red {
-    resettheme
-    setcolor windowbg 0.15 0.02 0.02 1.0
-    setcolor childbg 0.10 0.01 0.01 1.0
-    setcolor text 1.0 0.9 0.9 1.0
-    setcolor button 0.7 0.1 0.1 1.0
-    setcolor buttonhovered 0.9 0.2 0.2 1.0
-    setcolor checkmark 1.0 0.4 0.4 1.0
-    setcolor framebg 0.3 0.05 0.05 1.0
-}
-
-macro @ui_green {
-    resettheme
-    setcolor windowbg 0.02 0.12 0.02 1.0
-    setcolor childbg 0.01 0.08 0.01 1.0
-    setcolor button 0.1 0.6 0.1 1.0
-    setcolor checkmark 0.4 1.0 0.4 1.0
-}
-
-bind F1 @ui_red   # switch to the red UI
-bind F2 @ui_green # switch to the green UI
-```
-
-Tips:
-- The macro name is your pack name — copy-paste a pack, change the name, tweak colors.
-- Mix UI and ESP `setcolor` lines in one macro for a full setup.
-- `resettheme` inside a pack makes it a clean base; running a pack again re-applies it, and the last pack run wins.
-
-#### Available UI colors
-
-```
-# Backgrounds & surfaces
-windowbg  childbg  popupbg  menubarbg  titlebg  titlebgactive  titlebgcollapsed
-# Text
-text  textdisabled  textselectedbg
-# Borders
-border  bordershadow
-# Frames, checkboxes, sliders
-framebg  framebghovered  framebgactive  checkmark  slidergrab  slidergrabactive
-# Buttons
-button  buttonhovered  buttonactive
-# Headers, separators, resize grip
-header  headerhovered  headeractive  separator  separatorhovered  separatoractive
-resizegrip  resizegriphovered  resizegripactive
-# Tabs
-tab  tabhovered  tabactive  tabunfocused  tabunfocusedactive
-# Scrollbar
-scrollbarbg  scrollbargrab  scrollbargrabhovered  scrollbargrabactive
-# Plots
-plotlines  plotlineshovered  plothistogram  plothistogramhovered
-# Tables
-tableheaderbg  tablebordersstrong  tableborderslight  tablerowbg  tablerowbgalt
-# Misc
-dockingpreview  dockingemptybg  dragdroptarget  navhighlight
-navwindowinghighlight  navwindowingdimbg  modalwindowdimbg
-```
-
-### var
-Create/update variable.
-```
-var name value
-var result $a+$b
-```
-
-### get
-Retrieve config value into variable.
-```
-get esp.box current_state
-echo Current state: $current_state
-```
-
-### echo
-Print to console (debug mode only).
-```
-echo Hello World
-var x 42
-echo Value: $x
-```
-
-### run
-Execute another macro by name.
-```
-run helper_macro
-run setup_colors
-```
-
-### send (⚠️ DEBUG ONLY)
-Send keyboard input to the game. **Only available in debug mode.**
-```
+```text
 send KEY [duration_ms] [repeat_count]
-
-# Examples:
-send SPACE           # Single space press (50ms default)
-send SPACE 100       # Hold space for 100ms
-send SPACE 50 10     # Press space 10 times (bhop)
-send W 1000          # Hold W for 1 second
-
-# Bhop with stop key:
-macro @bhop {
-    send SPACE 50 999999
-} SPACE
-
-bind B bhop
-# Press B to start, SPACE to stop
+send SPACE 50 10
 ```
 
-**WARNING**: Can trigger anti-cheat detection!
+### Memory commands  (debug builds only)
 
-### !read (⚠️ DEBUG ONLY)
-Read memory address into variable. **Only available in debug mode.**
-```
+`!read` and `!write` are experimental commands under testing and are available in debug builds only. They directly access game memory and can crash the game or trigger anti-cheat detection.
+
+```text
 !read variable_name 0xABCD1234
+
+var value 100
+!write value 0xABCD1234
 ```
 
-**WARNING**: Direct memory access - use with extreme caution!
+Use these commands only for development/testing when you understand the risks. Scripts containing dangerous commands produce a warning when loaded.
 
-### !write (⚠️ DEBUG ONLY)
-Write variable value to memory address. **Only available in debug mode.**
-```
-var myvalue 100
-!write myvalue 0xABCD1234
-```
+## Configuration values
 
-**WARNING**: Can crash the game or trigger anti-cheat!
+Common values include:
 
-### bind
-```
-echo Hello World
-var x 42                                                    
-echo Value: $x
-```
+```text
+# ESP
+esp.team  esp.box  esp.skeleton  esp.health  esp.health_number
+esp.armor  esp.spotted  esp.tracers  esp.head_tracker
 
-### bind
-Bind macro to key.
-```
-bind F1 @macro_name
-bind SPACE @toggle
-bind A internal_macro
-```
+# ESP flags
+esp.flags.name  esp.flags.ping  esp.flags.money  esp.flags.weapon
+esp.flags.ammo  esp.flags.reloading  esp.flags.scoped
+esp.flags.defusing  esp.flags.flashed  esp.flags.has_c4
 
-**Key Names:** `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUM0-NUM9`, `MOUSE1-MOUSE5`
+# World
+world.spectators.enabled  world.spectators.detailed  world.spectators.self_only
+world.bomb.location  world.bomb.timer  world.crosshair.enabled
+world.radar.enabled  world.radar.no_rotate  world.radar.range
 
-**Numeric codes also work:** `bind 112 @macro` (F1 = 112)
-
-## Configuration Variables
-
-### ESP Settings
-`enabled`, `esp.team`, `esp.box`, `esp.skeleton`, `esp.health`, `esp.health_number`, `esp.armor`, `esp.spotted`, `esp.bomb`, `esp.tracers`, `esp.head_tracker`
-
-### ESP Flags
-`esp.flags.name`, `esp.flags.ping`, `esp.flags.money`, `esp.flags.weapon`, `esp.flags.ammo`, `esp.flags.reloading`, `esp.flags.scoped`, `esp.flags.defusing`, `esp.flags.flashed`, `esp.flags.has_c4`
-
-### World Settings
-`world.spectators.enabled`, `world.spectators.detailed`, `world.spectators.self_only`, `world.bomb.location`, `world.bomb.timer`, `world.bomb.hud`, `world.crosshair.enabled`, `world.radar.enabled`, `world.radar.no_rotate`, `world.radar.range`
-
-### Other Settings
-`settings.watermark`, `settings.streamproof`, `settings.vsync`, `settings.free_cpu`
-
-### Colors
-`esp.color.box_team`, `esp.color.box_enemy`, `esp.color.skeleton_team`, `esp.color.skeleton_enemy`, `esp.color.tracker_team`, `esp.color.tracker_enemy`, `esp.color.tracer_team`, `esp.color.tracer_enemy`, `esp.bomb_color`
-
-**Flag Colors:** `esp.color.flags.flashed_team/enemy`, `esp.color.flags.reloading_team/enemy`, `esp.color.flags.defusing_team/enemy`, `esp.color.flags.scoped_team/enemy`, `esp.color.flags.c4_team/enemy`
-
-## Examples
-
-### Complete Configuration
-```
-macro @competitive {
-    set esp.box true
-    set esp.health true
-    set esp.spotted true
-    setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
-}
+# Other
+settings.watermark  settings.streamproof  settings.vsync  settings.free_cpu
 ```
 
-### Color Presets
-```
-macro @red_theme {
-    setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
-    setcolor esp.color.skeleton_enemy 1.0 0.2 0.2 1.0
-}
+ESP colors use names such as `esp.color.box_team`, `esp.color.box_enemy`, `esp.color.skeleton_team`, `esp.color.skeleton_enemy`, `esp.color.tracer_team`, and `esp.bomb_color`. Flag colors follow the pattern `esp.color.flags.<flag>_<team|enemy>`.
 
-macro @neon_theme {
-    setcolor esp.color.box_enemy 1.0 0.0 1.0 1.0
-    setcolor esp.color.skeleton_enemy 0.0 1.0 0.5 1.0
-}
-```
+## GUI
 
-### Variables & Math
-```
-macro @dynamic_radar {
-    var base 1000
-    var multiplier 2
-    set world.radar.range $base*$multiplier
-    echo Radar set to: $base*$multiplier
-}
-```
+Open the **Macros** tab to:
 
-### Internal Helpers
-```
-# User-facing (GUI visible)
-macro @full_setup {
-    run enable_visuals
-    run enable_world
-    run apply_colors
-}
+- run GUI-visible (`@`) macros;
+- hover a macro to preview its commands;
+- enter an `@macro_name` manually and click **Execute**;
+- reload the script or open it in the default text editor.
 
-# Internal (GUI hidden)
-macro enable_visuals {
-    set esp.box true
-    set esp.skeleton true
-}
+## Key names
 
-macro enable_world {
-    set world.radar.enabled true
-}
+Use `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUM0-NUM9`, or `MOUSE1-MOUSE5`.
 
-macro apply_colors {
-    setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
-}
-```
-
-### Keybinds
-```
-bind F1 @competitive    # GUI macro
-bind F2 enable_visuals  # Internal macro
-bind SPACE @full_setup  # Quick access
-```
-
-## GUI Usage
-
-### Macros Tab
-- Click macro buttons to execute
-- Only `@` prefixed macros appear
-- Hover for command preview
-- Manual input field for typing `@macro_name`
-
-### Manual Execution
-1. Type `@macro_name` in input field
-2. Click Execute
-3. Only works with `@` prefixed macros
-
-## Auto-Reload
-
-The script file is monitored and reloads automatically when modified:
-1. Edit `scripts.esp`
-2. Save changes
-3. Changes apply immediately
-4. New macros/keybinds available instantly
-
-Or click "Reload Scripts Now" in GUI.
-
-## Best Practices
-
-1. **Use @ for user actions** - Main operations
-2. **Skip @ for helpers** - Internal functions
-3. **Use key names** - More readable than numbers
-4. **Add comments** - Document your macros
-5. **Group related macros** - Organize by category
-6. **Use variables** - For reusable values
-7. **Test incrementally** - Change one thing at a time
+Numeric virtual-key codes are also accepted, for example `bind 112 @setup` for F1.
 
 ## Troubleshooting
 
-**Macro not in GUI?**
-- Check for `@` prefix in definition
-- Reload scripts manually
-- Check console for errors
+- **Macro is missing from the GUI:** add `@` to its name, then reload the script.
+- **Keybind does not work:** check the key name and macro name; numeric key codes can be used as a fallback.
+- **Color does not change:** use RGBA values between `0.0` and `1.0` and verify the color variable name.
 
-**Keybind not working?**
-- Verify key name spelling
-- Try numeric code temporarily
-- Check macro name is correct
-
-**Colors not changing?**
-- Use 0.0 to 1.0 range (not 0-255)
-- Check variable name is correct
-- Verify it's a color variable
-
-## Quick Reference
-
-```
-# Macros
-macro @name { commands }        # GUI visible
-macro name { commands }          # GUI hidden
-
-# Commands
-set variable value               # Set config
-setcolor var r g b a            # Set color (esp.color.* or UI color)
-resettheme                      # Restore default UI theme
-var name value                  # Create variable
-get config_var var_name         # Retrieve value
-echo message                    # Print to console
-run macro_name                  # Execute macro
-bind KEY macro_name             # Bind key
-
-# DEBUG ONLY (⚠️ Dangerous)
-send KEY [duration] [repeat]    # Send input
-!read var address               # Read memory
-!write var address              # Write memory
-
-# Variables
-$variable                       # Use variable
-$a+$b                          # Arithmetic
-```
-
-## Script File Location
-
-`scripts.esp` in the application directory.
+For theme packs and color customization, see [`THEMES.md`](THEMES.md).

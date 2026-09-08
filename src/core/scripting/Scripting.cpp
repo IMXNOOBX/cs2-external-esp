@@ -1,17 +1,17 @@
 #include "Scripting.hpp"
 #include "core/logger/LogHelper.hpp"
 #include "core\engine\types\Types.hpp"
+#include "core\engine\Engine.hpp"
+#include "gui\frontend\menu\Menu.hpp"
+#include "gui\renderer\Renderer.hpp"
 #include "gui/frontend/theme/Theme.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <Windows.h>
-
-#ifdef _DEBUG
-#include "core/engine/Engine.hpp"
-#endif
 
 namespace scripting {
 
@@ -20,6 +20,7 @@ namespace scripting {
             InitKeyNameMap();
             RegisterConfigVars();
             RegisterCommands();
+            UpdateGlobalVariables();
             LoadScripts();
         }
         catch (std::exception& e) {
@@ -161,6 +162,12 @@ namespace scripting {
         command_map["var"] = [this](const std::vector<std::string>& args) {
             if (args.size() < 2) return;
             const std::string& var_name = args[0];
+
+            if (global_variables.find(var_name) != global_variables.end()) {
+                LOGF(WARNING, "Global variable '{}' is read-only", var_name);
+                return;
+            }
+
             std::string value = args[1];
             
             // Evaluate if needed
@@ -240,6 +247,8 @@ namespace scripting {
     }
 
     void Scripting::Update() {
+        UpdateGlobalVariables();
+
         if (std::filesystem::exists("scripts.esp")) {
             auto current_write_time = std::filesystem::last_write_time("scripts.esp");
             if (current_write_time != last_load_time) {
@@ -604,6 +613,10 @@ namespace scripting {
     }
 
     std::string Scripting::GetConfigValue(const std::string& var_name) {
+        if (global_variables.find(var_name) != global_variables.end()) {
+            return global_variables[var_name];
+        }
+
         if (config_map.find(var_name) == config_map.end()) {
             LOGF(WARNING, "Unknown config variable: {}", var_name);
             return "0";
@@ -625,6 +638,28 @@ namespace scripting {
         }
         
         return "0";
+    }
+
+    void Scripting::UpdateGlobalVariables() {
+        const auto client_base = Engine::GetClient().base;
+        const auto engine_base = Engine::GetEngine().base;
+        const auto menu_pos = Menu::GetPos();
+
+        std::ostringstream client_base_value;
+        client_base_value << "0x" << std::hex << std::uppercase << client_base;
+
+        std::ostringstream engine_base_value;
+        engine_base_value << "0x" << std::hex << std::uppercase << engine_base;
+
+        global_variables["client.base"] = client_base_value.str();
+        global_variables["engine2.base"] = engine_base_value.str();
+        global_variables["menu.open"] = Renderer::IsOpen() ? "true" : "false";
+        global_variables["menu.pos.x"] = std::to_string(menu_pos.x);
+        global_variables["menu.pos.y"] = std::to_string(menu_pos.y);
+
+        for (const auto& [name, value] : global_variables) {
+            variables[name] = value;
+        }
     }
 
     void Scripting::SetColorValue(const std::string& var_name, float r, float g, float b, float a) {

@@ -64,6 +64,7 @@ namespace scripting {
         std::vector<Keybind> keybinds;
         std::unordered_map<int, bool> key_states;
         std::unordered_map<std::string, std::string> variables;
+        std::unordered_map<std::string, std::string> global_variables;
         std::unordered_map<std::string, int> key_name_map;
 
         std::filesystem::file_time_type last_load_time;
@@ -82,6 +83,7 @@ namespace scripting {
         float EvaluateArithmetic(const std::string& expr);
         std::string GetConfigValue(const std::string& var_name);
         void SetColorValue(const std::string& var_name, float r, float g, float b, float a);
+        void UpdateGlobalVariables();
         void InitKeyNameMap();
         void SendInput(int vk_code, int duration_ms, int repeat_count);
         void ReadMemory(const std::string& var_name, uintptr_t address);
