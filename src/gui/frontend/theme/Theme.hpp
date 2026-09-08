@@ -1,20 +1,12 @@
 #pragma once
 
 #include <string>
+#include <array>
 #include <unordered_map>
-#include <vector>
-#include <filesystem>
+#include <mutex>
 #include "imgui.h"
 
 namespace theme {
-
-    struct ThemeInfo {
-        std::string name;
-        std::string author;
-        std::string description;
-        ImVec4 colors[ImGuiCol_COUNT];
-    };
-
     class ThemeManager {
     public:
         static ThemeManager& Get() {
@@ -23,27 +15,22 @@ namespace theme {
         }
 
         void Init();
-        void LoadThemesFromDirectory();
-        bool LoadTheme(const std::string& filename);
-        void ApplyTheme(const std::string& theme_name);
-        void SaveCurrentTheme(const std::string& filename);
-        void ExportDefaultTheme();
-        
-        std::vector<std::string> GetThemeNames() const;
-        const ThemeInfo* GetThemeInfo(const std::string& name) const;
-        std::string GetCurrentThemeName() const { return current_theme_name; }
+
+        bool SetColor(const std::string& name, float r, float g, float b, float a);
+
+        void RequestReset();
+
+        void FlushPending();
 
     private:
         ThemeManager() = default;
 
-        void CaptureCurrentColors();
-        std::string GetColorName(ImGuiCol idx) const;
-        ImGuiCol GetColorIndexFromName(const std::string& name) const;
-        
-        std::unordered_map<std::string, ThemeInfo> themes;
-        std::string current_theme_name = "default";
-        
         std::unordered_map<std::string, ImGuiCol> color_name_map;
+        std::array<ImVec4, ImGuiCol_COUNT> default_colors{};
+
+        std::mutex style_mutex;
+        std::unordered_map<int, ImVec4> pending_colors;
+        bool pending_reset = false;
     };
 
 }

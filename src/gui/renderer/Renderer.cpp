@@ -6,6 +6,7 @@
 #include "gui/frontend/menu/Menu.hpp"
 #include "gui\frontend\overlays\Overlays.hpp"
 #include "core\scripting\Scripting.hpp"
+#include "gui/frontend/theme/Theme.hpp"
 
 bool Renderer::Init() {
     return GetInstance().InitImpl();
@@ -89,6 +90,8 @@ void Renderer::ThreadImpl() {
 }
 
 void Renderer::Render() {
+    theme::ThemeManager::Get().FlushPending();
+
     Window::StartRender();
 
     Esp::Render();

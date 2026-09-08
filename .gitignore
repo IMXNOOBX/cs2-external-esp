@@ -8,7 +8,7 @@ typos
 .vscode
 config.json
 crashlog.txt
-scripts.mcr
+scripts.esp
 
 # Ignore all the offsets.json files but the one in the folder offsets for the auto updater
 offsets.json

@@ -1,5 +1,6 @@
 # Scripting System Documentation
-<small>please note that I DID generate this documentation using AI (Claude Sonnet 4.5). I have however read it over a few times and i see no problems</small>
+
+<small>Theme documentation generated with AI assistance and reviewed for accuracy.</small>
 
 ## ⚠️ Security Warning
 
@@ -114,9 +115,83 @@ set world.radar.range $var*100
 ```
 
 ### setcolor
-Set RGBA color (0.0 to 1.0).
+Set an RGBA color (0.0 to 1.0, arithmetic/`$var` supported). Works for ESP colors (`esp.color.*`, `esp.bomb_color`) **and** menu/UI colors (`windowbg`, `checkmark`, `text`, ...). UI color names are case-insensitive.
 ```
-setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
+setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0   # ESP box color
+setcolor windowbg 0.05 0.05 0.05 1.0            # menu background
+setcolor checkmark 0.0 1.0 0.0 1.0              # menu accent
+```
+
+### UI Themes (Scripted)
+
+The scripting system is the way to customize the **menu/UI colors**. UI colors take effect on the next rendered frame and are **not** saved to config — they last until changed or reset.
+
+#### resettheme
+Restore the default UI look (the one at app startup).
+```
+resettheme
+```
+
+#### Theme packs
+
+A "theme pack" is just a macro. Put `resettheme` at the top so every pack starts from a clean default, then `setcolor` the colors you want to change:
+
+```
+macro @ui_red {
+    resettheme
+    setcolor windowbg 0.15 0.02 0.02 1.0
+    setcolor childbg 0.10 0.01 0.01 1.0
+    setcolor text 1.0 0.9 0.9 1.0
+    setcolor button 0.7 0.1 0.1 1.0
+    setcolor buttonhovered 0.9 0.2 0.2 1.0
+    setcolor checkmark 1.0 0.4 0.4 1.0
+    setcolor framebg 0.3 0.05 0.05 1.0
+}
+
+macro @ui_green {
+    resettheme
+    setcolor windowbg 0.02 0.12 0.02 1.0
+    setcolor childbg 0.01 0.08 0.01 1.0
+    setcolor button 0.1 0.6 0.1 1.0
+    setcolor checkmark 0.4 1.0 0.4 1.0
+}
+
+bind F1 @ui_red   # switch to the red UI
+bind F2 @ui_green # switch to the green UI
+```
+
+Tips:
+- The macro name is your pack name — copy-paste a pack, change the name, tweak colors.
+- Mix UI and ESP `setcolor` lines in one macro for a full setup.
+- `resettheme` inside a pack makes it a clean base; running a pack again re-applies it, and the last pack run wins.
+
+#### Available UI colors
+
+```
+# Backgrounds & surfaces
+windowbg  childbg  popupbg  menubarbg  titlebg  titlebgactive  titlebgcollapsed
+# Text
+text  textdisabled  textselectedbg
+# Borders
+border  bordershadow
+# Frames, checkboxes, sliders
+framebg  framebghovered  framebgactive  checkmark  slidergrab  slidergrabactive
+# Buttons
+button  buttonhovered  buttonactive
+# Headers, separators, resize grip
+header  headerhovered  headeractive  separator  separatorhovered  separatoractive
+resizegrip  resizegriphovered  resizegripactive
+# Tabs
+tab  tabhovered  tabactive  tabunfocused  tabunfocusedactive
+# Scrollbar
+scrollbarbg  scrollbargrab  scrollbargrabhovered  scrollbargrabactive
+# Plots
+plotlines  plotlineshovered  plothistogram  plothistogramhovered
+# Tables
+tableheaderbg  tablebordersstrong  tableborderslight  tablerowbg  tablerowbgalt
+# Misc
+dockingpreview  dockingemptybg  dragdroptarget  navhighlight
+navwindowinghighlight  navwindowingdimbg  modalwindowdimbg
 ```
 
 ### var
@@ -307,7 +382,7 @@ bind SPACE @full_setup  # Quick access
 ## Auto-Reload
 
 The script file is monitored and reloads automatically when modified:
-1. Edit `scripts.txt`
+1. Edit `scripts.esp`
 2. Save changes
 3. Changes apply immediately
 4. New macros/keybinds available instantly
@@ -350,7 +425,8 @@ macro name { commands }          # GUI hidden
 
 # Commands
 set variable value               # Set config
-setcolor var r g b a            # Set color
+setcolor var r g b a            # Set color (esp.color.* or UI color)
+resettheme                      # Restore default UI theme
 var name value                  # Create variable
 get config_var var_name         # Retrieve value
 echo message                    # Print to console
@@ -369,4 +445,4 @@ $a+$b                          # Arithmetic
 
 ## Script File Location
 
-`scripts.txt` in the application directory.
+`scripts.esp` in the application directory.

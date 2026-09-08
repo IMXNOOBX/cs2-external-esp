@@ -1,6 +1,7 @@
 #include "Scripting.hpp"
 #include "core/logger/LogHelper.hpp"
 #include "core\engine\types\Types.hpp"
+#include "gui/frontend/theme/Theme.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -139,6 +140,10 @@ namespace scripting {
             }
         };
 
+        command_map["resettheme"] = [this](const std::vector<std::string>&) {
+            theme::ThemeManager::Get().RequestReset();
+        };
+
         command_map["get"] = [this](const std::vector<std::string>& args) {
             if (args.size() < 2) {
                 LOGF(WARNING, "get requires 2 arguments: variable destination");
@@ -235,10 +240,10 @@ namespace scripting {
     }
 
     void Scripting::Update() {
-        if (std::filesystem::exists("scripts.mcr")) {
-            auto current_write_time = std::filesystem::last_write_time("scripts.mcr");
+        if (std::filesystem::exists("scripts.esp")) {
+            auto current_write_time = std::filesystem::last_write_time("scripts.esp");
             if (current_write_time != last_load_time) {
-                LOGF(INFO, "scripts.mcr changed, reloading...");
+                LOGF(INFO, "scripts.esp changed, reloading...");
                 LoadScripts();
             }
         }
@@ -329,9 +334,9 @@ namespace scripting {
     }
 
     void Scripting::LoadScripts() {
-        std::ifstream f("scripts.mcr");
+        std::ifstream f("scripts.esp");
         if (!f.is_open()) {
-            LOGF(INFO, "No scripts.mcr found, skipping");
+            LOGF(INFO, "No scripts.esp found, skipping");
             return;
         }
 
@@ -480,8 +485,8 @@ namespace scripting {
             }
         }
 
-        if (std::filesystem::exists("scripts.mcr")) {
-            last_load_time = std::filesystem::last_write_time("scripts.mcr");
+        if (std::filesystem::exists("scripts.esp")) {
+            last_load_time = std::filesystem::last_write_time("scripts.esp");
         }
 
         // Warn about dangerous scripts
@@ -623,21 +628,27 @@ namespace scripting {
     }
 
     void Scripting::SetColorValue(const std::string& var_name, float r, float g, float b, float a) {
-        if (config_map.find(var_name) == config_map.end()) {
-            LOGF(WARNING, "Unknown config variable: {}", var_name);
+        // Priority to the config color values
+        if (config_map.find(var_name) != config_map.end()) {
+            auto& var = config_map[var_name];
+            if (std::holds_alternative<color_t*>(var)) {
+                auto* color = std::get<color_t*>(var);
+                color->r = std::clamp(r, 0.0f, 1.0f);
+                color->g = std::clamp(g, 0.0f, 1.0f);
+                color->b = std::clamp(b, 0.0f, 1.0f);
+                color->a = std::clamp(a, 0.0f, 1.0f);
+                LOGF(INFO, "Set color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
+            } else {
+                LOGF(WARNING, "{} is not a color variable", var_name);
+            }
             return;
         }
 
-        auto& var = config_map[var_name];
-        if (std::holds_alternative<color_t*>(var)) {
-            auto* color = std::get<color_t*>(var);
-            color->r = std::clamp(r, 0.0f, 1.0f);
-            color->g = std::clamp(g, 0.0f, 1.0f);
-            color->b = std::clamp(b, 0.0f, 1.0f);
-            color->a = std::clamp(a, 0.0f, 1.0f);
-            LOGF(INFO, "Set color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
+        // Fallback to imgui theme color modifier
+        if (theme::ThemeManager::Get().SetColor(var_name, r, g, b, a)) {
+            LOGF(INFO, "Set UI color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
         } else {
-            LOGF(WARNING, "{} is not a color variable", var_name);
+            LOGF(WARNING, "Unknown color variable: {}", var_name);
         }
     }
 

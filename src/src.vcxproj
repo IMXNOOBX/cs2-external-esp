@@ -241,6 +241,7 @@
     <ClInclude Include="core\memory\Memory.hpp" />
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
+    <ClInclude Include="core\scripting\Scripting.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
     <ClInclude Include="external\AsyncLogger\src\common.hpp" />
     <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp" />

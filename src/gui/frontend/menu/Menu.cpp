@@ -6,6 +6,9 @@
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
 #include "assets/fonts/Icons.h";
+#include <shellapi.h>
+
+#pragma comment(lib, "Shell32.lib")
 
 
 bool Menu::Init() {
@@ -302,14 +305,45 @@ void Menu::RenderImpl() {
 					ImGui::TextLinkOpenURL("Documentation", "https://github.com/IMXNOOBX/cs2-external-esp/blob/main/SCRIPTING.md");
 					ImGui::Separator();
 
-					ImGui::TextWrapped("Execute macros defined in scripts.mcr. Only macros prefixed with @ in the definition are shown here.");
+					ImGui::TextWrapped("Execute macros defined in scripts.esp. Only macros prefixed with @ in the definition are shown here.");
 					ImGui::Spacing();
 
 					if (ImGui::Button("Reload Scripts"))
 					{
 						scripting::Scripting::Get().LoadScripts();
 					}
-					ImGui::SetItemTooltip("Manually reload scripts.mcr\n(Auto-reloads when file is modified)");
+					ImGui::SetItemTooltip("Manually reload scripts.esp\n(Auto-reloads when file is modified)");
+
+					ImGui::SameLine();
+					if (ImGui::Button("Open Script"))
+					{
+						const auto script_path = std::filesystem::absolute("scripts.esp");
+						bool can_open_script = true;
+						if (!std::filesystem::exists(script_path))
+						{
+							std::ofstream script_file(script_path);
+							if (!script_file.is_open())
+							{
+								LOGF(WARNING, "Failed to create script file: {}", script_path.string());
+								can_open_script = false;
+							}
+						}
+
+						if (can_open_script)
+						{
+							const auto result = reinterpret_cast<intptr_t>(ShellExecuteA(
+								nullptr,
+								"open",
+								script_path.string().c_str(),
+								nullptr,
+								nullptr,
+								SW_SHOWNORMAL));
+
+							if (result <= 32)
+								LOGF(WARNING, "Failed to open script file: {}", script_path.string());
+						}
+					}
+					ImGui::SetItemTooltip("Open scripts.esp with the default text editor");
 
 					ImGui::Spacing();
 					ImGui::Separator();
@@ -325,7 +359,7 @@ void Menu::RenderImpl() {
 					
 					if (gui_macro_count == 0)
 					{
-						ImGui::TextWrapped("No GUI-accessible macros found. Create macros with @ prefix in scripts.mcr.");
+						ImGui::TextWrapped("No GUI-accessible macros found. Create macros with @ prefix in scripts.esp.");
 						ImGui::Spacing();
 						ImGui::TextWrapped("Example:\nmacro @my_macro {\n    set esp.box true\n    set esp.skeleton true\n}");
 					}
@@ -421,62 +455,6 @@ void Menu::RenderImpl() {
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{
-					ImGui::Text("UI Theme");
-					ImGui::Separator();
-
-					auto& theme_mgr = theme::ThemeManager::Get();
-					static std::vector<std::string> theme_names = theme_mgr.GetThemeNames();
-					static int selected_theme = 0;
-					
-					// Create combo items
-					std::string combo_preview = theme_names.empty() ? "No themes" : theme_mgr.GetCurrentThemeName();
-					
-					if (ImGui::BeginCombo("Theme", combo_preview.c_str())) {
-						for (size_t i = 0; i < theme_names.size(); i++) {
-							bool is_selected = (theme_mgr.GetCurrentThemeName() == theme_names[i]);
-							if (ImGui::Selectable(theme_names[i].c_str(), is_selected)) {
-								theme_mgr.ApplyTheme(theme_names[i]);
-							}
-							if (is_selected) {
-								ImGui::SetItemDefaultFocus();
-							}
-						}
-						ImGui::EndCombo();
-					}
-
-					if (ImGui::Button("Reload Themes")) {
-						theme_mgr.LoadThemesFromDirectory();
-						theme_names = theme_mgr.GetThemeNames();
-						LOGF(INFO, "Reloaded themes - found {} themes", theme_names.size());
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Export Current")) {
-						static char filename[64] = "my_theme";
-						ImGui::OpenPopup("Export Theme");
-						
-						if (ImGui::BeginPopup("Export Theme")) {
-							ImGui::Text("Enter theme name:");
-							ImGui::InputText("##filename", filename, sizeof(filename));
-							if (ImGui::Button("Save")) {
-								theme_mgr.SaveCurrentTheme(filename);
-								ImGui::CloseCurrentPopup();
-							}
-							ImGui::SameLine();
-							if (ImGui::Button("Cancel")) {
-								ImGui::CloseCurrentPopup();
-							}
-							ImGui::EndPopup();
-						}
-					}
-
-					// Show current theme info
-					const theme::ThemeInfo* info = theme_mgr.GetThemeInfo(theme_mgr.GetCurrentThemeName());
-					if (info) {
-						ImGui::Text("Author: %s", info->author.empty() ? "Unknown" : info->author.c_str());
-						if (!info->description.empty()) {
-							ImGui::TextWrapped("%s", info->description.c_str());
-						}
-					}
 
 					ImGui::Spacing();
 					ImGui::Text("Misc");
