@@ -76,9 +76,11 @@ void Menu::RenderImpl() {
 
 					if (is_active)
 					{
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						const ImGuiStyle& style = ImGui::GetStyle();
+						const ImVec4& active_tab_color = style.Colors[ImGuiCol_TabActive];
+						ImGui::PushStyleColor(ImGuiCol_Button, active_tab_color);
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, active_tab_color);
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, active_tab_color);
 					}
 
 					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 28)))
@@ -568,7 +570,7 @@ void Menu::SetupStyles() {
 
 	style.Colors[ImGuiCol_Tab] = ImVec4(0.08f, 0.08f, 0.09f, 0.83f);
 	style.Colors[ImGuiCol_TabHovered] = ImVec4(0.33f, 0.34f, 0.36f, 0.83f);
-	style.Colors[ImGuiCol_TabActive] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
+	style.Colors[ImGuiCol_TabActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 	style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
 	style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
 	style.Colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);

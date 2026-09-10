@@ -88,20 +88,20 @@ void Overlays::RenderWatermark() {
     d->AddRectFilled(
         rect_start,
         rect_end,
-        IM_COL32(0, 0, 0, 200),
+        ImGui::GetColorU32(ImGuiCol_WindowBg, 200.0f / 255.0f),
         8.f
     );
 
     d->AddRect(
         rect_start,
         rect_end,
-        IM_COL32(100, 100, 100, 200),
+        ImGui::GetColorU32(ImGuiCol_Border, 200.0f / 255.0f),
         8.f
     );
 
     d->AddText(
         pos,
-        IM_COL32(255, 255, 255, 255),
+        ImGui::GetColorU32(ImGuiCol_Text),
         watermark_string.data()
     );
 }
@@ -642,18 +642,19 @@ void Overlays::RenderBomb() {
     }
 
     auto d = ImGui::GetBackgroundDrawList();
+    const ImGuiStyle& style = ImGui::GetStyle();
 
     d->AddRectFilled(
         ImVec2(render_x, render_y),
         ImVec2(render_x + width, render_y + height),
-        IM_COL32(15, 15, 15, 220),
+        ImGui::GetColorU32(ImGuiCol_WindowBg, 220.0f / 255.0f),
         rounding
     );
 
     d->AddRect(
         ImVec2(render_x, render_y),
         ImVec2(render_x + width, render_y + height),
-        IM_COL32(45, 45, 45, 255),
+        ImGui::GetColorU32(ImGuiCol_Border),
         rounding
     );
 
@@ -661,13 +662,13 @@ void Overlays::RenderBomb() {
         this->font_icons,
         16.0f,
         ImVec2(render_x + padding, render_y + padding + (content_height - icon_size.y) * 0.5f),
-        IM_COL32(255, 60, 60, 255),
+        ImGui::GetColorU32(ImGuiCol_CheckMark),
         WeaponIcons::C4
     );
 
     d->AddText(
         ImVec2(render_x + padding + icon_size.x + element_gap, render_y + padding + (content_height - text_size.y) * 0.5f),
-        IM_COL32(240, 240, 240, 255),
+        ImGui::GetColorU32(ImGuiCol_Text),
         bomb_string.data()
     );
 
@@ -676,15 +677,19 @@ void Overlays::RenderBomb() {
         float time_left = bomb.is_planted ? bomb.time_left : 40.f;
         float progress = std::clamp(time_left / 40.f, 0.f, 1.f);
 
-        ImU32 bar_color = progress > 0.5f
-            ? IM_COL32((int)((1.f - progress) * 2.f * 255), 220, 50, 255)
-            : IM_COL32(220, (int)(progress * 2.f * 220), 50, 255);
+        const ImVec4& urgent_color = style.Colors[ImGuiCol_PlotHistogramHovered];
+        const ImVec4& safe_color = style.Colors[ImGuiCol_PlotHistogram];
+        ImU32 bar_color = ImGui::ColorConvertFloat4ToU32(ImVec4(
+            urgent_color.x + (safe_color.x - urgent_color.x) * progress,
+            urgent_color.y + (safe_color.y - urgent_color.y) * progress,
+            urgent_color.z + (safe_color.z - urgent_color.z) * progress,
+            urgent_color.w + (safe_color.w - urgent_color.w) * progress));
 
         ImVec2 bar_start(render_x + rounding, render_y + height - bar_height - 4.f);
         ImVec2 bar_end(render_x + width - rounding, render_y + height - bar_height - 4.f);
         float max_bar_width = bar_end.x - bar_start.x;
 
-        d->AddLine(bar_start, bar_end, IM_COL32(40, 40, 40, 255), bar_height);
+        d->AddLine(bar_start, bar_end, ImGui::GetColorU32(ImGuiCol_FrameBg), bar_height);
 
         if (progress > 0.f)
         {
