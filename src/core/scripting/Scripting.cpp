@@ -99,7 +99,10 @@ namespace scripting {
 
     void Scripting::RegisterCommands() {
         command_map["set"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) return;
+            if (args.size() < 2) {
+                LOGF(WARNING, "set requires 2 arguments: variable value");
+                return;
+            }
             const std::string& var_name = args[0];
             std::string value = args[1];
 
@@ -120,7 +123,12 @@ namespace scripting {
                 *std::get<int*>(var) = static_cast<int>(EvaluateArithmetic(value));
             } else if (std::holds_alternative<float*>(var)) {
                 *std::get<float*>(var) = EvaluateArithmetic(value);
+            } else {
+                LOGF(WARNING, "Config variable '{}' is a color; use setcolor instead", var_name);
+                return;
             }
+
+            LOGF(VERBOSE, "Set config variable '{}' to '{}'", var_name, value);
         };
 
         command_map["setcolor"] = [this](const std::vector<std::string>& args) {
@@ -500,6 +508,7 @@ namespace scripting {
 
         // Warn about dangerous scripts
         if (has_dangerous_scripts) {
+            MessageBeep(MB_ICONWARNING);
             LOGF(WARNING, "=======================================================");
             LOGF(WARNING, "WARNING: Script contains DANGEROUS commands!");
             LOGF(WARNING, "Commands detected: send, !read, or !write");
@@ -672,7 +681,7 @@ namespace scripting {
                 color->g = std::clamp(g, 0.0f, 1.0f);
                 color->b = std::clamp(b, 0.0f, 1.0f);
                 color->a = std::clamp(a, 0.0f, 1.0f);
-                LOGF(INFO, "Set color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
+                LOGF(VERBOSE, "Set color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
             } else {
                 LOGF(WARNING, "{} is not a color variable", var_name);
             }

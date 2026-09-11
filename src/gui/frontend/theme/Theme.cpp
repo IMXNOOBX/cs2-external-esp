@@ -68,7 +68,7 @@ namespace theme {
             default_colors[i] = style.Colors[i];
         }
 
-        LOGF(INFO, "UI theme ready ({} colors, script-controllable)", color_name_map.size());
+        LOGF(VERBOSE, "UI theme ready, loaded {} colors", color_name_map.size());
     }
 
     bool ThemeManager::SetColor(const std::string& name, float r, float g, float b, float a) {
@@ -82,10 +82,10 @@ namespace theme {
 
         auto it = color_name_map.find(lower_name);
         if (it == color_name_map.end()) {
-            return false; // unknown name; let the caller warn
+            return false; // unknown name, let the caller warn
         }
 
-        // Stage the change; FlushPending() applies it on the render thread.
+        // Stage the change, FlushPending() applies it on the render thread.
         {
             std::lock_guard<std::mutex> lock(style_mutex);
             pending_colors[it->second] = ImVec4(

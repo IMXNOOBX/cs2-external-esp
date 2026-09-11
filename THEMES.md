@@ -33,7 +33,7 @@ macro @my_theme {
 Run the theme from the GUI or you can even bind it to a key:
 
 ```text
-bind F1 @my_theme
+bind F1 my_theme
 ```
 
 Using `resettheme` at the start is recommended so the theme always starts from the default UI, and you don inherit the colors from a previous theme

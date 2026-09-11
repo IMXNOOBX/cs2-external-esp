@@ -7,16 +7,17 @@ Scripts are loaded from `scripts.esp` in the application directory. The file is 
 ## Quick start
 
 ```text
-macro @setup {
+# Setups basic esp features on click or when pressing F1
+macro @setup { 
     set esp.box true
     set esp.health true
     setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
 }
 
-bind F1 @setup
+bind F1 setup
 ```
 
-Macros beginning with `@` are shown in the GUI. Other macros are hidden helpers that can still be called by another macro or keybind.
+Macros beginning with `@` are shown in the GUI. The prefix is only part of the declaration: the stored macro name is `setup`, so use `setup` (without `@`) when running it or binding it to a key. Other macros are hidden helpers that can still be called by another macro or keybind.
 
 ## Syntax
 
@@ -60,7 +61,7 @@ Supported arithmetic operators are `+`, `-`, `*`, and `/`. Use `$name` to substi
 | `get` | Read a configuration value into a variable. | `get esp.box current` |
 | `echo` | Print a message to the console. | `echo Range: $range` |
 | `run` | Run another macro. | `run setup` |
-| `bind` | Bind a macro to a key. | `bind F1 @setup` |
+| `bind` | Bind a macro to a key; omit `@` from the macro name. | `bind F1 setup` |
 
 For UI themes and the full list of UI color names, see [`THEMES.md`](THEMES.md).
 
@@ -144,12 +145,12 @@ Open the **Macros** tab to:
 
 Use `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUM0-NUM9`, or `MOUSE1-MOUSE5`.
 
-Numeric virtual-key codes are also accepted, for example `bind 112 @setup` for F1.
+Numeric virtual-key codes are also accepted, for example `bind 112 setup` for F1.
 
 ## Troubleshooting
 
 - **Macro is missing from the GUI:** add `@` to its name, then reload the script.
-- **Keybind does not work:** check the key name and macro name; numeric key codes can be used as a fallback.
+- **Keybind does not work:** use the macro name without the `@` GUI marker (for example, `bind F1 setup` for `macro @setup`), then check the key name. Numeric key codes can be used as a fallback.
 - **Color does not change:** use RGBA values between `0.0` and `1.0` and verify the color variable name.
 
 For theme packs and color customization, see [`THEMES.md`](THEMES.md).
