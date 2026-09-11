@@ -30,14 +30,16 @@ macro @name {
 }
 ```
 
-An optional key after the closing brace stops a running macro:
+Use `hold KEY macro_name` to make a macro run while a key is physically held. The macro starts when the key is pressed and releasing it stops repeated `send` input. Define the macro before its `hold` declaration.
 
 ```text
-macro @hold_jump {
+# Pressing and holding SPACE runs this invisible macro.
+macro hold_jump {
     send SPACE 50 999999
-} SPACE
-```
+}
 
+hold SPACE hold_jump
+```
 Use `#` for comments. The older unbracketed macro format is still supported.
 
 ### Variables and expressions
@@ -62,6 +64,7 @@ Supported arithmetic operators are `+`, `-`, `*`, and `/`. Use `$name` to substi
 | `echo` | Print a message to the console. | `echo Range: $range` |
 | `run` | Run another macro. | `run setup` |
 | `bind` | Bind a macro to a key; omit `@` from the macro name. | `bind F1 setup` |
+| `hold` | Run a macro while a physical key is held; define the macro first. | `hold SPACE hold_jump` |
 
 For UI themes and the full list of UI color names, see [`THEMES.md`](THEMES.md).
 

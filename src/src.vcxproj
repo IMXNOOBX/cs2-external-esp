@@ -190,6 +190,7 @@
     <ClCompile Include="core\engine\classes\Globals.cpp" />
     <ClCompile Include="core\engine\classes\Player.cpp" />
     <ClCompile Include="core\scripting\Scripting.cpp" />
+    <ClCompile Include="core\scripting\hooks\PhysicalKeyboard.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
     <ClCompile Include="core\offsets\Dumper.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="core\scripting\Scripting.hpp" />
+    <ClInclude Include="core\scripting\hooks\PhysicalKeyboard.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
     <ClInclude Include="external\AsyncLogger\src\common.hpp" />
     <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp" />

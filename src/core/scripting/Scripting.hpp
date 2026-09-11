@@ -21,7 +21,7 @@ namespace scripting {
         std::vector<std::string> commands;
         bool gui_accessible = false;
         bool contains_dangerous_commands = false;
-        int stop_key = 0; // Key code to stop this macro (0 = no stop key)
+        int hold_key = 0; // Key code that keeps this macro running 
     };
 
     struct Keybind {
@@ -42,12 +42,7 @@ namespace scripting {
         void LoadScripts();
         const std::unordered_map<std::string, Macro>& GetMacros() const { return macros; }
         
-        ~Scripting() {
-            shutdown_thread = true;
-            if (command_thread.joinable()) {
-                command_thread.join();
-            }
-        }
+        ~Scripting();
 
     private:
         Scripting() = default;
@@ -55,6 +50,7 @@ namespace scripting {
         void RegisterConfigVars();
         void RegisterCommands();
         int ParseKeyCode(const std::string& key_str);
+        void RegisterHoldKey(const std::string& macro_name, std::string key_text);
         void CommandWorkerThread();
         void ExecuteCommandInternal(const std::string& command_line);
 
@@ -75,8 +71,8 @@ namespace scripting {
         std::queue<std::string> command_queue;
         std::mutex queue_mutex;
         std::atomic<bool> shutdown_thread{false};
-        std::atomic<bool> stop_current_macro{false};
-        std::string current_running_macro;
+        std::atomic<unsigned int> active_macro_count{0};
+        std::atomic<int> active_hold_key{0};
 
         void ProcessCommand(const std::string& cmd, const std::vector<std::string>& args);
         std::string EvaluateExpression(const std::string& expr);

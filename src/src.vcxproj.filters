@@ -123,9 +123,15 @@
     <ClCompile Include="core\scripting\Scripting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\scripting\hooks\PhysicalKeyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\logger\LogHelper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scripting\hooks\PhysicalKeyboard.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp">

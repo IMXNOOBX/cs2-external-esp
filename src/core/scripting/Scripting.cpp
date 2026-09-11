@@ -1,4 +1,5 @@
 #include "Scripting.hpp"
+#include "core/scripting/hooks/PhysicalKeyboard.hpp"
 #include "core/logger/LogHelper.hpp"
 #include "core\engine\types\Types.hpp"
 #include "core\engine\Engine.hpp"
@@ -22,6 +23,10 @@ namespace scripting {
             RegisterCommands();
             UpdateGlobalVariables();
             LoadScripts();
+
+            if (!input::InstallPhysicalKeyboardHook()) {
+                LOGF(WARNING, "Could not install physical keyboard hook; hold macros are unavailable");
+            }
         }
         catch (std::exception& e) {
             LOGF(FATAL, "Caught exception while initializing: {}", e.what());
@@ -30,6 +35,14 @@ namespace scripting {
         command_thread = std::thread(&Scripting::CommandWorkerThread, this);
         
         LOGF(INFO, "Scripting system initialized");
+    }
+
+    Scripting::~Scripting() {
+        shutdown_thread = true;
+        if (command_thread.joinable()) {
+            command_thread.join();
+        }
+        input::UninstallPhysicalKeyboardHook();
     }
 
     void Scripting::RegisterConfigVars() {
@@ -265,21 +278,24 @@ namespace scripting {
             }
         }
 
-        // Check for stop key down
-        if (!current_running_macro.empty() && macros.count(current_running_macro)) {
-            int stop_key = macros[current_running_macro].stop_key;
-            if (stop_key != 0 && (GetAsyncKeyState(stop_key) & 0x8000)) {
-                stop_current_macro = true;
-                LOGF(INFO, "Stop key pressed - terminating macro '{}'", current_running_macro);
-            }
-        }
-
         for (const auto& bind : keybinds) {
             bool is_pressed = (GetAsyncKeyState(bind.key) & 0x8000);
-            if (is_pressed && !key_states[bind.key]) {
+            if (is_pressed && !key_states[bind.key] && active_macro_count == 0) {
                 ExecuteCommand(bind.action);
             }
             key_states[bind.key] = is_pressed;
+        }
+
+        for (const auto& [name, macro] : macros) {
+            if (macro.hold_key == 0) {
+                continue;
+            }
+
+            bool is_pressed = input::IsPhysicalKeyDown(macro.hold_key);
+            if (is_pressed && !key_states[macro.hold_key] && active_macro_count == 0) {
+                ExecuteCommand(name);
+            }
+            key_states[macro.hold_key] = is_pressed;
         }
     }
 
@@ -331,20 +347,25 @@ namespace scripting {
         if (command_map.count(cmd)) {
             command_map[cmd](args);
         } else if (macros.count(cmd)) {
-            current_running_macro = cmd;
-            stop_current_macro = false;
-            
+            const Macro& macro = macros[cmd];
+            if (macro.hold_key != 0 && !input::IsPhysicalKeyDown(macro.hold_key)) {
+                LOGF(VERBOSE, "Ignoring hold macro '{}' because its trigger key is not pressed", cmd);
+                return;
+            }
+
+            active_macro_count.fetch_add(1);
+            active_hold_key = macro.hold_key;
             LOGF(INFO, "Executing macro: {}", cmd);
             
-            for (const auto& macro_cmd : macros[cmd].commands) {
-                if (stop_current_macro) {
-                    LOGF(INFO, "Macro '{}' stopped by user", cmd);
+            for (const auto& macro_cmd : macro.commands) {
+                if (macro.hold_key != 0 && !input::IsPhysicalKeyDown(macro.hold_key)) {
                     break;
                 }
                 ExecuteCommandInternal(macro_cmd);
             }
-            
-            current_running_macro = "";
+
+            active_hold_key = 0;
+            active_macro_count.fetch_sub(1);
         } else {
             LOGF(WARNING, "Unknown command or macro: {}", cmd);
         }
@@ -386,30 +407,26 @@ namespace scripting {
                 if (brace_depth == 0) {
                     in_braces = false;
                     
-                    // Check for stop key after closing brace
-                    size_t brace_pos = line.find("}");
-                    size_t stop_key_start = line.find_first_not_of(" \t", brace_pos + 1);
-                    if (stop_key_start != std::string::npos && !current_macro.empty()) {
-                        std::string stop_key_str = line.substr(stop_key_start);
-                        // Remove trailing semicolon or whitespace
-                        size_t end = stop_key_str.find_first_of(" \t;");
-                        if (end != std::string::npos) {
-                            stop_key_str = stop_key_str.substr(0, end);
-                        }
-                        
-                        int stop_key = ParseKeyCode(stop_key_str);
-                        if (stop_key != 0) {
-                            macros[current_macro].stop_key = stop_key;
-                            LOGF(INFO, "Macro '{}' has stop key: {} ({})", current_macro, stop_key_str, stop_key);
-                        }
-                    }
-                    
                     current_macro = "";
                 }
                 continue;
             }
 
-            if (line.find("bind ") == 0) {
+            if (line.find("hold ") == 0) {
+                current_macro = "";
+                in_braces = false;
+                std::stringstream ss(line.substr(5));
+                std::string key_text;
+                std::string macro_name;
+                if (ss >> key_text >> macro_name) {
+                    if (!macro_name.empty() && macro_name.front() == '@') {
+                        macro_name.erase(0, 1);
+                    }
+                    RegisterHoldKey(macro_name, key_text);
+                } else {
+                    LOGF(WARNING, "hold requires: key macro_name");
+                }
+            } else if (line.find("bind ") == 0) {
                 current_macro = "";
                 in_braces = false;
                 std::stringstream ss(line.substr(5));
@@ -438,37 +455,14 @@ namespace scripting {
                     current_macro = name;
                     macros[name].name = name;
                     macros[name].gui_accessible = gui_accessible;
-                    macros[name].stop_key = 0; // Default no stop key
                     
                     std::string rest;
                     std::getline(ss, rest);
                     
-                    // Check for stop key after closing brace
                     size_t brace_pos = rest.find("{");
                     if (brace_pos != std::string::npos) {
                         in_braces = true;
                         brace_depth++;
-                        
-                        // Look for stop key after }
-                        size_t close_brace = rest.find("}", brace_pos);
-                        if (close_brace != std::string::npos) {
-                            // Single-line macro with stop key
-                            size_t stop_key_start = rest.find_first_not_of(" \t", close_brace + 1);
-                            if (stop_key_start != std::string::npos) {
-                                std::string stop_key_str = rest.substr(stop_key_start);
-                                // Remove trailing semicolon or whitespace
-                                size_t end = stop_key_str.find_first_of(" \t;");
-                                if (end != std::string::npos) {
-                                    stop_key_str = stop_key_str.substr(0, end);
-                                }
-                                
-                                int stop_key = ParseKeyCode(stop_key_str);
-                                if (stop_key != 0) {
-                                    macros[name].stop_key = stop_key;
-                                    LOGF(INFO, "Macro '{}' has stop key: {} ({})", name, stop_key_str, stop_key);
-                                }
-                            }
-                        }
                     }
                 }
             } else if (in_braces && !current_macro.empty()) {
@@ -508,7 +502,7 @@ namespace scripting {
 
         // Warn about dangerous scripts
         if (has_dangerous_scripts) {
-            MessageBeep(MB_ICONWARNING);
+            MessageBeep(MB_ICONERROR);
             LOGF(WARNING, "=======================================================");
             LOGF(WARNING, "WARNING: Script contains DANGEROUS commands!");
             LOGF(WARNING, "Commands detected: send, !read, or !write");
@@ -816,6 +810,28 @@ namespace scripting {
         return 0; // Unknown
     }
 
+    void Scripting::RegisterHoldKey(const std::string& macro_name, std::string key_text) {
+        size_t end = key_text.find_first_of(" \t;");
+        if (end != std::string::npos) {
+            key_text = key_text.substr(0, end);
+        }
+
+        int hold_key = ParseKeyCode(key_text);
+        if (hold_key == 0) {
+            LOGF(WARNING, "Unknown hold key name: {}", key_text);
+            return;
+        }
+
+        auto macro = macros.find(macro_name);
+        if (macro == macros.end()) {
+            LOGF(WARNING, "Cannot register hold key for missing macro '{}'", macro_name);
+            return;
+        }
+
+        macro->second.hold_key = hold_key;
+        LOGF(INFO, "Bound hold key '{}' ({}) to action '{}'", key_text, hold_key, macro_name);
+    }
+
     bool Scripting::IsDangerousCommand(const std::string& cmd) {
         return (cmd == "send" || cmd == "!read" || cmd == "!write");
     }
@@ -830,6 +846,12 @@ namespace scripting {
         LOGF(INFO, "Sending input: key={}, duration={}ms, repeat={}", vk_code, duration_ms, repeat_count);
 
         for (int i = 0; i < repeat_count; i++) {
+            const int hold_key = active_hold_key.load();
+            if (hold_key != 0 && !input::IsPhysicalKeyDown(hold_key)) {
+                LOGF(INFO, "Hold key released - stopping repeated input");
+                break;
+            }
+
             // Key down
             keybd_event(static_cast<BYTE>(vk_code), 0, 0, 0);
             Sleep(duration_ms);

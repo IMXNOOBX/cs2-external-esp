@@ -388,7 +388,7 @@ void Menu::RenderImpl() {
 							if (ImGui::Button(button_label.c_str(), ImVec2(button_width, 30)))
 							{
 								scripting::Scripting::Get().ExecuteCommand(name);
-								LOGF(INFO, "Executed macro: @{}", name);
+								LOGF(VERBOSE, "Executed macro: @{}", name);
 							}
 
 							// tooltip with macro commands
@@ -437,7 +437,7 @@ void Menu::RenderImpl() {
 								if (it->second.gui_accessible)
 								{
 									scripting::Scripting::Get().ExecuteCommand(macro_name);
-									LOGF(INFO, "Executed macro: @{}", macro_name);
+									LOGF(VERBOSE, "Executed macro: @{}", macro_name);
 								}
 								else
 								{
