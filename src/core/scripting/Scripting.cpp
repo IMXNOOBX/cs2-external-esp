@@ -1,5 +1,5 @@
 #include "Scripting.hpp"
-#include "core/scripting/hooks/PhysicalKeyboard.hpp"
+#include "core/scripting/hooks/PhysicalInput.hpp"
 #include "core/logger/LogHelper.hpp"
 #include "core\engine\types\Types.hpp"
 #include "core\engine\Engine.hpp"
@@ -15,7 +15,6 @@
 #include <Windows.h>
 
 namespace scripting {
-
     void Scripting::Init() {
         try {
             InitKeyNameMap();
@@ -24,8 +23,8 @@ namespace scripting {
             UpdateGlobalVariables();
             LoadScripts();
 
-            if (!input::InstallPhysicalKeyboardHook()) {
-                LOGF(WARNING, "Could not install physical keyboard hook; hold macros are unavailable");
+            if (!input::InstallPhysicalInputHooks()) {
+                LOGF(WARNING, "Could not install physical input hooks; hold macros are unavailable");
             }
         }
         catch (std::exception& e) {
@@ -42,7 +41,7 @@ namespace scripting {
         if (command_thread.joinable()) {
             command_thread.join();
         }
-        input::UninstallPhysicalKeyboardHook();
+        input::UninstallPhysicalInputHooks();
     }
 
     void Scripting::RegisterConfigVars() {
@@ -291,7 +290,7 @@ namespace scripting {
                 continue;
             }
 
-            bool is_pressed = input::IsPhysicalKeyDown(macro.hold_key);
+            bool is_pressed = input::IsPhysicalInputDown(macro.hold_key);
             if (is_pressed && !key_states[macro.hold_key] && active_macro_count == 0) {
                 ExecuteCommand(name);
             }
@@ -348,7 +347,7 @@ namespace scripting {
             command_map[cmd](args);
         } else if (macros.count(cmd)) {
             const Macro& macro = macros[cmd];
-            if (macro.hold_key != 0 && !input::IsPhysicalKeyDown(macro.hold_key)) {
+            if (macro.hold_key != 0 && !input::IsPhysicalInputDown(macro.hold_key)) {
                 LOGF(VERBOSE, "Ignoring hold macro '{}' because its trigger key is not pressed", cmd);
                 return;
             }
@@ -358,7 +357,7 @@ namespace scripting {
             LOGF(INFO, "Executing macro: {}", cmd);
             
             for (const auto& macro_cmd : macro.commands) {
-                if (macro.hold_key != 0 && !input::IsPhysicalKeyDown(macro.hold_key)) {
+                if (macro.hold_key != 0 && !input::IsPhysicalInputDown(macro.hold_key)) {
                     break;
                 }
                 ExecuteCommandInternal(macro_cmd);
@@ -821,7 +820,6 @@ namespace scripting {
             LOGF(WARNING, "Unknown hold key name: {}", key_text);
             return;
         }
-
         auto macro = macros.find(macro_name);
         if (macro == macros.end()) {
             LOGF(WARNING, "Cannot register hold key for missing macro '{}'", macro_name);
@@ -847,16 +845,14 @@ namespace scripting {
 
         for (int i = 0; i < repeat_count; i++) {
             const int hold_key = active_hold_key.load();
-            if (hold_key != 0 && !input::IsPhysicalKeyDown(hold_key)) {
+            if (hold_key != 0 && !input::IsPhysicalInputDown(hold_key)) {
                 LOGF(INFO, "Hold key released - stopping repeated input");
                 break;
             }
 
-            // Key down
-            keybd_event(static_cast<BYTE>(vk_code), 0, 0, 0);
+            input::SendVirtualInput(vk_code, true);
             Sleep(duration_ms);
-            // Key up
-            keybd_event(static_cast<BYTE>(vk_code), 0, KEYEVENTF_KEYUP, 0);
+            input::SendVirtualInput(vk_code, false);
             
             if (i < repeat_count - 1) {
                 Sleep(10); // Small delay between repeats

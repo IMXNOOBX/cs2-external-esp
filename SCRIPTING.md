@@ -90,11 +90,12 @@ Global variables cannot be changed with `var`; their values are refreshed by the
 
 ### Keyboard input
 
-`send` is available in debug builds only and sends keyboard input:
+`send` is available in debug builds only and sends keyboard or mouse-button input:
 
 ```text
 send KEY [duration_ms] [repeat_count]
 send SPACE 50 10
+send MOUSE1 50 10
 ```
 
 ### Memory commands  (debug builds only)
