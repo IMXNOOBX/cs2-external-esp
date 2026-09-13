@@ -183,7 +183,8 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 		auto y_end = bounds.second.y;
 
 		float height = y_end - y_start;
-		float filled_height = height * (player.health / 100.0f);
+		float health_ratio = std::clamp(player.health / 100.0f, 0.0f, 1.0f);
+		float filled_height = height * health_ratio;
 
 		d->AddRectFilled(
 			ImVec2(x_start, y_end - filled_height),

@@ -90,16 +90,19 @@ bool Player::UpdatePawn() {
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
 
-	if (this->health > 255 || this->health < 0)
-		LOGF(FATAL,
-			"Health seems to have a random value (over 100 or under 0) with a value of ({}). Game has probably updated pawn structure",
-			this->health
-		);
-
 	UpdateObserverServices();
 
 	if (!alive) // No need to continue 
 		return true;
+
+	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
+	if (this->team < 2 || this->team > 3) {
+		LOGF(FATAL,
+			"Invalid player team ({}) for entity index({}) (under 2 or over 3); game structures may have changed",
+			this->team, index
+		);
+		return false;
+	}
 
 	this->pos = p->read<Vec3_t>(pawn + offsets::pawn::m_vOldOrigin);
 
@@ -107,8 +110,6 @@ bool Player::UpdatePawn() {
 		return false;
 
 	this->vel = p->read<Vec3_t>(pawn + offsets::pawn::m_vecAbsVelocity);
-
-	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
 	this->armor = p->read<int>(pawn + offsets::pawn::m_ArmorValue);
 	this->defusing = p->read<bool>(pawn + offsets::pawn::m_bIsDefusing);
