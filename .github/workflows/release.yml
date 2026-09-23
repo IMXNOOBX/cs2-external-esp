@@ -2,6 +2,15 @@ name: Build & Release
 
 on:
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: Release type
+        required: true
+        default: release
+        type: choice
+        options:
+          - release
+          - pre-release
 
 permissions:
   contents: write
@@ -92,5 +101,6 @@ jobs:
           name: Release (v${{ github.run_number }})
           body_path: CHANGELOG.md
           files: release.zip
+          prerelease: ${{ inputs.release_type == 'pre-release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
