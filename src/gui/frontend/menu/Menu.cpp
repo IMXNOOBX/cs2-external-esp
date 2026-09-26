@@ -99,9 +99,6 @@ void Menu::RenderImpl() {
 
 			ImGui::SameLine();
 
-
-			ImGui::BeginDisabled(!cfg::enabled);
-
 			ImGui::BeginChild("##tab_content", ImVec2(0, size.y), true);
 			{
 				if (active_tab == Tab::PLAYER)
@@ -349,10 +346,6 @@ void Menu::RenderImpl() {
 				}
 			}
 			ImGui::EndChild();
-
-			ImGui::EndDisabled();
-
-
 			ImGui::EndChild();
 		}
 

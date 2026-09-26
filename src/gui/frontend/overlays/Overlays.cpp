@@ -42,6 +42,7 @@ void Overlays::RenderImpl() {
         RenderWatermark();
 
         RenderNotice();
+        RenderEspStatus();
 
     #ifdef _DEBUG
         RenderDebugWindow();
@@ -693,4 +694,28 @@ void Overlays::RenderBomb() {
             d->AddLine(bar_start, bar_filled_end, bar_color, bar_height);
         }
     }
+}
+
+void Overlays::RenderEspStatus() {
+    if (cfg::enabled || !Renderer::IsOpen())
+        return;
+
+    auto d = ImGui::GetBackgroundDrawList();
+    auto menu_pos = Menu::GetPos();
+    auto menu_size = Menu::GetSize();
+
+    constexpr int margin = 10;
+    constexpr int padding = 10;
+    constexpr auto message = "Settings can be changed now and will take effect when ESP is enabled.";
+
+    auto max_width = menu_size.x - padding * 2;
+    auto size = ImGui::CalcTextSize(message, nullptr, false, max_width);
+    auto rect_start = ImVec2(menu_pos.x, menu_pos.y + menu_size.y + margin);
+    auto rect_end = ImVec2(menu_pos.x + menu_size.x, rect_start.y + padding * 2 + size.y);
+    auto pos = ImVec2(rect_start.x + padding, rect_start.y + padding);
+
+    d->AddRectFilled(rect_start, rect_end, IM_COL32(0, 0, 0, 200), 10.f);
+    d->AddRect(rect_start, rect_end, IM_COL32(100, 100, 100, 200), 10.f);
+    //d->AddText(pos - ImVec2(0, padding + padding * 0.5f), IM_COL32(255, 200, 0, 255), "ESP disabled");
+    d->AddText(this->font, this->font->LegacySize, pos, IM_COL32(255, 255, 255, 255), message, nullptr, max_width);
 }
