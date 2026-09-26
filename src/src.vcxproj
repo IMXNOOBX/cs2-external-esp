@@ -189,8 +189,11 @@
     <ClCompile Include="core\engine\classes\Game.cpp" />
     <ClCompile Include="core\engine\classes\Globals.cpp" />
     <ClCompile Include="core\engine\classes\Player.cpp" />
+    <ClCompile Include="core\scripting\Scripting.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
+    <ClCompile Include="core\vischeck\VisCheck.cpp" />
+    <ClCompile Include="core\vischeck\VisCheckManager.cpp" />
     <ClCompile Include="core\offsets\Dumper.cpp" />
     <ClCompile Include="external\AsyncLogger\src\LogCapture.cpp" />
     <ClCompile Include="external\AsyncLogger\src\Logger.cpp" />
@@ -208,6 +211,7 @@
     <ClCompile Include="gui\frontend\esp\Esp.cpp" />
     <ClCompile Include="gui\frontend\menu\Menu.cpp" />
     <ClCompile Include="gui\frontend\overlays\Overlays.cpp" />
+    <ClCompile Include="gui\frontend\theme\Theme.cpp" />
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
@@ -237,6 +241,9 @@
     <ClInclude Include="core\engine\classes\Player.hpp" />
     <ClInclude Include="core\logger\LogHelper.hpp" />
     <ClInclude Include="core\memory\Memory.hpp" />
+    <ClInclude Include="core\vischeck\Math.hpp" />
+    <ClInclude Include="core\vischeck\VisCheck.h" />
+    <ClInclude Include="core\vischeck\VisCheckManager.h" />
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
@@ -306,6 +313,7 @@
     <ClInclude Include="gui\frontend\esp\Esp.hpp" />
     <ClInclude Include="gui\frontend\menu\Menu.hpp" />
     <ClInclude Include="gui\frontend\overlays\Overlays.hpp" />
+    <ClInclude Include="gui\frontend\theme\Theme.hpp" />
     <ClInclude Include="gui\renderer\Renderer.hpp" />
     <ClInclude Include="gui\renderer\window\Window.hpp" />
     <ClInclude Include="updater\http\HttpHelper.hpp" />

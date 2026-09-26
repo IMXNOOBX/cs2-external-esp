@@ -2,6 +2,7 @@
 
 #include "core/engine/Engine.hpp" // Circular dep
 #include "core/offsets/Dumper.hpp"
+#include "core/vischeck/VisCheckManager.h"
 
 bool Cache::Refresh() {
     return Get().RefreshImpl();
@@ -45,6 +46,16 @@ bool Cache::RefreshImpl() {
     game.UpdateEntityList();
     globals.Update();
     bomb.Update();
+
+    {
+        auto current_map = globals.map_name;
+        static std::string last_map;
+        std::string map_str(current_map, current_map + strnlen(current_map, sizeof(current_map)));
+        if (map_str != last_map && !map_str.empty()) {
+            last_map = map_str;
+            VisCheckManager::OnMapChanged(current_map);
+        }
+    }
 
     std::vector<Player> scan;
     scan.reserve(globals.max_clients);

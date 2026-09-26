@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Current.hpp"
+#include <filesystem>
 
 using json = nlohmann::json;
 
@@ -14,6 +15,9 @@ public:
 
     static bool Read();
     static bool Write();
+    static bool ReadProfile(const std::string& name);
+    static bool WriteProfile(const std::string& name);
+    static std::vector<std::string> ListProfiles();
 private:
     Config() {};
 
@@ -25,6 +29,8 @@ private:
 
     bool ReadImpl();
     bool WriteImpl();
+    bool ReadImplFile(const std::string& filename);
+    bool WriteImplFile(const std::string& filename);
 
     static color_t JsonToColor(const json& parent, const std::string& key, const color_t& def);
     static void ColorToJson(json& parent, const std::string& key, const color_t& color);

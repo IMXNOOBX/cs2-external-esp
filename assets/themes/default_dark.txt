@@ -1,0 +1,99 @@
+# Default Dark Theme
+# The default theme that ships with CS2 External ESP
+
+name Default Dark
+author IMXNOOBX
+description The original dark theme
+
+# Text
+text 1.0 1.0 1.0 1.0
+textdisabled 0.5 0.5 0.5 1.0
+textselectedbg 0.26 0.59 0.98 0.35
+
+# Window
+windowbg 0.0392 0.0392 0.0392 1.0
+childbg 0.0392 0.0392 0.0392 1.0
+popupbg 0.13 0.14 0.15 1.0
+
+# Border
+border 0.196 0.196 0.196 1.0
+bordershadow 0.0 0.0 0.0 0.0
+
+# Frame
+framebg 0.294 0.294 0.294 1.0
+framebghovered 0.38 0.38 0.38 1.0
+framebgactive 0.67 0.67 0.67 0.39
+
+# Title
+titlebg 0.08 0.08 0.09 1.0
+titlebgactive 0.08 0.08 0.09 1.0
+titlebgcollapsed 0.0 0.0 0.0 0.51
+
+# Menu Bar
+menubarbg 0.14 0.14 0.14 1.0
+
+# Scrollbar
+scrollbarbg 0.02 0.02 0.02 0.53
+scrollbargrab 0.31 0.31 0.31 1.0
+scrollbargrabhovered 0.41 0.41 0.41 1.0
+scrollbargrabactive 0.51 0.51 0.51 1.0
+
+# Checkmark & Slider
+checkmark 0.11 0.64 0.92 1.0
+slidergrab 0.11 0.64 0.92 1.0
+slidergrabactive 0.08 0.50 0.72 1.0
+
+# Button
+button 0.25 0.25 0.25 1.0
+buttonhovered 0.38 0.38 0.38 1.0
+buttonactive 0.67 0.67 0.67 0.39
+
+# Header
+header 0.22 0.22 0.22 1.0
+headerhovered 0.25 0.25 0.25 1.0
+headeractive 0.67 0.67 0.67 0.39
+
+# Separator
+separator 0.196 0.196 0.196 1.0
+separatorhovered 0.41 0.42 0.44 1.0
+separatoractive 0.26 0.59 0.98 0.95
+
+# Resize Grip
+resizegrip 0.0 0.0 0.0 0.0
+resizegriphovered 0.29 0.30 0.31 0.67
+resizegripactive 0.29 0.30 0.31 0.95
+
+# Tabs
+tab 0.08 0.08 0.09 0.83
+tabhovered 0.33 0.34 0.36 0.83
+tabactive 0.23 0.23 0.24 1.0
+tabunfocused 0.08 0.08 0.09 1.0
+tabunfocusedactive 0.13 0.14 0.15 1.0
+
+# Docking
+dockingpreview 0.26 0.59 0.98 0.7
+dockingemptybg 0.2 0.2 0.2 1.0
+
+# Plots
+plotlines 0.61 0.61 0.61 1.0
+plotlineshovered 1.0 0.43 0.35 1.0
+plothistogram 0.90 0.70 0.0 1.0
+plothistogramhovered 1.0 0.60 0.0 1.0
+
+# Tables
+tableheaderbg 0.19 0.19 0.2 1.0
+tablebordersstrong 0.31 0.31 0.35 1.0
+tableborderslight 0.23 0.23 0.25 1.0
+tablerowbg 0.0 0.0 0.0 0.0
+tablerowbgalt 1.0 1.0 1.0 0.06
+
+# Drag & Drop
+dragdroptarget 0.11 0.64 0.92 1.0
+
+# Navigation
+navhighlight 0.26 0.59 0.98 1.0
+navwindowinghighlight 1.0 1.0 1.0 0.7
+navwindowingdimbg 0.8 0.8 0.8 0.2
+
+# Modal
+modalwindowdimbg 0.8 0.8 0.8 0.35

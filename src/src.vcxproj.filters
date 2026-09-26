@@ -78,6 +78,9 @@
     <ClCompile Include="gui\frontend\menu\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gui\frontend\theme\Theme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="core\engine\classes\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -1,0 +1,96 @@
+name Matrix
+author 3 cats
+description Green terminal look
+
+# Text Colors
+text 0.0 1.0 0.0 1.0
+textdisabled 0.0 0.4 0.0 1.0
+textselectedbg 0.0 1.0 0.0 0.35
+
+# Window Colors
+windowbg 0.0 0.0 0.0 1.0
+childbg 0.0 0.0 0.0 1.0
+popupbg 0.0 0.05 0.0 1.0
+
+# Border Colors
+border 0.0 0.5 0.0 1.0
+bordershadow 0.0 0.0 0.0 0.0
+
+# Frame Colors
+framebg 0.0 0.15 0.0 1.0
+framebghovered 0.0 0.25 0.0 1.0
+framebgactive 0.0 0.35 0.0 0.8
+
+# Title Bar
+titlebg 0.0 0.1 0.0 1.0
+titlebgactive 0.0 0.2 0.0 1.0
+titlebgcollapsed 0.0 0.0 0.0 0.51
+
+# Menu Bar
+menubarbg 0.0 0.1 0.0 1.0
+
+# Scrollbar
+scrollbarbg 0.0 0.05 0.0 0.53
+scrollbargrab 0.0 0.5 0.0 1.0
+scrollbargrabhovered 0.0 0.7 0.0 1.0
+scrollbargrabactive 0.0 0.9 0.0 1.0
+
+# Checkmark & Slider
+checkmark 0.0 1.0 0.0 1.0
+slidergrab 0.0 1.0 0.0 1.0
+slidergrabactive 0.0 0.8 0.0 1.0
+
+# Button
+button 0.0 0.3 0.0 1.0
+buttonhovered 0.0 0.5 0.0 1.0
+buttonactive 0.0 0.7 0.0 0.8
+
+# Header
+header 0.0 0.2 0.0 1.0
+headerhovered 0.0 0.3 0.0 1.0
+headeractive 0.0 0.4 0.0 1.0
+
+# Separator
+separator 0.0 0.5 0.0 1.0
+separatorhovered 0.0 0.7 0.0 1.0
+separatoractive 0.0 1.0 0.0 0.95
+
+# Resize Grip
+resizegrip 0.0 0.5 0.0 0.2
+resizegriphovered 0.0 0.7 0.0 0.67
+resizegripactive 0.0 1.0 0.0 0.95
+
+# Tabs
+tab 0.0 0.1 0.0 0.83
+tabhovered 0.0 0.4 0.0 0.83
+tabactive 0.0 0.3 0.0 1.0
+tabunfocused 0.0 0.1 0.0 1.0
+tabunfocusedactive 0.0 0.15 0.0 1.0
+
+# Docking
+dockingpreview 0.0 1.0 0.0 0.7
+dockingemptybg 0.0 0.05 0.0 1.0
+
+# Plots
+plotlines 0.0 0.8 0.0 1.0
+plotlineshovered 0.0 1.0 0.0 1.0
+plothistogram 0.0 0.7 0.0 1.0
+plothistogramhovered 0.0 0.9 0.0 1.0
+
+# Tables
+tableheaderbg 0.0 0.2 0.0 1.0
+tablebordersstrong 0.0 0.5 0.0 1.0
+tableborderslight 0.0 0.3 0.0 0.5
+tablerowbg 0.0 0.0 0.0 0.0
+tablerowbgalt 0.0 1.0 0.0 0.06
+
+# Drag & Drop
+dragdroptarget 0.0 1.0 0.0 1.0
+
+# Navigation
+navhighlight 0.0 1.0 0.0 1.0
+navwindowinghighlight 0.0 1.0 0.0 0.7
+navwindowingdimbg 0.0 0.3 0.0 0.2
+
+# Modal
+modalwindowdimbg 0.0 0.2 0.0 0.35
