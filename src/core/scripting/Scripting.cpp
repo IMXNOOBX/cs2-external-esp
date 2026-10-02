@@ -844,6 +844,10 @@ namespace scripting {
         LOGF(INFO, "Sending input: key={}, duration={}ms, repeat={}", vk_code, duration_ms, repeat_count);
 
         for (int i = 0; i < repeat_count; i++) {
+            if (shutdown_thread || !Renderer::IsFocused()) {
+                break;
+            }
+
             const int hold_key = active_hold_key.load();
             if (hold_key != 0 && !input::IsPhysicalInputDown(hold_key)) {
                 LOGF(INFO, "Hold key released - stopping repeated input");

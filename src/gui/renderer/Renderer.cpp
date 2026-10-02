@@ -25,7 +25,7 @@ bool Renderer::IsOpen() {
 }
 
 bool Renderer::IsFocused() {
-    return GetInstance().isFocused;
+    return GetInstance().isFocused.load();
 }
 
 bool Renderer::InitImpl() {
