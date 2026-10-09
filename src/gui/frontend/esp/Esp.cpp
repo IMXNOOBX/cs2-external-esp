@@ -87,8 +87,7 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-		if (cfg::esp::bomb)
-			RenderBombBox(bomb);
+	RenderBombBox(bomb);
 	ImGui::PopFont();
 }
 
@@ -384,6 +383,10 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 }
 
 void Esp::RenderBombBox(Bomb bomb) {
+	if (!cfg::esp::bomb)
+		return;
+
+
 	if (!bomb.is_planted)
 		return;
 
@@ -428,9 +431,26 @@ void Esp::RenderBombBox(Bomb bomb) {
 		int i = edge[0];
 		int j = edge[1];
 		if (visible[i] && visible[j]) {
-			this->d->AddLine(projected[i], projected[j], ImColor(color), 1.0f);
+			d->AddLine(projected[i], projected[j], ImColor(color), 1.0f);
 		}
 	}
+
+	Vec2_t screen;
+	if (!matrix.wts(bomb.pos + Vec3_t(0, 0, 8), io.DisplaySize, screen))
+		return;
+
+	ImGui::PushFont(this->font_merged_icons);
+	d->AddText(
+		this->font_merged_icons,
+		16.0f,
+		Vec2_t(
+			screen.x - 8, // lazy
+			screen.y
+		),
+		ImColor(255, 255, 255),
+		WeaponIcons::C4
+	);
+	ImGui::PopFont();
 }
 
 void Esp::RenderCrosshair(Player local)
