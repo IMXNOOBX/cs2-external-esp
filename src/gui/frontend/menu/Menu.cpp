@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include "core/engine/cache/Cache.hpp"
+#include "radar/Radar.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
 #include "assets/fonts/Icons.h";
@@ -288,6 +289,17 @@ void Menu::RenderImpl() {
 						ImGui::Checkbox("Disable Rotation", &cfg::world::radar::no_rotate);
 					}
 					ImGui::EndDisabled();
+					if (ImGui::Checkbox("Browser radar", &cfg::world::radar::external)) {
+						if (cfg::world::radar::external)
+							cfg::world::radar::external = Radar::Init();
+						else
+							Radar::Destroy();
+					}
+					if (cfg::world::radar::external) {
+						ImGui::Text("http://127.0.0.1:27080");
+						if (ImGui::Button("Copy radar URL"))
+							ImGui::SetClipboardText("http://127.0.0.1:27080");
+					}
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{

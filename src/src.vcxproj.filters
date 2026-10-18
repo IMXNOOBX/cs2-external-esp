@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="radar\Radar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="core\logger\LogHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -126,6 +129,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="radar\Radar.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="radar\Page.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp">

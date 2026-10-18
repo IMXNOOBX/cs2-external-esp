@@ -109,6 +109,7 @@ bool Config::ReadImpl() {
 
 		// radar
 		cfg::world::radar::enabled = data["world"]["radar"].value("enabled", true);
+		cfg::world::radar::external = data["world"]["radar"].value("external", false);
 		cfg::world::radar::no_rotate = data["world"]["radar"].value("no_rotate", false);
 		cfg::world::radar::range = data["world"]["radar"].value("range", 2000.f);
 		cfg::world::radar::pos = JsonToVec2(data["world"]["radar"], "pos", { 10.f, 10.f });
@@ -187,6 +188,7 @@ bool Config::WriteImpl() {
 
 	// radar
 	data["world"]["radar"]["enabled"] = cfg::world::radar::enabled;
+	data["world"]["radar"]["external"] = cfg::world::radar::external;
 	data["world"]["radar"]["no_rotate"] = cfg::world::radar::no_rotate;
 	data["world"]["radar"]["range"] = cfg::world::radar::range;
 	Vec2ToJson(data["world"]["radar"], "pos", cfg::world::radar::pos);
