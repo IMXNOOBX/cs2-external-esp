@@ -2,6 +2,7 @@
 #include "Page.hpp"
 #include "core/engine/cache/Cache.hpp"
 #include "assets/fonts/WeaponIcons.h"
+#include <sstream>
 
 using json = nlohmann::json;
 
@@ -13,6 +14,201 @@ bool Radar::Init() {
 
 void Radar::Destroy() {
     GetInstance().DestroyImpl();
+}
+
+bool Radar::Share() {
+    auto& radar = GetInstance();
+    if (IsSharing())
+        return true;
+    StopSharing();
+    auto fail = [&](const char* message) {
+        std::lock_guard lock(radar.sharingMutex);
+        radar.sharing.error = message;
+        return false;
+    };
+    if (!radar.running)
+        return fail("Enable Browser radar before sharing.");
+
+    std::array<wchar_t, 32768> module{};
+    DWORD length = GetModuleFileNameW(nullptr, module.data(), static_cast<DWORD>(module.size()));
+    if (!length || length == module.size())
+        return fail("Could not locate the application folder.");
+    auto directory = std::filesystem::path(module.data()).parent_path();
+    auto script = directory / L"cloudflare" / L"share-radar.ps1";
+    std::error_code error;
+    if (!std::filesystem::is_regular_file(script, error)) {
+        return fail("Sharing script missing from the cloudflare folder. Rebuild the project.");
+    }
+
+    std::array<wchar_t, MAX_PATH> system{};
+    length = GetSystemDirectoryW(system.data(), static_cast<UINT>(system.size()));
+    if (!length || length >= system.size())
+        return fail("Could not locate Windows PowerShell.");
+    auto powershell = std::filesystem::path(system.data()) / L"WindowsPowerShell" / L"v1.0" / L"powershell.exe";
+    std::wstring command = L"\"" + powershell.wstring() +
+        L"\" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"" + script.wstring() + L"\"";
+
+    HANDLE job = CreateJobObjectW(nullptr, nullptr);
+    if (!job)
+        return fail("Could not prepare radar sharing.");
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
+    // Keep the tunnel and its launcher in the same job.
+    limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    if (!SetInformationJobObject(job, JobObjectExtendedLimitInformation, &limits, sizeof(limits))) {
+        CloseHandle(job);
+        return fail("Could not prepare radar sharing.");
+    }
+
+    SECURITY_ATTRIBUTES security{ sizeof(security), nullptr, TRUE };
+    HANDLE output = nullptr, writer = nullptr;
+    HANDLE input = CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+        &security, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (!CreatePipe(&output, &writer, &security, 0) ||
+        !SetHandleInformation(output, HANDLE_FLAG_INHERIT, 0) || input == INVALID_HANDLE_VALUE) {
+        if (output) CloseHandle(output);
+        if (writer) CloseHandle(writer);
+        if (input != INVALID_HANDLE_VALUE) CloseHandle(input);
+        CloseHandle(job);
+        return fail("Could not capture sharing output.");
+    }
+    STARTUPINFOW startup{};
+    startup.cb = sizeof(startup);
+    startup.dwFlags = STARTF_USESTDHANDLES;
+    startup.hStdInput = input;
+    startup.hStdOutput = startup.hStdError = writer;
+    PROCESS_INFORMATION process{};
+    bool created = CreateProcessW(powershell.c_str(), command.data(), nullptr, nullptr, TRUE,
+        CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, directory.c_str(), &startup, &process);
+    CloseHandle(writer);
+    CloseHandle(input);
+    if (!created) {
+        CloseHandle(output);
+        CloseHandle(job);
+        return fail("Could not start Windows PowerShell.");
+    }
+    if (!AssignProcessToJobObject(job, process.hProcess) || ResumeThread(process.hThread) == static_cast<DWORD>(-1)) {
+        TerminateProcess(process.hProcess, 1);
+        CloseHandle(process.hThread);
+        CloseHandle(process.hProcess);
+        CloseHandle(output);
+        CloseHandle(job);
+        return fail("Could not start radar sharing.");
+    }
+    CloseHandle(process.hThread);
+    radar.sharingProcess = process.hProcess;
+    radar.sharingJob = job;
+    radar.sharingOutput = output;
+    {
+        std::lock_guard lock(radar.sharingMutex);
+        radar.sharing = { true, "Starting sharing...", {}, {} };
+    }
+    try {
+        radar.sharingThread = std::thread(&Radar::ReadSharingOutput, &radar);
+    } catch (const std::exception&) {
+        StopSharing();
+        return fail("Could not start the sharing monitor.");
+    }
+    return true;
+}
+
+bool Radar::IsSharing() {
+    return GetSharingState().active;
+}
+
+Radar::SharingState Radar::GetSharingState() {
+    auto& radar = GetInstance();
+    if (radar.sharingProcess && WaitForSingleObject(radar.sharingProcess, 0) != WAIT_TIMEOUT)
+        radar.CloseSharing(false);
+    std::lock_guard lock(radar.sharingMutex);
+    return radar.sharing;
+}
+
+void Radar::StopSharing() {
+    GetInstance().CloseSharing(true);
+}
+
+void Radar::CloseSharing(bool clear) {
+    if (sharingJob)
+        CloseHandle(sharingJob);
+    if (sharingThread.joinable())
+        sharingThread.join();
+    if (sharingOutput)
+        CloseHandle(sharingOutput);
+    if (sharingProcess)
+        CloseHandle(sharingProcess);
+    sharingJob = sharingProcess = sharingOutput = nullptr;
+    std::lock_guard lock(sharingMutex);
+    if (clear)
+        sharing = {};
+}
+
+void Radar::ReadSharingOutput() {
+    std::string pending, url, lastError;
+    bool connected = false, startupBanner = false;
+    auto line = [&](std::string text) {
+        if (!text.empty() && text.back() == '\r') text.pop_back();
+        auto log = json::parse(text, nullptr, false);
+        if (log.is_object() && log.contains("message") && log["message"].is_string())
+            text = log["message"].get<std::string>();
+        if (text.starts_with("ERROR: ")) {
+            auto message = text.substr(7, 500);
+            if (lastError.empty() || !message.starts_with("Cloudflare tunnel exited"))
+                lastError = message;
+        } else if (text.find(" ERR ") != std::string::npos ||
+            (log.is_object() && log.contains("level") && log["level"] == "error")) {
+            lastError = text.substr(0, 500);
+        }
+
+        if (log.is_object() && log.contains("level") && log["level"] == "info") {
+            std::istringstream lines(text);
+            std::string part;
+            while (std::getline(lines, part)) {
+                if (part.find("Your quick Tunnel has been created!") != std::string::npos) {
+                    startupBanner = true;
+                    continue;
+                }
+                if (!startupBanner || !url.empty()) continue;
+                auto first = part.find_first_not_of(" \t\r|");
+                if (first == std::string::npos) continue;
+                startupBanner = false;
+                auto candidate = part.substr(first, part.find_last_not_of(" \t\r|") - first + 1);
+                const std::string prefix = "https://", suffix = ".trycloudflare.com";
+                if (!candidate.starts_with(prefix) || !candidate.ends_with(suffix)) continue;
+                auto label = candidate.substr(prefix.size(), candidate.size() - prefix.size() - suffix.size());
+                if (!label.empty() && label.size() <= 63 && label.front() != '-' && label.back() != '-' &&
+                    label.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789-") == std::string::npos)
+                    url = candidate;
+            }
+            if (text == "Registered tunnel connection")
+                connected = true;
+        }
+        std::lock_guard lock(sharingMutex);
+        if (text == "Downloading cloudflared..." || text == "Verifying download..." || text == "Connecting to Cloudflare...")
+            sharing.status = text;
+        if (connected && !url.empty()) {
+            sharing.url = url;
+            sharing.status = "Sharing radar";
+        } else if (connected) {
+            sharing.error = "Cloudflare connected, but its share link could not be read. Stop sharing and try again.";
+        }
+    };
+    char buffer[2048];
+    DWORD count = 0;
+    while (ReadFile(sharingOutput, buffer, sizeof(buffer), &count, nullptr) && count) {
+        pending.append(buffer, count);
+        size_t end;
+        while ((end = pending.find('\n')) != std::string::npos) {
+            line(pending.substr(0, end));
+            pending.erase(0, end + 1);
+        }
+        if (pending.size() > 16384) pending.clear();
+    }
+    if (!pending.empty()) line(pending);
+    std::lock_guard lock(sharingMutex);
+    sharing.active = false;
+    sharing.url.clear();
+    sharing.status.clear();
+    sharing.error = lastError.empty() ? "Sharing stopped. Check your connection and try again." : lastError;
 }
 
 Radar::~Radar() {
@@ -63,6 +259,7 @@ bool Radar::InitImpl() {
 }
 
 void Radar::DestroyImpl() {
+    StopSharing();
     if (!running.exchange(false))
         return;
 

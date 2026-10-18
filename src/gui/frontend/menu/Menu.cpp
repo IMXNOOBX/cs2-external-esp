@@ -299,6 +299,39 @@ void Menu::RenderImpl() {
 						ImGui::Text("http://127.0.0.1:27080");
 						if (ImGui::Button("Copy radar URL"))
 							ImGui::SetClipboardText("http://127.0.0.1:27080");
+						ImGui::SameLine();
+						auto sharing = Radar::GetSharingState();
+						if (sharing.active) {
+							if (ImGui::Button("Stop sharing")) {
+								Radar::StopSharing();
+								sharing = {};
+							}
+						} else if (ImGui::Button("Share radar")) {
+							Radar::Share();
+							sharing = Radar::GetSharingState();
+						}
+						ImGui::SetItemTooltip("Anyone with the share link can view the radar. Downloads cloudflared on first use.");
+						if (!sharing.url.empty()) {
+							ImGui::TextWrapped("%s", sharing.url.c_str());
+							if (ImGui::Button("Copy share link"))
+								ImGui::SetClipboardText(sharing.url.c_str());
+							ImGui::SameLine();
+							if (ImGui::Button("Regenerate link")) {
+								Radar::StopSharing();
+								Radar::Share();
+								sharing = Radar::GetSharingState();
+							}
+							ImGui::SetItemTooltip("Starts a new tunnel. The current link will stop working.");
+							ImGui::SameLine();
+							ImGui::AlignTextToFramePadding();
+							ImGui::TextDisabled("(?)");
+							ImGui::SetItemTooltip("Cloudflare links may take a moment to become available.");
+						}
+						if (sharing.active && sharing.url.empty() && sharing.error.empty()) {
+							ImGui::ProgressBar(-static_cast<float>(ImGui::GetTime()), ImVec2(-1, 0), sharing.status.c_str());
+						}
+						if (!sharing.error.empty())
+							ImGui::TextWrapped("%s", sharing.error.c_str());
 					}
 				}
 				else if (active_tab == Tab::SETTINGS)

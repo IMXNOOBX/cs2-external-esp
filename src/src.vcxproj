@@ -316,6 +316,9 @@
     <ClInclude Include="core\engine\classes\Weapon.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="CopyRadarSharingScript" AfterTargets="Build">
+    <Copy SourceFiles="$(ProjectDir)..\scripts\share-radar.ps1" DestinationFolder="$(TargetDir)cloudflare" SkipUnchangedFiles="true" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
