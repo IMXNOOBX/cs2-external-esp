@@ -5,7 +5,7 @@ inline constexpr char radar_page[] = R"HTML(<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CS2 Radar</title>
+<title>cs2-external-esp radar</title>
 <style>
     @font-face { font-family: RadarWeapons; src: url('/weapon-font.ttf') format('truetype'); }
     :root { color-scheme: dark; }
@@ -24,7 +24,7 @@ inline constexpr char radar_page[] = R"HTML(<!doctype html>
 </style>
 </head>
 <body>
-<header><h1>CS2 Radar</h1><span id="map">No map</span><span id="status">Connecting...</span></header>
+<header><h1>cs2-external-esp radar</h1><span id="map">No map</span><span id="status">Connecting...</span></header>
 <nav>
     <label><input id="names" type="checkbox" checked> Names</label>
     <label><input id="health" type="checkbox" checked> Health</label>
