@@ -1,3 +1,5 @@
+// Most of this file was written with AI assistance
+
 #pragma once
 
 class Radar {

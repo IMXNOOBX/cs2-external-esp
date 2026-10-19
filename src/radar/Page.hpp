@@ -1,3 +1,5 @@
+// Most of this file was written with AI assistance
+
 #pragma once
 
 inline constexpr char radar_page[] = R"HTML(<!doctype html>
