@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 
 #include "core/engine/cache/Cache.hpp"
+#include "radar/Radar.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
 #include "assets/fonts/Icons.h";
@@ -288,6 +289,51 @@ void Menu::RenderImpl() {
 						ImGui::Checkbox("Disable Rotation", &cfg::world::radar::no_rotate);
 					}
 					ImGui::EndDisabled();
+					if (ImGui::Checkbox("Browser radar", &cfg::world::radar::external)) {
+						if (cfg::world::radar::external)
+							cfg::world::radar::external = Radar::Init();
+						else
+							Radar::Destroy();
+					}
+					if (cfg::world::radar::external) {
+						auto radarUrl = Radar::GetUrl();
+						ImGui::TextUnformatted(radarUrl.c_str());
+						if (ImGui::Button("Copy radar URL"))
+							ImGui::SetClipboardText(radarUrl.c_str());
+						ImGui::SameLine();
+						auto sharing = Radar::GetSharingState();
+						if (sharing.active) {
+							if (ImGui::Button("Stop sharing")) {
+								Radar::StopSharing();
+								sharing = {};
+							}
+						} else if (ImGui::Button("Share radar")) {
+							Radar::Share();
+							sharing = Radar::GetSharingState();
+						}
+						ImGui::SetItemTooltip("Anyone with the share link can view the radar. Downloads cloudflared on first use.");
+						if (!sharing.url.empty()) {
+							ImGui::TextWrapped("%s", sharing.url.c_str());
+							if (ImGui::Button("Copy share link"))
+								ImGui::SetClipboardText(sharing.url.c_str());
+							ImGui::SameLine();
+							if (ImGui::Button("Regenerate link")) {
+								Radar::StopSharing();
+								Radar::Share();
+								sharing = Radar::GetSharingState();
+							}
+							ImGui::SetItemTooltip("Starts a new tunnel. The current link will stop working.");
+							ImGui::SameLine();
+							ImGui::AlignTextToFramePadding();
+							ImGui::TextDisabled("(?)");
+							ImGui::SetItemTooltip("Cloudflare links may take a moment to become available.");
+						}
+						if (sharing.active && sharing.url.empty() && sharing.error.empty()) {
+							ImGui::ProgressBar(-static_cast<float>(ImGui::GetTime()), ImVec2(-1, 0), sharing.status.c_str());
+						}
+						if (!sharing.error.empty())
+							ImGui::TextWrapped("%s", sharing.error.c_str());
+					}
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{
@@ -346,8 +392,8 @@ void Menu::RenderImpl() {
 				}
 			}
 			ImGui::EndChild();
-			ImGui::EndChild();
 		}
+		ImGui::EndChild();
 
 	}
 

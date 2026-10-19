@@ -70,6 +70,8 @@ set SRCS=scripts\msvc\compatibility.cpp ^
          src/gui/renderer/Renderer.cpp ^
          src/gui/renderer/window/Window.cpp ^
          src/main.cpp ^
+         src/radar/Radar.cpp ^
+         src/radar/Sharing.cpp ^
          src/updater/http/HttpHelper.cpp ^
          src/updater/Updater.cpp
 

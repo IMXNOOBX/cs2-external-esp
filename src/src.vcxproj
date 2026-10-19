@@ -211,6 +211,8 @@
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="radar\Radar.cpp" />
+    <ClCompile Include="radar\Sharing.cpp" />
     <ClCompile Include="updater\http\HttpHelper.cpp" />
     <ClCompile Include="updater\Updater.cpp" />
     <ClCompile Include="core\engine\classes\Weapon.cpp" />
@@ -219,6 +221,8 @@
     <ClInclude Include="assets\fonts\Icons.h" />
     <ClInclude Include="assets\fonts\WeaponIcons.h" />
     <ClInclude Include="common.hpp" />
+    <ClInclude Include="radar\Radar.hpp" />
+    <ClInclude Include="radar\Page.hpp" />
     <ClInclude Include="config\Config.hpp" />
     <ClInclude Include="config\Current.hpp" />
     <ClInclude Include="core\engine\cache\Cache.hpp" />
