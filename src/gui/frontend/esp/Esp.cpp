@@ -182,8 +182,7 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 		auto y_end = bounds.second.y;
 
 		float height = y_end - y_start;
-		float health_ratio = std::clamp(player.health / 100.0f, 0.0f, 1.0f);
-		float filled_height = height * health_ratio;
+		float filled_height = height * (std::clamp(player.health, 0, 100) / 100.0f);
 
 		d->AddRectFilled(
 			ImVec2(x_start, y_end - filled_height),
@@ -197,7 +196,7 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 			IM_COL32(0, 0, 0, 50)
 		);
 
-		if (cfg::esp::health_number && player.health < 100) {
+		if (cfg::esp::health_number) {
 			auto txt = std::to_string(player.health);
 			auto sz = ImGui::CalcTextSize(txt.c_str());
 
@@ -220,7 +219,7 @@ void Esp::RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds) {
 		auto x_end = bounds.second.x;
 
 		float width = x_end - x_start;
-		float filled_width = width * (player.armor / 100.0f);
+		float filled_width = width * (std::clamp(player.armor, 0, 100) / 100.0f);
 
 		d->AddRectFilled(
 			ImVec2(x_start, y_start),
