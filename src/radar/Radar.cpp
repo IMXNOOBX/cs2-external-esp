@@ -110,27 +110,27 @@ const std::string& Radar::GetState() {
 
     json data = {
         { "in_match", in_match },
-        { "local_team", 0 },
         { "map", in_match ? std::string(globals.map_name, strnlen(globals.map_name, sizeof(globals.map_name))) : "" },
+        { "roster", json::array() },
         { "players", json::array() }
     };
 
     if (in_match) {
         for (const auto& player : snapshot.players) {
-            if (player.localplayer)
-                data["local_team"] = player.team;
+            auto id = player.steam_id ? std::to_string(player.steam_id) : "bot-" + std::to_string(player.index);
+            auto name = std::string(player.name, strnlen(player.name, sizeof(player.name)));
+            data["roster"].push_back({ { "id", id }, { "name", name }, { "team", player.team } });
             if (!player.alive || !std::isfinite(player.pos.x) ||
                 !std::isfinite(player.pos.y) || !std::isfinite(player.pos.z))
                 continue;
 
             data["players"].push_back({
-                { "id", player.index },
-                { "name", std::string(player.name, strnlen(player.name, sizeof(player.name))) },
+                { "id", id },
+                { "name", name },
                 { "team", player.team },
                 { "health", player.health },
                 { "weapon", player.weapon.name == "Invalid" ? "" : player.weapon.name },
                 { "weapon_icon", player.weapon.name == "Invalid" || !player.weapon.icon ? "" : player.weapon.icon },
-                { "local", player.localplayer },
                 { "x", player.pos.x }, { "y", player.pos.y }, { "z", player.pos.z }
             });
         }

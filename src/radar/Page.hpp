@@ -28,6 +28,7 @@ inline constexpr char radar_page[] = R"HTML(<!doctype html>
 <body>
 <header><h1>cs2-external-esp radar</h1><span id="map">No map</span><span id="status">Connecting...</span></header>
 <nav>
+    <label>You <select id="player"><option value="">Select player</option></select></label>
     <label><input id="names" type="checkbox" checked> Names</label>
     <label><input id="health" type="checkbox" checked> Health</label>
     <label><input id="team" type="checkbox" checked> Teammates</label>
@@ -49,6 +50,7 @@ const names = document.getElementById('names');
 const health = document.getElementById('health');
 const teammates = document.getElementById('team');
 const weapon = document.getElementById('weapon');
+const playerSelect = document.getElementById('player');
 const floor = document.getElementById('floor');
 const floors = document.getElementById('floors');
 const assetBase = 'https://raw.githubusercontent.com/MurkyYT/cs2-map-icons/main/';
@@ -60,6 +62,8 @@ let panels = [];
 let generation = 0;
 let loading = false;
 let weaponFontReady = false;
+let selectedPlayer = null;
+let playerOptions = '';
 
 document.fonts.load('24px RadarWeapons').then(() => {
     weaponFontReady = true;
@@ -78,8 +82,26 @@ function worldToMap(player, info) {
     return [(player.x - info.pos_x) / info.scale, (info.pos_y - player.y) / info.scale];
 }
 
+function updatePlayerList() {
+    const roster = (state.roster || []).filter(player => player.team === 2 || player.team === 3);
+    const current = roster.find(player => player.id === selectedPlayer?.id);
+    if (current) selectedPlayer = current;
+    // Keep the selected player's team while their update is missing
+    if (selectedPlayer && !current) roster.push(selectedPlayer);
+    const options = JSON.stringify(roster.map(player => [player.id, player.name]));
+    if (options === playerOptions) return;
+    playerOptions = options;
+    playerSelect.replaceChildren(...[{ id: '', name: 'Select player' }, ...roster].map(player => {
+        const option = document.createElement('option');
+        option.value = player.id;
+        option.textContent = player.name;
+        return option;
+    }));
+    playerSelect.value = selectedPlayer?.id || '';
+}
+
 function visible(player) {
-    return player.local || teammates.checked || player.team !== state.local_team;
+    return teammates.checked || !selectedPlayer || player.id === selectedPlayer.id || player.team !== selectedPlayer.team;
 }
 
 function draw() {
@@ -112,9 +134,8 @@ function draw() {
         if (panelIndex < 0) continue;
         const x = px + panelIndex * 1024;
         const y = py + titleHeight;
-        ctx.fillStyle = player.local ? '#64b5ff' :
-            (state.local_team ? (player.team === state.local_team ? '#5dff8d' : '#ff6565') :
-                (player.team === 3 ? '#64b5ff' : '#ffcc66'));
+        ctx.fillStyle = selectedPlayer && player.id === selectedPlayer.id ? '#64b5ff' :
+            (selectedPlayer && player.team === selectedPlayer.team ? '#5dff8d' : '#ff6565');
         const markerRadius = 6;
         ctx.beginPath();
         ctx.arc(x, y, markerRadius, 0, Math.PI * 2);
@@ -226,12 +247,14 @@ async function poll() {
         const response = await fetch('state', { cache: 'no-store', signal: AbortSignal.timeout(2000) });
         if (!response.ok) throw new Error('Disconnected');
         state = await response.json();
+        updatePlayerList();
         const name = state.in_match ? state.map.replaceAll('\\', '/').split('/').pop().replace(/\.vpk$/i, '') : '';
         if (name !== mapName) void loadMap(name);
         status.textContent = state.in_match ? `${state.players.length} players` : 'Waiting for a match...';
         draw();
     } catch {
         state = { players: [] };
+        updatePlayerList();
         status.textContent = 'Disconnected. Retrying...';
         draw();
     } finally {
@@ -240,6 +263,11 @@ async function poll() {
 }
 
 names.onchange = health.onchange = teammates.onchange = weapon.onchange = floor.onchange = draw;
+playerSelect.onchange = () => {
+    selectedPlayer = (state.roster || []).find(player => player.id === playerSelect.value) ||
+        (selectedPlayer?.id === playerSelect.value ? selectedPlayer : null);
+    draw();
+};
 document.getElementById('reload').onclick = loadMaps;
 document.getElementById('fullscreen').onclick = async () => {
     try {

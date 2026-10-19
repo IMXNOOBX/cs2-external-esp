@@ -13,14 +13,14 @@ const ctx = {
     globalAlpha: 1,
     clearRect() { arcs.length = 0; labels.length = 0; drawnImages.length = 0; },
     drawImage(image) { drawnImages.push(image.src); },
-    beginPath() {}, arc(...args) { arcs.push({ args, alpha:this.globalAlpha }); }, fill() {}, stroke() {},
+    beginPath() {}, arc(...args) { arcs.push({ args, alpha:this.globalAlpha, color:this.fillStyle }); }, fill() {}, stroke() {},
     measureText() {
         return /RadarWeapons$/.test(this.font) ? weaponBounds : textBounds;
     },
     strokeText() {}, fillText(text, x, y) { labels.push({ text, x, y, font:this.font }); }
 };
 const elements = {};
-for (const id of ['radar', 'map', 'status', 'notice', 'names', 'health', 'team', 'weapon', 'reload', 'view', 'fullscreen', 'floor', 'floors']) {
+for (const id of ['radar', 'map', 'status', 'notice', 'names', 'health', 'team', 'weapon', 'player', 'reload', 'view', 'fullscreen', 'floor', 'floors']) {
     elements[id] = { value: 'both', hidden: true, replaceChildren(...children) { this.children = children; }, clientWidth: 1600, clientHeight: 900, checked: true, textContent: '', style: {}, getContext() { return ctx; } };
 }
 let fullscreenFails = false;
@@ -63,6 +63,10 @@ const maps = {
 };
 context.fixtures = maps;
 run('maps = fixtures');
+async function updateState(snapshot) {
+    context.fetch = async () => ({ ok:true, json:async () => snapshot });
+    await run('poll()');
+}
 (async () => {
     assert.equal(run('JSON.stringify(worldToMap({x:0,y:0}, maps.test_single.radar_info))'), '[0,0]');
     assert.equal(run('JSON.stringify(worldToMap({x:2,y:-2}, maps.test_single.radar_info))'), '[1,1]');
@@ -115,11 +119,60 @@ run('maps = fixtures');
     assert.equal(elements.radar.width, 1024);
     assert.equal(elements.floors.hidden, true);
     assert.equal(elements.floor.value, 'both');
-    run(`state = { local_team:3, players: [
-        {name:'Local',local:true,team:3,x:1,y:-1,z:0,health:100,weapon:'AK-47',weapon_icon:'\uE000'},
-        {name:'Enemy',team:2,x:2,y:-2,z:0,health:50,weapon:'AWP'},
-        {name:'Mate',team:3,x:0,y:0,z:0,health:80,weapon:'M4A1-S'},
-        {name:'Outside',team:2,x:Infinity,y:0,z:0,health:100,weapon:'AK-47',weapon_icon:'\uE000'}] }; draw()`);
+    const roster = [
+        {id:'76561198000000001',name:'Host',team:3},
+        {id:'76561198000000002',name:'You',team:2},
+        {id:'76561198000000003',name:'Your teammate',team:2},
+        {id:'bot-4',name:'Dead bot',team:2}
+    ];
+    const playing = roster.slice(0, 3).map((player, index) => ({ ...player, x:index + 1, y:-1, z:0, health:100 }));
+    await updateState({in_match:true,map:'test_single',roster,players:playing});
+    assert.deepEqual(elements.player.children.map(option => option.textContent),
+        ['Select player', 'Host', 'You', 'Your teammate', 'Dead bot']);
+    assert.ok(arcs.every(arc => arc.color === '#ff6565'));
+    elements.player.value = roster[1].id;
+    elements.player.onchange();
+    assert.deepEqual(arcs.map(arc => arc.color), ['#ff6565', '#64b5ff', '#5dff8d']);
+    const options = elements.player.children;
+    await updateState({in_match:true,map:'test_single',roster,players:playing});
+    assert.equal(elements.player.children, options);
+    elements.team.checked = false;
+    elements.team.onchange();
+    assert.deepEqual(arcs.map(arc => arc.color), ['#ff6565', '#64b5ff']);
+    elements.team.checked = true;
+    await updateState({in_match:true,map:'test_single',roster,players:[playing[0], playing[2]]});
+    assert.equal(elements.player.value, roster[1].id);
+    assert.deepEqual(arcs.map(arc => arc.color), ['#ff6565', '#5dff8d']);
+    await updateState({in_match:true,map:'test_single',roster:[roster[0], roster[2]],players:[playing[0], playing[2]]});
+    assert.equal(elements.player.value, roster[1].id);
+    assert.deepEqual(arcs.map(arc => arc.color), ['#ff6565', '#5dff8d']);
+    assert.ok(elements.player.children.some(option => option.value === roster[1].id));
+    const swapped = roster.map(player => ({ ...player, team:player.team === 2 ? 3 : 2 }));
+    await updateState({in_match:true,map:'test_single',roster:swapped,
+        players:[playing[2], playing[0], playing[1]].map(player => ({...player,team:player.team === 2 ? 3 : 2}))});
+    assert.deepEqual(arcs.map(arc => arc.color), ['#5dff8d', '#ff6565', '#64b5ff']);
+    const replacement = {...swapped[1], id:'76561198000000004'};
+    await updateState({in_match:true,map:'test_single',roster:[swapped[0], replacement],
+        players:[{...playing[1], ...replacement}]});
+    assert.equal(elements.player.value, roster[1].id);
+    assert.deepEqual(arcs.map(arc => arc.color), ['#5dff8d']);
+    context.fetch = () => Promise.reject(new Error('offline'));
+    await run('poll()');
+    assert.equal(elements.player.value, roster[1].id);
+    assert.equal(arcs.length, 0);
+    await updateState({in_match:true,map:'test_single',roster,players:playing});
+    assert.deepEqual(arcs.map(arc => arc.color), ['#ff6565', '#64b5ff', '#5dff8d']);
+    elements.player.value = '';
+    elements.player.onchange();
+    assert.ok(arcs.every(arc => arc.color === '#ff6565'));
+    run(`state = { players: [
+        {id:'local',name:'Local',team:3,x:1,y:-1,z:0,health:100,weapon:'AK-47',weapon_icon:'\uE000'},
+        {id:'enemy',name:'Enemy',team:2,x:2,y:-2,z:0,health:50,weapon:'AWP'},
+        {id:'mate',name:'Mate',team:3,x:0,y:0,z:0,health:80,weapon:'M4A1-S'},
+        {id:'outside',name:'Outside',team:2,x:Infinity,y:0,z:0,health:100,weapon:'AK-47',weapon_icon:'\uE000'}] };
+        state.roster = state.players; updatePlayerList()`);
+    elements.player.value = 'local';
+    elements.player.onchange();
     assert.equal(arcs.length, 3);
     assert.equal(labels.length, 9);
     elements.team.checked = false;
@@ -187,8 +240,9 @@ run('maps = fixtures');
     await run("loadMap('unsupported')");
     assert.equal(run('map'), null);
     assert.match(elements.notice.textContent, /No calibrated overview/);
+    context.fetch = () => Promise.reject(new Error('offline'));
     await run('poll()');
     assert.equal(run('state.players.length'), 0);
     assert.match(elements.status.textContent, /Disconnected/);
-    console.log('Browser tests passed: coordinates, floor selection and resets, simultaneous floors, correct marker placement, missing floor isolation, full-brightness markers, glyph alignment, compact labels, fullscreen sizing and failure, all toggle combinations, map races, missing assets and disconnects');
+    console.log('Browser tests passed: player selection, consistent colours, death and missing updates, team changes, identity, reconnects, coordinates, floors, markers, labels, fullscreen, toggles, map races and disconnects');
 })().catch(error => { console.error(error); process.exitCode = 1; });

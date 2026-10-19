@@ -392,8 +392,8 @@ void Menu::RenderImpl() {
 				}
 			}
 			ImGui::EndChild();
-			ImGui::EndChild();
 		}
+		ImGui::EndChild();
 
 	}
 

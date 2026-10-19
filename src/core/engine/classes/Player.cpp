@@ -89,6 +89,7 @@ bool Player::UpdatePawn() {
 
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
+	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
 	if (this->health > 255 || this->health < 0)
 		LOGF(FATAL,
@@ -107,8 +108,6 @@ bool Player::UpdatePawn() {
 		return false;
 
 	this->vel = p->read<Vec3_t>(pawn + offsets::pawn::m_vecAbsVelocity);
-
-	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
 	this->armor = p->read<int>(pawn + offsets::pawn::m_ArmorValue);
 	this->defusing = p->read<bool>(pawn + offsets::pawn::m_bIsDefusing);
