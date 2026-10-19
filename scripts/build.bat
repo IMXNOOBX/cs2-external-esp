@@ -71,6 +71,7 @@ set SRCS=scripts\msvc\compatibility.cpp ^
          src/gui/renderer/window/Window.cpp ^
          src/main.cpp ^
          src/radar/Radar.cpp ^
+         src/radar/Sharing.cpp ^
          src/updater/http/HttpHelper.cpp ^
          src/updater/Updater.cpp
 
@@ -80,8 +81,6 @@ echo compiling project
 %CC% -target %TARGET% -std=c++20 -O3 -Wno-date-time -fno-autolink -include src/common.hpp %DEFINES% %INCLUDES% %SRCS% -o %OUT% %LIBS% -Lsrc/external/lib
 
 if %ERRORLEVEL% EQU 0 (
-    if not exist "%OUTDIR%\cloudflare" mkdir "%OUTDIR%\cloudflare"
-    copy /Y scripts\share-radar.ps1 "%OUTDIR%\cloudflare\share-radar.ps1" >nul
     echo build successful: %OUT%
 ) else (
     echo build failed.

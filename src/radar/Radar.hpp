@@ -30,17 +30,15 @@ private:
     void DestroyImpl();
     void Thread();
     const std::string& GetState();
-    void ReadSharingOutput();
-    void CloseSharing(bool clear);
+    void RunSharing();
+    std::string ReadSharingOutput(HANDLE output, HANDLE process);
 
     std::atomic<bool> running{ false };
     std::thread thread;
     std::string state = R"({"in_match":false,"map":"","players":[]})";
     std::chrono::steady_clock::time_point updated{};
     SOCKET listener = INVALID_SOCKET;
-    HANDLE sharingProcess = nullptr;
-    HANDLE sharingJob = nullptr;
-    HANDLE sharingOutput = nullptr;
+    std::atomic<bool> sharingStopped{ false };
     std::thread sharingThread;
     std::mutex sharingMutex;
     SharingState sharing;
