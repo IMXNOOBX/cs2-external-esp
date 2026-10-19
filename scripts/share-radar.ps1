@@ -42,7 +42,13 @@ try {
             }
             Move-Item -LiteralPath $temporary -Destination $executable
         } catch {
-            throw "Could not download cloudflared: $($_.Exception.Message) See docs/radar-sharing.md."
+            $response = $_.Exception.Response
+
+            if ($null -ne $response -and [int]$response.StatusCode -eq 403) {
+                throw "Github denied the download (403). Try again later or install cloudflared manually, see docs/radar-sharing.md."
+            }
+
+            throw "Could not download cloudflared: $($_.Exception.Message) See docs/radar-sharing.md"
         } finally {
             if ($temporary -and (Test-Path -LiteralPath $temporary)) {
                 Remove-Item -LiteralPath $temporary

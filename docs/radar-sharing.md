@@ -1,11 +1,20 @@
 # Share the radar
 
-Enable **Browser radar** under **World > Radar**, then click **Share radar**. An animated loading bar shows startup progress. The URL is read from this tunnel's startup banner and shown after a connection is registered. Use **Copy share link** to share it. Anyone with that link can view the radar; traffic passes through Cloudflare.
+Enable **Browser radar** under **World > Radar**, then click **Share radar**.
 
-On first use, the script downloads cloudflared from Cloudflare's official GitHub release, verifies its SHA-256 checksum, and saves it as `cloudflare\cloudflared.exe` beside the app. Later runs reuse that file. No account, API key or administrator rights are needed.
-
-Sharing runs in the background. Click **Stop sharing** to stop it. Disabling Browser radar or closing the app also stops sharing. Each run creates a new URL. **Regenerate link** restarts the tunnel and replaces the current link.
-
-Build **Release | x64** after applying the UI changes. The build places `share-radar.ps1` in the `cloudflare` folder beside the executable. Keep that folder with the app; it must be writable for the first download. The script can also be run directly from PowerShell.
+Once the link appears, click **Copy share link** and send it to whoever you want to share with. Anyone with the link can view your radar through Cloudflare.
 
 This uses [Cloudflare Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/), intended for temporary testing, with no uptime guarantee.
+
+## Manual install
+
+If the automated installer fails, or you are being rate limited, you can manually install the cloudflared binary from https://github.com/cloudflare/cloudflared/releases.
+
+Download `cloudflared-windows-amd64.exe`, rename it to `cloudflared.exe`, and place it in the `cloudflare` folder beside the executable.
+
+```
+cs2-external-esp.exe
+cloudflare/
+    share-radar.ps1
+    cloudflared.exe
+```
