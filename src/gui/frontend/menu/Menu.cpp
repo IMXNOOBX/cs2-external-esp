@@ -296,9 +296,10 @@ void Menu::RenderImpl() {
 							Radar::Destroy();
 					}
 					if (cfg::world::radar::external) {
-						ImGui::Text("http://127.0.0.1:27080");
+						auto radarUrl = Radar::GetUrl();
+						ImGui::TextUnformatted(radarUrl.c_str());
 						if (ImGui::Button("Copy radar URL"))
-							ImGui::SetClipboardText("http://127.0.0.1:27080");
+							ImGui::SetClipboardText(radarUrl.c_str());
 						ImGui::SameLine();
 						auto sharing = Radar::GetSharingState();
 						if (sharing.active) {

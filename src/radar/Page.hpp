@@ -7,7 +7,7 @@ inline constexpr char radar_page[] = R"HTML(<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cs2-external-esp radar</title>
 <style>
-    @font-face { font-family: RadarWeapons; src: url('/weapon-font.ttf') format('truetype'); }
+    @font-face { font-family: RadarWeapons; src: url('weapon-font.ttf') format('truetype'); }
     :root { color-scheme: dark; }
     body { margin: 20px; background: #181818; color: #ddd; font: 14px Consolas, monospace; }
     header, nav { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; margin-bottom: 12px; }
@@ -221,7 +221,7 @@ async function loadMaps() {
 
 async function poll() {
     try {
-        const response = await fetch('/state', { cache: 'no-store', signal: AbortSignal.timeout(2000) });
+        const response = await fetch('state', { cache: 'no-store', signal: AbortSignal.timeout(2000) });
         if (!response.ok) throw new Error('Disconnected');
         state = await response.json();
         const name = state.in_match ? state.map.replaceAll('\\', '/').split('/').pop().replace(/\.vpk$/i, '') : '';

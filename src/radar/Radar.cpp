@@ -3,10 +3,12 @@
 #include "core/engine/cache/Cache.hpp"
 #include "assets/fonts/WeaponIcons.h"
 #include <sstream>
+#include <bcrypt.h>
 
 using json = nlohmann::json;
 
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "bcrypt.lib")
 
 bool Radar::Init() {
     return GetInstance().InitImpl();
@@ -14,6 +16,13 @@ bool Radar::Init() {
 
 void Radar::Destroy() {
     GetInstance().DestroyImpl();
+}
+
+std::string Radar::GetUrl() {
+    auto& radar = GetInstance();
+    if (!radar.running)
+        return {};
+    return "http://127.0.0.1:27080/" + radar.token + "/";
 }
 
 bool Radar::Share() {
@@ -47,6 +56,10 @@ bool Radar::Share() {
     auto powershell = std::filesystem::path(system.data()) / L"WindowsPowerShell" / L"v1.0" / L"powershell.exe";
     std::wstring command = L"\"" + powershell.wstring() +
         L"\" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File \"" + script.wstring() + L"\"";
+
+    auto radarUrl = GetUrl();
+    command += L" -RadarUrl \"" +
+        std::wstring(radarUrl.begin(), radarUrl.end()) + L"\"";
 
     HANDLE job = CreateJobObjectW(nullptr, nullptr);
     if (!job)
@@ -186,7 +199,7 @@ void Radar::ReadSharingOutput() {
         if (text == "Downloading cloudflared..." || text == "Verifying download..." || text == "Connecting to Cloudflare...")
             sharing.status = text;
         if (connected && !url.empty()) {
-            sharing.url = url;
+            sharing.url = url + "/" + token + "/";
             sharing.status = "Sharing radar";
         } else if (connected) {
             sharing.error = "Cloudflare connected, but its share link could not be read. Stop sharing and try again.";
@@ -218,6 +231,20 @@ Radar::~Radar() {
 bool Radar::InitImpl() {
     if (running)
         return true;
+
+    // Random token auth
+    std::array<unsigned char, 16> bytes{};
+    if (BCryptGenRandom(nullptr, bytes.data(),
+        static_cast<ULONG>(bytes.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG) != 0)
+        return false;
+
+    constexpr char hex[] = "0123456789abcdef";
+    token.clear();
+    token.reserve(bytes.size() * 2);
+    for (auto byte : bytes) {
+        token += hex[byte >> 4];
+        token += hex[byte & 15];
+    }
 
     WSADATA data{};
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0)
@@ -254,7 +281,7 @@ bool Radar::InitImpl() {
         return false;
     }
 
-    LOGF(INFO, "Browser radar: http://127.0.0.1:27080");
+    LOGF(INFO, "Browser radar started on port 27080");
     return true;
 }
 
@@ -350,20 +377,23 @@ void Radar::Thread() {
         // Only serve requests addressed to this listener.
         bool valid = headers.find("\r\nhost: 127.0.0.1:27080\r\n") != std::string::npos &&
             request.find("\r\n\r\n") != std::string::npos;
+
+        const std::string prefix = "GET /" + token + "/";
+
         if (!valid) {
             status = "400 Bad Request";
         }
-        else if (request.starts_with("GET / HTTP/1.")) {
+        else if (request.starts_with(prefix + " HTTP/1.")) {
             body = radar_page;
             status = "200 OK";
             type = "text/html; charset=utf-8";
         }
-        else if (request.starts_with("GET /weapon-font.ttf HTTP/1.")) {
+        else if (request.starts_with(prefix + "weapon-font.ttf HTTP/1.")) {
             body.assign(reinterpret_cast<const char*>(weapon_icon_font), weapon_icon_font_len);
             status = "200 OK";
             type = "font/ttf";
         }
-        else if (request.starts_with("GET /state HTTP/1.")) {
+        else if (request.starts_with(prefix + "state HTTP/1.")) {
             body = GetState();
             status = "200 OK";
             type = "application/json; charset=utf-8";

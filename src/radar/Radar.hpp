@@ -9,6 +9,7 @@ public:
         std::string error;
     };
 
+    static std::string GetUrl();
     static bool Init();
     static void Destroy();
     static bool Share();
@@ -21,6 +22,7 @@ private:
         return instance;
     }
 
+    std::string token;
     ~Radar();
     bool InitImpl();
     void DestroyImpl();

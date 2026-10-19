@@ -1,10 +1,15 @@
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$RadarUrl
+)
+
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
 
 try {
     try {
-        $response = Invoke-WebRequest -Uri 'http://127.0.0.1:27080/state' -UseBasicParsing -TimeoutSec 3 -MaximumRedirection 0
+        $response = Invoke-WebRequest -Uri ($RadarUrl + 'state') -UseBasicParsing -TimeoutSec 3 -MaximumRedirection 0
         $state = $response.Content | ConvertFrom-Json
         if ($null -eq $state.in_match -or $null -eq $state.players -or $null -eq $state.map) {
             throw 'Unexpected radar response.'
