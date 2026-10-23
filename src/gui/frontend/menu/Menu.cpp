@@ -297,26 +297,26 @@ void Menu::RenderImpl() {
 					}
 					ImGui::EndDisabled();
 				}
-				else if (active_tab == Tab::MACROS)
+				else if (active_tab == Tab::SCRIPTS)
 				{
-					ImGui::Text("Script Macros");
+					ImGui::Text("Scripts");
 					ImGui::SameLine();
 					ImGui::TextLinkOpenURL("Documentation", "https://github.com/IMXNOOBX/cs2-external-esp/blob/main/SCRIPTING.md");
 					ImGui::Separator();
 
-					ImGui::TextWrapped("Execute macros defined in scripts.esp. Only macros prefixed with @ in the definition are shown here.");
+					ImGui::TextWrapped("Run scripts defined in scripts.sl. Every function without parameters is listed here.");
 					ImGui::Spacing();
 
 					if (ImGui::Button("Reload Scripts"))
 					{
 						scripting::Scripting::Get().LoadScripts();
 					}
-					ImGui::SetItemTooltip("Manually reload scripts.esp\n(Auto-reloads when file is modified)");
+					ImGui::SetItemTooltip("Manually reload scripts.sl\n(Auto-reloads when file is modified)");
 
 					ImGui::SameLine();
 					if (ImGui::Button("Open Script"))
 					{
-						const auto script_path = std::filesystem::absolute("scripts.esp");
+						const auto script_path = std::filesystem::absolute(scripting::Scripting::kScriptPath);
 						bool can_open_script = true;
 						if (!std::filesystem::exists(script_path))
 						{
@@ -342,29 +342,29 @@ void Menu::RenderImpl() {
 								LOGF(WARNING, "Failed to open script file: {}", script_path.string());
 						}
 					}
-					ImGui::SetItemTooltip("Open scripts.esp with the default text editor");
+					ImGui::SetItemTooltip("Open scripts.sl with the default text editor");
 
 					ImGui::Spacing();
 					ImGui::Separator();
-					ImGui::Text("Available Macros:");
+					ImGui::Text("Available Scripts:");
 					ImGui::Separator();
 
-					const auto& macros = scripting::Scripting::Get().GetMacros();
+					const auto& scripts = scripting::Scripting::Get().GetMacros();
 					
-					int gui_macro_count = 0;
-					for (const auto& [name, macro] : macros) {
-						if (macro.gui_accessible) gui_macro_count++;
+					int gui_script_count = 0;
+					for (const auto& [name, script] : scripts) {
+						if (script.gui_accessible) gui_script_count++;
 					}
 					
-					if (gui_macro_count == 0)
+					if (gui_script_count == 0)
 					{
-						ImGui::TextWrapped("No GUI-accessible macros found. Create macros with @ prefix in scripts.esp.");
+						ImGui::TextWrapped("No scripts found. Functions without parameters in scripts.sl are listed here.");
 						ImGui::Spacing();
-						ImGui::TextWrapped("Example:\nmacro @my_macro {\n    set esp.box true\n    set esp.skeleton true\n}");
+						ImGui::TextWrapped("Example:\nfunc setup() {\n    set_bool(\"esp.box\", true);\n    set_bool(\"esp.skeleton\", true);\n}");
 					}
 					else
 					{
-						ImGui::Text("Click a macro button to execute it:");
+						ImGui::Text("Click a script button to execute it:");
 						ImGui::Spacing();
 
 						float available_width = ImGui::GetContentRegionAvail().x;
@@ -374,9 +374,9 @@ void Menu::RenderImpl() {
 						if (buttons_per_row < 1) buttons_per_row = 1;
 
 						int col = 0;
-						for (const auto& [name, macro] : macros)
+						for (const auto& [name, script] : scripts)
 						{
-							if (!macro.gui_accessible) continue;
+							if (!script.gui_accessible) continue;
 							
 							if (col > 0 && col < buttons_per_row)
 								ImGui::SameLine();
@@ -384,22 +384,8 @@ void Menu::RenderImpl() {
 							std::string button_label = "@" + name;
 							if (ImGui::Button(button_label.c_str(), ImVec2(button_width, 30)))
 							{
-								scripting::Scripting::Get().ExecuteCommand(name);
-								LOGF(VERBOSE, "Executed macro: @{}", name);
-							}
-
-							// tooltip with macro commands
-							if (ImGui::IsItemHovered())
-							{
-								ImGui::BeginTooltip();
-								ImGui::Text("Macro: @%s", name.c_str());
-								ImGui::Separator();
-								ImGui::Text("Commands:");
-								for (const auto& cmd : macro.commands)
-								{
-									ImGui::Text("  %s", cmd.c_str());
-								}
-								ImGui::EndTooltip();
+								scripting::Scripting::Get().ExecuteMacro(name);
+								LOGF(VERBOSE, "Executed script: @{}", name);
 							}
 
 							col++;
@@ -412,43 +398,43 @@ void Menu::RenderImpl() {
 					ImGui::Text("Manual Execution:");
 					ImGui::Separator();
 
-					static char macro_input[256] = "@";
+					static char script_input[256] = "@";
 					float input_width = ImGui::GetContentRegionAvail().x - 100.0f; // Leave space for button
 					ImGui::SetNextItemWidth(input_width);
-					ImGui::InputText("##macro_input", macro_input, IM_ARRAYSIZE(macro_input));
+					ImGui::InputText("##script_input", script_input, IM_ARRAYSIZE(script_input));
 					if (ImGui::IsItemHovered())
-						ImGui::SetTooltip("Enter macro name with @ prefix (e.g., @my_macro)");
+						ImGui::SetTooltip("Enter script name with @ prefix (e.g., @my_script)");
 
 					ImGui::SameLine();
 					if (ImGui::Button("Execute", ImVec2(90, 0)))
 					{
-						if (macro_input[0] == '@' && strlen(macro_input) > 1)
+						if (script_input[0] == '@' && strlen(script_input) > 1)
 						{
-							std::string macro_name = std::string(macro_input + 1); // Skip @ prefix
+							std::string script_name = std::string(script_input + 1); // Skip @ prefix
 							
-							// Check if this macro exists and is GUI accessible
-							const auto& all_macros = scripting::Scripting::Get().GetMacros();
-							auto it = all_macros.find(macro_name);
-							if (it != all_macros.end())
+							// Check if this script exists and is GUI accessible
+							const auto& all_scripts = scripting::Scripting::Get().GetMacros();
+							auto it = all_scripts.find(script_name);
+							if (it != all_scripts.end())
 							{
 								if (it->second.gui_accessible)
 								{
-									scripting::Scripting::Get().ExecuteCommand(macro_name);
-									LOGF(VERBOSE, "Executed macro: @{}", macro_name);
+									scripting::Scripting::Get().ExecuteMacro(script_name);
+									LOGF(VERBOSE, "Executed script: @{}", script_name);
 								}
 								else
 								{
-									LOGF(WARNING, "Macro '{}' is not GUI-accessible (must be defined with @ prefix)", macro_name);
+									LOGF(WARNING, "Script '{}' is hidden (names starting with _ are not listed)", script_name);
 								}
 							}
 							else
 							{
-								LOGF(WARNING, "Macro '{}' not found", macro_name);
+								LOGF(WARNING, "Script '{}' not found", script_name);
 							}
 						}
 						else
 						{
-							LOGF(WARNING, "Invalid macro name. Must start with @");
+							LOGF(WARNING, "Invalid script name. Must start with @");
 						}
 					}
 				}

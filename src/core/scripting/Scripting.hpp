@@ -1,36 +1,39 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <functional>
-#include <variant>
-#include <filesystem>
-#include <thread>
-#include <queue>
-#include <mutex>
 #include <atomic>
-#include "config/Current.hpp"
+#include <cstdint>
+#include <filesystem>
+#include <mutex>
+#include <queue>
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+
+struct color_t;
+
+namespace solis {
+    class Vm;
+}
 
 namespace scripting {
     using ConfigVar = std::variant<bool*, int*, float*, color_t*>;
-    using CommandFunc = std::function<void(const std::vector<std::string>&)>;
 
     struct Macro {
-        std::string name;
-        std::vector<std::string> commands;
-        bool gui_accessible = false;
-        bool contains_dangerous_commands = false;
-        int hold_key = 0; // Key code that keeps this macro running 
+        bool gui_accessible = true;
+        int hold_key = 0;
     };
 
     struct Keybind {
         int key;
-        std::string action;
+        std::string macro;
     };
 
     class Scripting {
     public:
+        static constexpr const char* kScriptPath = "scripts.sl";
+
         static Scripting& Get() {
             static Scripting instance;
             return instance;
@@ -38,52 +41,62 @@ namespace scripting {
 
         void Init();
         void Update();
-        void ExecuteCommand(const std::string& command_line);
         void LoadScripts();
+        void ExecuteMacro(const std::string& name);
+
         const std::unordered_map<std::string, Macro>& GetMacros() const { return macros; }
-        
+
         ~Scripting();
 
     private:
         Scripting() = default;
 
+        struct PendingMacro {
+            std::string name;
+            int hold_key = 0;
+        };
+
         void RegisterConfigVars();
-        void RegisterCommands();
+        void RegisterNatives(solis::Vm& vm);
+        void WritePrelude();
+        void RunInit();
+        void RunMacro(const std::string& name);
+        void RunImage(const std::vector<uint8_t>& image, const std::string& label);
+        void QueueMacro(const std::string& name, int hold_key = 0);
+        void WorkerThread();
+
+        void SetBoolValue(const std::string& name, bool value);
+        void SetIntValue(const std::string& name, int value);
+        void SetFloatValue(const std::string& name, float value);
+        void SetColorValue(const std::string& name, float r, float g, float b, float a);
+        bool GetBoolValue(const std::string& name) const;
+        int GetIntValue(const std::string& name) const;
+        float GetFloatValue(const std::string& name) const;
+        std::string GetColorValue(const std::string& name) const;
+
+        void RegisterBind(const std::string& key, const std::string& macro);
+        void RegisterHoldKey(const std::string& key, const std::string& macro);
+        void InitKeyNameMap();
         int ParseKeyCode(const std::string& key_str);
-        void RegisterHoldKey(const std::string& macro_name, std::string key_text);
-        void CommandWorkerThread();
-        void ExecuteCommandInternal(const std::string& command_line);
+        void SendInput(int vk_code, int duration_ms, int repeat_count);
 
         std::unordered_map<std::string, ConfigVar> config_map;
-        std::unordered_map<std::string, CommandFunc> command_map;
         std::unordered_map<std::string, Macro> macros;
         std::vector<Keybind> keybinds;
         std::unordered_map<int, bool> key_states;
-        std::unordered_map<std::string, std::string> variables;
-        std::unordered_map<std::string, std::string> global_variables;
         std::unordered_map<std::string, int> key_name_map;
 
         std::filesystem::file_time_type last_load_time;
-        bool has_dangerous_scripts = false;
+        std::vector<uint8_t> init_image;
+        std::unordered_map<std::string, std::vector<uint8_t>> macro_images;
+        std::mutex image_mutex;
 
-        // Async
-        std::thread command_thread;
-        std::queue<std::string> command_queue;
+        std::thread worker_thread;
+        std::queue<PendingMacro> macro_queue;
         std::mutex queue_mutex;
         std::atomic<bool> shutdown_thread{false};
         std::atomic<unsigned int> active_macro_count{0};
         std::atomic<int> active_hold_key{0};
-
-        void ProcessCommand(const std::string& cmd, const std::vector<std::string>& args);
-        std::string EvaluateExpression(const std::string& expr);
-        float EvaluateArithmetic(const std::string& expr);
-        std::string GetConfigValue(const std::string& var_name);
-        void SetColorValue(const std::string& var_name, float r, float g, float b, float a);
-        void UpdateGlobalVariables();
-        void InitKeyNameMap();
-        void SendInput(int vk_code, int duration_ms, int repeat_count);
-        void ReadMemory(const std::string& var_name, uintptr_t address);
-        void WriteMemory(const std::string& var_name, uintptr_t address);
-        bool IsDangerousCommand(const std::string& cmd);
+        std::atomic<bool> initializing{false};
     };
 }

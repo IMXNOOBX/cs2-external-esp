@@ -1,29 +1,48 @@
 #include "Scripting.hpp"
 #include "SolisScript.hpp"
+#include "core\engine\types\Types.hpp"
+#include "config/Current.hpp"
 #include "core/scripting/hooks/PhysicalInput.hpp"
 #include "core/logger/LogHelper.hpp"
-#include "core\engine\types\Types.hpp"
 #include "core\engine\Engine.hpp"
 #include "gui\frontend\menu\Menu.hpp"
 #include "gui\renderer\Renderer.hpp"
 #include "gui/frontend/theme/Theme.hpp"
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <algorithm>
-#include <chrono>
-#include <iomanip>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+#include "solis.hpp"
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include <Windows.h>
+#include <algorithm>
+#include <cctype>
+#include <chrono>
+#include <fstream>
+#include <utility>
 
 namespace scripting {
+    namespace {
+        std::string ArgString(solis::Args args, int index) {
+            return std::string(args[index].asString());
+        }
+
+        void RequireArgs(solis::Args args, int count, const char* name) {
+            if (args.size() < count) {
+                throw solis::Error(std::string(name) + " expects " + std::to_string(count) + " argument(s)");
+            }
+        }
+    }
+
     void Scripting::Init() {
         try {
             InitKeyNameMap();
             RegisterConfigVars();
-            RegisterCommands();
-            UpdateGlobalVariables();
             LoadScripts();
-            RunSolisScript("scripts.sl");
 
             if (!input::InstallPhysicalInputHooks()) {
                 LOGF(WARNING, "Could not install physical input hooks; hold macros are unavailable");
@@ -32,16 +51,16 @@ namespace scripting {
         catch (std::exception& e) {
             LOGF(FATAL, "Caught exception while initializing: {}", e.what());
         }
-        
-        command_thread = std::thread(&Scripting::CommandWorkerThread, this);
-        
+
+        worker_thread = std::thread(&Scripting::WorkerThread, this);
+
         LOGF(INFO, "Scripting system initialized");
     }
 
     Scripting::~Scripting() {
         shutdown_thread = true;
-        if (command_thread.joinable()) {
-            command_thread.join();
+        if (worker_thread.joinable()) {
+            worker_thread.join();
         }
         input::UninstallPhysicalInputHooks();
     }
@@ -87,7 +106,6 @@ namespace scripting {
         config_map["settings.vsync"] = &cfg::settings::vsync;
         config_map["settings.free_cpu"] = &cfg::settings::free_cpu;
 
-        // Colors
         config_map["esp.color.box_team"] = &cfg::esp::colors::box_team;
         config_map["esp.color.box_enemy"] = &cfg::esp::colors::box_enemy;
         config_map["esp.color.skeleton_team"] = &cfg::esp::colors::skeleton_team;
@@ -96,7 +114,7 @@ namespace scripting {
         config_map["esp.color.tracker_enemy"] = &cfg::esp::colors::tracker_enemy;
         config_map["esp.color.tracer_team"] = &cfg::esp::colors::tracer_team;
         config_map["esp.color.tracer_enemy"] = &cfg::esp::colors::tracer_enemy;
-        
+
         config_map["esp.color.flags.flashed_team"] = &cfg::esp::colors::flags::flashed_team;
         config_map["esp.color.flags.flashed_enemy"] = &cfg::esp::colors::flags::flashed_enemy;
         config_map["esp.color.flags.reloading_team"] = &cfg::esp::colors::flags::reloading_team;
@@ -107,184 +125,302 @@ namespace scripting {
         config_map["esp.color.flags.scoped_enemy"] = &cfg::esp::colors::flags::scoped_enemy;
         config_map["esp.color.flags.c4_team"] = &cfg::esp::colors::flags::c4_team;
         config_map["esp.color.flags.c4_enemy"] = &cfg::esp::colors::flags::c4_enemy;
-        
+
         config_map["esp.bomb_color"] = &cfg::esp::bomb_color;
     }
 
-    void Scripting::RegisterCommands() {
-        command_map["set"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) {
-                LOGF(WARNING, "set requires 2 arguments: variable value");
-                return;
-            }
-            const std::string& var_name = args[0];
-            std::string value = args[1];
+    void Scripting::RegisterNatives(solis::Vm& vm) {
+        vm.define("set_bool", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "set_bool");
+            SetBoolValue(ArgString(args, 0), args[1].asBool());
+            return solis::Value();
+        });
 
-            // Evaluate if it contains operators
-            if (value.find_first_of("+-*/") != std::string::npos || value[0] == '$') {
-                value = EvaluateExpression(value);
-            }
+        vm.define("set_int", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "set_int");
+            SetIntValue(ArgString(args, 0), static_cast<int>(args[1].asInt()));
+            return solis::Value();
+        });
 
-            if (config_map.find(var_name) == config_map.end()) {
-                LOGF(WARNING, "Unknown config variable: {}", var_name);
-                return;
-            }
+        vm.define("set_float", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "set_float");
+            SetFloatValue(ArgString(args, 0), static_cast<float>(args[1].asFloat()));
+            return solis::Value();
+        });
 
-            auto& var = config_map[var_name];
-            if (std::holds_alternative<bool*>(var)) {
-                *std::get<bool*>(var) = (value == "true" || value == "1");
-            } else if (std::holds_alternative<int*>(var)) {
-                *std::get<int*>(var) = static_cast<int>(EvaluateArithmetic(value));
-            } else if (std::holds_alternative<float*>(var)) {
-                *std::get<float*>(var) = EvaluateArithmetic(value);
-            } else {
-                LOGF(WARNING, "Config variable '{}' is a color; use setcolor instead", var_name);
-                return;
-            }
+        vm.define("set_color", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 5, "set_color");
+            SetColorValue(ArgString(args, 0),
+                static_cast<float>(args[1].asFloat()),
+                static_cast<float>(args[2].asFloat()),
+                static_cast<float>(args[3].asFloat()),
+                static_cast<float>(args[4].asFloat()));
+            return solis::Value();
+        });
 
-            LOGF(VERBOSE, "Set config variable '{}' to '{}'", var_name, value);
-        };
+        vm.define("get_bool", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "get_bool");
+            return solis::Value::boolean(GetBoolValue(ArgString(args, 0)));
+        });
 
-        command_map["setcolor"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 5) {
-                LOGF(WARNING, "setcolor requires 5 arguments: variable r g b a");
-                return;
-            }
-            
-            const std::string& var_name = args[0];
-            try {
-                float r = EvaluateArithmetic(args[1]);
-                float g = EvaluateArithmetic(args[2]);
-                float b = EvaluateArithmetic(args[3]);
-                float a = EvaluateArithmetic(args[4]);
-                SetColorValue(var_name, r, g, b, a);
-            } catch (const std::exception& e) {
-                LOGF(WARNING, "Error setting color {}: {}", var_name, e.what());
-            }
-        };
+        vm.define("get_int", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "get_int");
+            return solis::Value::integer(GetIntValue(ArgString(args, 0)));
+        });
 
-        command_map["resettheme"] = [this](const std::vector<std::string>&) {
+        vm.define("get_float", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "get_float");
+            return solis::Value::number(GetFloatValue(ArgString(args, 0)));
+        });
+
+        vm.define("get_color", [this](solis::Vm& vm, solis::Args args) {
+            RequireArgs(args, 1, "get_color");
+            return vm.string(GetColorValue(ArgString(args, 0)));
+        });
+
+        vm.define("reset_theme", [](solis::Vm&, solis::Args) {
             theme::ThemeManager::Get().RequestReset();
-        };
+            return solis::Value();
+        });
 
-        command_map["get"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) {
-                LOGF(WARNING, "get requires 2 arguments: variable destination");
-                return;
-            }
-            
-            const std::string& var_name = args[0];
-            const std::string& dest_var = args[1];
-            
-            std::string value = GetConfigValue(var_name);
-            variables[dest_var] = value;
-            LOGF(INFO, "get {} -> ${} = {}", var_name, dest_var, value);
-        };
+        vm.define("echo", [](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "echo");
+            LOGF(INFO, "{}", args[0].toString());
+            return solis::Value();
+        });
 
-        command_map["var"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) return;
-            const std::string& var_name = args[0];
+        vm.define("print", [](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "print");
+            LOGF(INFO, "{}", args[0].toString());
+            return solis::Value();
+        });
 
-            if (global_variables.find(var_name) != global_variables.end()) {
-                LOGF(WARNING, "Global variable '{}' is read-only", var_name);
-                return;
+        vm.define("bind", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "bind");
+            if (!initializing) {
+                LOGF(WARNING, "bind() can only be called from main()");
+                return solis::Value();
             }
+            RegisterBind(ArgString(args, 0), ArgString(args, 1));
+            return solis::Value();
+        });
 
-            std::string value = args[1];
-            
-            // Evaluate if needed
-            if (value.find_first_of("+-*/") != std::string::npos || value[0] == '$') {
-                value = EvaluateExpression(value);
+        vm.define("hold", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "hold");
+            if (!initializing) {
+                LOGF(WARNING, "hold() can only be called from main()");
+                return solis::Value();
             }
-            
-            variables[var_name] = value;
-            LOGF(INFO, "var ${} = {}", var_name, value);
-        };
+            RegisterHoldKey(ArgString(args, 0), ArgString(args, 1));
+            return solis::Value();
+        });
 
-        command_map["echo"] = [this](const std::vector<std::string>& args) {
-            if (args.empty()) return;
-            std::string msg;
-            for (const auto& arg : args) {
-                if (!msg.empty()) msg += " ";
-                msg += (arg[0] == '$') ? EvaluateExpression(arg) : arg;
-            }
-            LOGF(INFO, "echo: {}", msg);
-        };
+        vm.define("client_base", [](solis::Vm&, solis::Args) {
+            return solis::Value::integer(static_cast<int64_t>(Engine::GetClient().base));
+        });
 
-        command_map["run"] = [this](const std::vector<std::string>& args) {
-            if (args.empty()) {
-                LOGF(WARNING, "run requires macro name");
-                return;
-            }
-            
-            const std::string& macro_name = args[0];
-            
-            if (macros.count(macro_name)) {
-                LOGF(INFO, "Running macro: {}", macro_name);
-                for (const auto& macro_cmd : macros[macro_name].commands) {
-                    ExecuteCommand(macro_cmd);
-                }
-            } else {
-                LOGF(WARNING, "Macro '{}' not found", macro_name);
-            }
-        };
+        vm.define("engine_base", [](solis::Vm&, solis::Args) {
+            return solis::Value::integer(static_cast<int64_t>(Engine::GetEngine().base));
+        });
+
+        vm.define("menu_open", [](solis::Vm&, solis::Args) {
+            return solis::Value::boolean(Renderer::IsOpen());
+        });
+
+        vm.define("menu_x", [](solis::Vm&, solis::Args) {
+            return solis::Value::integer(static_cast<int64_t>(Menu::GetPos().x));
+        });
+
+        vm.define("menu_y", [](solis::Vm&, solis::Args) {
+            return solis::Value::integer(static_cast<int64_t>(Menu::GetPos().y));
+        });
 
 #ifdef _DEBUG
-        // Dangerous stuff
-        command_map["send"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 1) {
-                LOGF(WARNING, "send requires: key [duration_ms] [repeat_count]");
-                return;
-            }
-            
-            int vk_code = ParseKeyCode(args[0]);
-            int duration_ms = args.size() > 1 ? std::stoi(EvaluateExpression(args[1])) : 50;
-            int repeat_count = args.size() > 2 ? std::stoi(EvaluateExpression(args[2])) : 1;
-            
-            SendInput(vk_code, duration_ms, repeat_count);
-        };
+        vm.define("send", [this](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "send");
+            const int key = ParseKeyCode(ArgString(args, 0));
+            const int duration = args.size() > 1 ? static_cast<int>(args[1].asInt()) : 50;
+            const int repeat = args.size() > 2 ? static_cast<int>(args[2].asInt()) : 1;
+            SendInput(key, duration, repeat);
+            return solis::Value();
+        });
 
-        command_map["!read"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) {
-                LOGF(WARNING, "!read requires: variable_name address");
-                return;
-            }
-            
-            const std::string& var_name = args[0];
-            uintptr_t address = std::stoull(EvaluateExpression(args[1]), nullptr, 16);
-            ReadMemory(var_name, address);
-        };
+        vm.define("read_int", [](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 1, "read_int");
+            const auto address = static_cast<uintptr_t>(args[0].asInt());
+            return solis::Value::integer(Engine::GetProcess()->read<int>(address));
+        });
 
-        command_map["!write"] = [this](const std::vector<std::string>& args) {
-            if (args.size() < 2) {
-                LOGF(WARNING, "!write requires: variable_name address");
-                return;
-            }
-            
-            const std::string& var_name = args[0];
-            uintptr_t address = std::stoull(EvaluateExpression(args[1]), nullptr, 16);
-            WriteMemory(var_name, address);
-        };
+        vm.define("write_int", [](solis::Vm&, solis::Args args) {
+            RequireArgs(args, 2, "write_int");
+            const auto address = static_cast<uintptr_t>(args[0].asInt());
+            Engine::GetProcess()->write<int>(address, static_cast<int>(args[1].asInt()));
+            return solis::Value();
+        });
 #endif
     }
 
-    void Scripting::Update() {
-        UpdateGlobalVariables();
 
-        if (std::filesystem::exists("scripts.esp")) {
-            auto current_write_time = std::filesystem::last_write_time("scripts.esp");
-            if (current_write_time != last_load_time) {
-                LOGF(INFO, "scripts.esp changed, reloading...");
+    // Prelude, this exports the methods that can be used by the scripts from the esp
+    void Scripting::WritePrelude() {
+        std::string text = R"(extern func set_bool(name: str, value: bool);
+extern func set_int(name: str, value: int);
+extern func set_float(name: str, value: float);
+extern func set_color(name: str, r: float, g: float, b: float, a: float);
+extern func get_bool(name: str): bool;
+extern func get_int(name: str): int;
+extern func get_float(name: str): float;
+extern func get_color(name: str): str;
+
+extern func reset_theme();
+extern func echo(message: str);
+extern func print(message: str);
+
+extern func bind(key: str, macro: str);
+extern func hold(key: str, macro: str);
+
+extern func client_base(): int;
+extern func engine_base(): int;
+extern func menu_open(): bool;
+extern func menu_x(): int;
+extern func menu_y(): int;
+)";
+
+#ifdef _DEBUG
+        text += R"(
+extern func send(key: str, duration_ms: int, repeat_count: int);
+extern func read_int(address: int): int;
+extern func write_int(address: int, value: int);
+)";
+#endif
+
+        const std::filesystem::path prelude = std::filesystem::path(kScriptPath).parent_path() / "prelude.sl";
+
+        std::ofstream out(prelude, std::ios::trunc);
+        if (!out.is_open()) {
+            LOGF(WARNING, "Could not write {}", prelude.string());
+            return;
+        }
+
+        out << text;
+    }
+
+    void Scripting::LoadScripts() {
+        std::error_code ec;
+        if (!std::filesystem::exists(kScriptPath, ec)) {
+            LOGF(WARNING, "No {} found", kScriptPath);
+            return;
+        }
+
+        last_load_time = std::filesystem::last_write_time(kScriptPath, ec);
+
+        macros.clear();
+        keybinds.clear();
+        key_states.clear();
+
+        WritePrelude();
+
+        SolisScript::CompiledScript script;
+        if (!SolisScript::Compile(kScriptPath, script)) {
+            LOGF(WARNING, "Failed to compile {}", kScriptPath);
+            std::lock_guard<std::mutex> lock(image_mutex);
+            init_image.clear();
+            macro_images.clear();
+            return;
+        }
+
+        std::unordered_map<std::string, std::vector<uint8_t>> images;
+        for (const auto& function : script.functions) {
+            std::vector<uint8_t> image;
+            if (!SolisScript::CompileMacro(kScriptPath, function, image)) {
+                LOGF(WARNING, "Failed to compile macro '{}'", function);
+                continue;
+            }
+            images.emplace(function, std::move(image));
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(image_mutex);
+            init_image = std::move(script.image);
+            macro_images = std::move(images);
+        }
+
+        for (const auto& [name, image] : macro_images) {
+            (void)image;
+            macros[name].gui_accessible = name.front() != '_';
+        }
+
+        initializing = true;
+        RunInit();
+        initializing = false;
+
+        LOGF(INFO, "Loaded {} macro(s) from {}", macros.size(), kScriptPath);
+    }
+
+    void Scripting::RunInit() {
+        std::vector<uint8_t> image;
+        {
+            std::lock_guard<std::mutex> lock(image_mutex);
+            image = init_image;
+        }
+
+        RunImage(image, "main");
+    }
+
+    void Scripting::RunMacro(const std::string& name) {
+        std::vector<uint8_t> image;
+        {
+            std::lock_guard<std::mutex> lock(image_mutex);
+            const auto it = macro_images.find(name);
+            if (it != macro_images.end()) {
+                image = it->second;
+            }
+        }
+
+        if (image.empty()) {
+            LOGF(WARNING, "Unknown macro: {}", name);
+            return;
+        }
+
+        RunImage(image, name);
+    }
+
+    void Scripting::RunImage(const std::vector<uint8_t>& image, const std::string& label) {
+        if (image.empty()) {
+            return;
+        }
+
+        try {
+            solis::Vm vm;
+            vm.openStd();
+            RegisterNatives(vm);
+            vm.load(image);
+            vm.run();
+        }
+        catch (const solis::Error& e) {
+            LOGF(WARNING, "Solis error in '{}': {}", label, e.what());
+        }
+        catch (const std::exception& e) {
+            LOGF(WARNING, "Error in '{}': {}", label, e.what());
+        }
+    }
+
+    void Scripting::Update() {
+        std::error_code ec;
+        if (std::filesystem::exists(kScriptPath, ec)) {
+            const auto write_time = std::filesystem::last_write_time(kScriptPath, ec);
+            if (!ec && write_time != last_load_time) {
+                LOGF(INFO, "{} changed, reloading", kScriptPath);
                 LoadScripts();
             }
         }
 
         for (const auto& bind : keybinds) {
-            bool is_pressed = (GetAsyncKeyState(bind.key) & 0x8000);
-            if (is_pressed && !key_states[bind.key] && active_macro_count == 0) {
-                ExecuteCommand(bind.action);
+            const bool pressed = (GetAsyncKeyState(bind.key) & 0x8000) != 0;
+            if (pressed && !key_states[bind.key] && active_macro_count == 0) {
+                QueueMacro(bind.macro);
             }
-            key_states[bind.key] = is_pressed;
+            key_states[bind.key] = pressed;
         }
 
         for (const auto& [name, macro] : macros) {
@@ -292,417 +428,212 @@ namespace scripting {
                 continue;
             }
 
-            bool is_pressed = input::IsPhysicalInputDown(macro.hold_key);
-            if (is_pressed && !key_states[macro.hold_key] && active_macro_count == 0) {
-                ExecuteCommand(name);
+            const bool pressed = input::IsPhysicalInputDown(macro.hold_key);
+            if (pressed && !key_states[macro.hold_key] && active_macro_count == 0) {
+                QueueMacro(name, macro.hold_key);
             }
-            key_states[macro.hold_key] = is_pressed;
+            key_states[macro.hold_key] = pressed;
         }
     }
 
-    void Scripting::ExecuteCommand(const std::string& command_line) {
-        std::lock_guard<std::mutex> lock(queue_mutex);
-        command_queue.push(command_line);
+    void Scripting::ExecuteMacro(const std::string& name) {
+        QueueMacro(name);
     }
 
-    void Scripting::CommandWorkerThread() {
+    void Scripting::QueueMacro(const std::string& name, int hold_key) {
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        macro_queue.push(PendingMacro{ name, hold_key });
+    }
+
+    void Scripting::WorkerThread() {
         while (!shutdown_thread) {
-            std::string command_to_execute;
-            
+            PendingMacro pending;
+            bool has_macro = false;
+
             {
                 std::lock_guard<std::mutex> lock(queue_mutex);
-                if (!command_queue.empty()) {
-                    command_to_execute = command_queue.front();
-                    command_queue.pop();
+                if (!macro_queue.empty()) {
+                    pending = std::move(macro_queue.front());
+                    macro_queue.pop();
+                    has_macro = true;
                 }
             }
-            
-            if (!command_to_execute.empty()) {
-                ExecuteCommandInternal(command_to_execute);
-            } else {
+
+            if (!has_macro) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
-        }
-    }
-
-    void Scripting::ExecuteCommandInternal(const std::string& command_line) {
-        std::stringstream ss(command_line);
-        std::string cmd;
-        ss >> cmd;
-
-        std::vector<std::string> args;
-        std::string arg;
-        while (ss >> arg) {
-            args.push_back(arg);
-        }
-
-        try {
-            ProcessCommand(cmd, args);
-        }
-        catch (std::exception& e) {
-            LOGF(FATAL, "Caught exception on command execution: {}", e.what());
-        }
-    }
-
-    void Scripting::ProcessCommand(const std::string& cmd, const std::vector<std::string>& args) {
-        if (command_map.count(cmd)) {
-            command_map[cmd](args);
-        } else if (macros.count(cmd)) {
-            const Macro& macro = macros[cmd];
-            if (macro.hold_key != 0 && !input::IsPhysicalInputDown(macro.hold_key)) {
-                LOGF(VERBOSE, "Ignoring hold macro '{}' because its trigger key is not pressed", cmd);
-                return;
+                continue;
             }
 
             active_macro_count.fetch_add(1);
-            active_hold_key = macro.hold_key;
-            LOGF(INFO, "Executing macro: {}", cmd);
-            
-            for (const auto& macro_cmd : macro.commands) {
-                if (macro.hold_key != 0 && !input::IsPhysicalInputDown(macro.hold_key)) {
-                    break;
-                }
-                ExecuteCommandInternal(macro_cmd);
-            }
-
+            active_hold_key = pending.hold_key;
+            RunMacro(pending.name);
             active_hold_key = 0;
             active_macro_count.fetch_sub(1);
-        } else {
-            LOGF(WARNING, "Unknown command or macro: {}", cmd);
         }
     }
 
-    void Scripting::LoadScripts() {
-        std::ifstream f("scripts.esp");
-        if (!f.is_open()) {
-            LOGF(INFO, "No scripts.esp found, skipping");
+    void Scripting::SetBoolValue(const std::string& name, bool value) {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
             return;
         }
 
-        keybinds.clear();
-        macros.clear();
-
-        std::string line;
-        std::string current_macro = "";
-        bool in_braces = false;
-        int brace_depth = 0;
-        
-        while (std::getline(f, line)) {
-            // Trim
-            size_t first = line.find_first_not_of(" \t");
-            if (first == std::string::npos) continue;
-            line = line.substr(first);
-            
-            if (line.empty() || line[0] == '#') continue;
-
-            // opening brace
-            if (!current_macro.empty() && line.find("{") != std::string::npos) {
-                in_braces = true;
-                brace_depth++;
-                continue;
-            }
-
-            // closing brace
-            if (in_braces && line.find("}") != std::string::npos) {
-                brace_depth--;
-                if (brace_depth == 0) {
-                    in_braces = false;
-                    
-                    current_macro = "";
-                }
-                continue;
-            }
-
-            if (line.find("hold ") == 0) {
-                current_macro = "";
-                in_braces = false;
-                std::stringstream ss(line.substr(5));
-                std::string key_text;
-                std::string macro_name;
-                if (ss >> key_text >> macro_name) {
-                    if (!macro_name.empty() && macro_name.front() == '@') {
-                        macro_name.erase(0, 1);
-                    }
-                    RegisterHoldKey(macro_name, key_text);
-                } else {
-                    LOGF(WARNING, "hold requires: key macro_name");
-                }
-            } else if (line.find("bind ") == 0) {
-                current_macro = "";
-                in_braces = false;
-                std::stringstream ss(line.substr(5));
-                std::string key_str;
-                std::string action;
-                if (ss >> key_str >> action) {
-                    int key = ParseKeyCode(key_str);
-                    if (key != 0) {
-                        keybinds.push_back({ key, action });
-                        LOGF(INFO, "Bound key '{}' ({}) to action '{}'", key_str, key, action);
-                    } else {
-                        LOGF(WARNING, "Unknown key name: {}", key_str);
-                    }
-                }
-            } else if (line.find("macro ") == 0) {
-                in_braces = false;
-                std::stringstream ss(line.substr(6));
-                std::string name;
-                if (ss >> name) {
-                    bool gui_accessible = false;
-                    if (name[0] == '@') {
-                        gui_accessible = true;
-                        name = name.substr(1);
-                    }
-                    
-                    current_macro = name;
-                    macros[name].name = name;
-                    macros[name].gui_accessible = gui_accessible;
-                    
-                    std::string rest;
-                    std::getline(ss, rest);
-                    
-                    size_t brace_pos = rest.find("{");
-                    if (brace_pos != std::string::npos) {
-                        in_braces = true;
-                        brace_depth++;
-                    }
-                }
-            } else if (in_braces && !current_macro.empty()) {
-                macros[current_macro].commands.push_back(line);
-                // Check for dangerous commands
-                std::stringstream cmd_ss(line);
-                std::string cmd;
-                cmd_ss >> cmd;
-                if (IsDangerousCommand(cmd)) {
-                    macros[current_macro].contains_dangerous_commands = true;
-                    has_dangerous_scripts = true;
-                }
-            } else if (!in_braces && !current_macro.empty() && (line[0] == ' ' || line[0] == '\t')) {
-                size_t cmd_start = line.find_first_not_of(" \t");
-                if (cmd_start != std::string::npos) {
-                    std::string cmd_line = line.substr(cmd_start);
-                    macros[current_macro].commands.push_back(cmd_line);
-                    // Check for dangerous commands
-                    std::stringstream cmd_ss(cmd_line);
-                    std::string cmd;
-                    cmd_ss >> cmd;
-                    if (IsDangerousCommand(cmd)) {
-                        macros[current_macro].contains_dangerous_commands = true;
-                        has_dangerous_scripts = true;
-                    }
-                }
-            } else if (!in_braces) {
-                // Top-level command - execute immediately during script load (not async)
-                current_macro = "";
-                ExecuteCommandInternal(line);
-            }
-        }
-
-        if (std::filesystem::exists("scripts.esp")) {
-            last_load_time = std::filesystem::last_write_time("scripts.esp");
-        }
-
-        // Warn about dangerous scripts
-        if (has_dangerous_scripts) {
-            MessageBeep(MB_ICONERROR);
-            LOGF(WARNING, "=======================================================");
-            LOGF(WARNING, "WARNING: Script contains DANGEROUS commands!");
-            LOGF(WARNING, "Commands detected: send, !read, or !write");
-            LOGF(WARNING, "These can:");
-            LOGF(WARNING, "  - Modify game memory (crash/instability)");
-            LOGF(WARNING, "  - Send inputs (automation detection)");
-            LOGF(WARNING, "  - Trigger anti-cheat systems");
-            LOGF(WARNING, "USE AT YOUR OWN RISK!");
-            LOGF(WARNING, "=======================================================");
-        }
-
-        LOGF(INFO, "Scripts loaded successfully - {} macros, {} keybinds", macros.size(), keybinds.size());
-    }
-
-    std::string Scripting::EvaluateExpression(const std::string& expr) {
-        if (expr[0] == '$') {
-            std::string var_name = expr.substr(1);
-            if (variables.find(var_name) != variables.end()) {
-                return variables[var_name];
-            }
-            return "0";
-        }
-
-        if (expr.find_first_of("+-*/") != std::string::npos) {
-            return std::to_string(EvaluateArithmetic(expr));
-        }
-
-        return expr;
-    }
-
-    float Scripting::EvaluateArithmetic(const std::string& expr) {
-        std::string eval_expr = expr;
-        
-        size_t pos = 0;
-        while ((pos = eval_expr.find('$', pos)) != std::string::npos) {
-            size_t end = eval_expr.find_first_of(" +-*/()", pos + 1);
-            if (end == std::string::npos) end = eval_expr.length();
-            
-            std::string var_name = eval_expr.substr(pos + 1, end - pos - 1);
-            std::string value = "0";
-            if (variables.find(var_name) != variables.end()) {
-                value = variables[var_name];
-            }
-            
-            eval_expr.replace(pos, end - pos, value);
-            pos += value.length();
-        }
-
-        try {
-            eval_expr.erase(std::remove(eval_expr.begin(), eval_expr.end(), ' '), eval_expr.end());
-
-            size_t mul_pos;
-            while ((mul_pos = eval_expr.find('*')) != std::string::npos || 
-                   (mul_pos = eval_expr.find('/')) != std::string::npos) {
-                char op = eval_expr[mul_pos];
-                
-                size_t left_start = mul_pos;
-                while (left_start > 0 && (std::isdigit(eval_expr[left_start - 1]) || 
-                                          eval_expr[left_start - 1] == '.' ||
-                                          eval_expr[left_start - 1] == '-')) {
-                    left_start--;
-                }
-
-                size_t right_end = mul_pos + 1;
-                if (right_end < eval_expr.length() && eval_expr[right_end] == '-') {
-                    right_end++; // Handle neg numbers
-                }
-                while (right_end < eval_expr.length() && 
-                       (std::isdigit(eval_expr[right_end]) || eval_expr[right_end] == '.')) {
-                    right_end++;
-                }
-                
-                float left = std::stof(eval_expr.substr(left_start, mul_pos - left_start));
-                float right = std::stof(eval_expr.substr(mul_pos + 1, right_end - mul_pos - 1));
-                float result = (op == '*') ? (left * right) : (left / right);
-                
-                eval_expr.replace(left_start, right_end - left_start, std::to_string(result));
-            }
-            
-            float result = 0;
-            size_t i = 0;
-            bool is_negative = false;
-            
-            if (!eval_expr.empty() && eval_expr[0] == '-') {
-                is_negative = true;
-                i = 1;
-            }
-            
-            size_t start = i;
-            while (i <= eval_expr.length()) {
-                if (i == eval_expr.length() || eval_expr[i] == '+' || 
-                    (eval_expr[i] == '-' && i > 0)) {
-                    if (i > start) {
-                        float num = std::stof(eval_expr.substr(start, i - start));
-                        result += is_negative ? -num : num;
-                    }
-                    
-                    if (i < eval_expr.length()) {
-                        is_negative = (eval_expr[i] == '-');
-                        start = i + 1;
-                    }
-                }
-                i++;
-            }
-            
-            return result;
-        } catch (const std::exception& e) {
-            LOGF(WARNING, "Error evaluating arithmetic '{}': {}", expr, e.what());
-            return 0.0f;
+        if (auto* var = std::get_if<bool*>(&it->second)) {
+            **var = value;
+        } else if (auto* var = std::get_if<int*>(&it->second)) {
+            **var = value ? 1 : 0;
+        } else if (auto* var = std::get_if<float*>(&it->second)) {
+            **var = value ? 1.0f : 0.0f;
+        } else {
+            LOGF(WARNING, "{} is a color, use set_color", name);
         }
     }
 
-    std::string Scripting::GetConfigValue(const std::string& var_name) {
-        if (global_variables.find(var_name) != global_variables.end()) {
-            return global_variables[var_name];
+    void Scripting::SetIntValue(const std::string& name, int value) {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return;
         }
 
-        if (config_map.find(var_name) == config_map.end()) {
-            LOGF(WARNING, "Unknown config variable: {}", var_name);
-            return "0";
-        }
-
-        auto& var = config_map[var_name];
-        if (std::holds_alternative<bool*>(var)) {
-            return *std::get<bool*>(var) ? "true" : "false";
-        } else if (std::holds_alternative<int*>(var)) {
-            return std::to_string(*std::get<int*>(var));
-        } else if (std::holds_alternative<float*>(var)) {
-            return std::to_string(*std::get<float*>(var));
-        } else if (std::holds_alternative<color_t*>(var)) {
-            auto* color = std::get<color_t*>(var);
-            return std::to_string(color->data()[0]) + "," + 
-                   std::to_string(color->data()[1]) + "," + 
-                   std::to_string(color->data()[2]) + "," + 
-                   std::to_string(color->data()[3]);
-        }
-        
-        return "0";
-    }
-
-    void Scripting::UpdateGlobalVariables() {
-        const auto client_base = Engine::GetClient().base;
-        const auto engine_base = Engine::GetEngine().base;
-        const auto menu_pos = Menu::GetPos();
-
-        std::ostringstream client_base_value;
-        client_base_value << "0x" << std::hex << std::uppercase << client_base;
-
-        std::ostringstream engine_base_value;
-        engine_base_value << "0x" << std::hex << std::uppercase << engine_base;
-
-        global_variables["client.base"] = client_base_value.str();
-        global_variables["engine2.base"] = engine_base_value.str();
-        global_variables["menu.open"] = Renderer::IsOpen() ? "true" : "false";
-        global_variables["menu.pos.x"] = std::to_string(menu_pos.x);
-        global_variables["menu.pos.y"] = std::to_string(menu_pos.y);
-
-        for (const auto& [name, value] : global_variables) {
-            variables[name] = value;
+        if (auto* var = std::get_if<int*>(&it->second)) {
+            **var = value;
+        } else if (auto* var = std::get_if<float*>(&it->second)) {
+            **var = static_cast<float>(value);
+        } else if (auto* var = std::get_if<bool*>(&it->second)) {
+            **var = value != 0;
+        } else {
+            LOGF(WARNING, "{} is a color, use set_color", name);
         }
     }
 
-    void Scripting::SetColorValue(const std::string& var_name, float r, float g, float b, float a) {
-        // Priority to the config color values
-        if (config_map.find(var_name) != config_map.end()) {
-            auto& var = config_map[var_name];
-            if (std::holds_alternative<color_t*>(var)) {
-                auto* color = std::get<color_t*>(var);
+    void Scripting::SetFloatValue(const std::string& name, float value) {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return;
+        }
+
+        if (auto* var = std::get_if<float*>(&it->second)) {
+            **var = value;
+        } else if (auto* var = std::get_if<int*>(&it->second)) {
+            **var = static_cast<int>(value);
+        } else if (auto* var = std::get_if<bool*>(&it->second)) {
+            **var = value != 0.0f;
+        } else {
+            LOGF(WARNING, "{} is a color, use set_color", name);
+        }
+    }
+
+    void Scripting::SetColorValue(const std::string& name, float r, float g, float b, float a) {
+        const auto it = config_map.find(name);
+        if (it != config_map.end()) {
+            if (auto* var = std::get_if<color_t*>(&it->second)) {
+                color_t* color = *var;
                 color->r = std::clamp(r, 0.0f, 1.0f);
                 color->g = std::clamp(g, 0.0f, 1.0f);
                 color->b = std::clamp(b, 0.0f, 1.0f);
                 color->a = std::clamp(a, 0.0f, 1.0f);
-                LOGF(VERBOSE, "Set color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
             } else {
-                LOGF(WARNING, "{} is not a color variable", var_name);
+                LOGF(WARNING, "{} is not a color variable", name);
             }
             return;
         }
 
-        // Fallback to imgui theme color modifier
-        if (theme::ThemeManager::Get().SetColor(var_name, r, g, b, a)) {
-            LOGF(INFO, "Set UI color {}: ({}, {}, {}, {})", var_name, r, g, b, a);
-        } else {
-            LOGF(WARNING, "Unknown color variable: {}", var_name);
+        if (!theme::ThemeManager::Get().SetColor(name, r, g, b, a)) {
+            LOGF(WARNING, "Unknown color variable: {}", name);
         }
     }
 
+    bool Scripting::GetBoolValue(const std::string& name) const {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return false;
+        }
+
+        if (const auto* var = std::get_if<bool*>(&it->second)) return **var;
+        if (const auto* var = std::get_if<int*>(&it->second)) return **var != 0;
+        if (const auto* var = std::get_if<float*>(&it->second)) return **var != 0.0f;
+        return false;
+    }
+
+    int Scripting::GetIntValue(const std::string& name) const {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return 0;
+        }
+
+        if (const auto* var = std::get_if<int*>(&it->second)) return **var;
+        if (const auto* var = std::get_if<float*>(&it->second)) return static_cast<int>(**var);
+        if (const auto* var = std::get_if<bool*>(&it->second)) return **var ? 1 : 0;
+        return 0;
+    }
+
+    float Scripting::GetFloatValue(const std::string& name) const {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return 0.0f;
+        }
+
+        if (const auto* var = std::get_if<float*>(&it->second)) return **var;
+        if (const auto* var = std::get_if<int*>(&it->second)) return static_cast<float>(**var);
+        if (const auto* var = std::get_if<bool*>(&it->second)) return **var ? 1.0f : 0.0f;
+        return 0.0f;
+    }
+
+    std::string Scripting::GetColorValue(const std::string& name) const {
+        const auto it = config_map.find(name);
+        if (it == config_map.end()) {
+            LOGF(WARNING, "Unknown config variable: {}", name);
+            return "0,0,0,0";
+        }
+
+        if (const auto* var = std::get_if<color_t*>(&it->second)) {
+            const color_t* color = *var;
+            return std::to_string(color->r) + "," +
+                   std::to_string(color->g) + "," +
+                   std::to_string(color->b) + "," +
+                   std::to_string(color->a);
+        }
+
+        return "0,0,0,0";
+    }
+
+    void Scripting::RegisterBind(const std::string& key, const std::string& macro) {
+        const int code = ParseKeyCode(key);
+        if (code == 0) {
+            LOGF(WARNING, "Unknown key name: {}", key);
+            return;
+        }
+
+        keybinds.push_back({ code, macro });
+        LOGF(INFO, "Bound {} to {}", key, macro);
+    }
+
+    void Scripting::RegisterHoldKey(const std::string& key, const std::string& macro) {
+        const int code = ParseKeyCode(key);
+        if (code == 0) {
+            LOGF(WARNING, "Unknown hold key name: {}", key);
+            return;
+        }
+
+        macros[macro].hold_key = code;
+        LOGF(INFO, "Holding {} runs {}", key, macro);
+    }
+
     void Scripting::InitKeyNameMap() {
-        // Letters A-Z
         for (char c = 'A'; c <= 'Z'; c++) {
             key_name_map[std::string(1, c)] = c;
         }
-        
-        // Numbers 0-9
+
         for (char c = '0'; c <= '9'; c++) {
             key_name_map[std::string(1, c)] = c;
         }
-        
-        // fn keys
+
         key_name_map["F1"] = VK_F1;
         key_name_map["F2"] = VK_F2;
         key_name_map["F3"] = VK_F3;
@@ -715,8 +646,7 @@ namespace scripting {
         key_name_map["F10"] = VK_F10;
         key_name_map["F11"] = VK_F11;
         key_name_map["F12"] = VK_F12;
-        
-        // special keys
+
         key_name_map["SPACE"] = VK_SPACE;
         key_name_map["ENTER"] = VK_RETURN;
         key_name_map["RETURN"] = VK_RETURN;
@@ -734,14 +664,12 @@ namespace scripting {
         key_name_map["PGUP"] = VK_PRIOR;
         key_name_map["PAGEDOWN"] = VK_NEXT;
         key_name_map["PGDN"] = VK_NEXT;
-        
-        // dir keys
+
         key_name_map["LEFT"] = VK_LEFT;
         key_name_map["RIGHT"] = VK_RIGHT;
         key_name_map["UP"] = VK_UP;
         key_name_map["DOWN"] = VK_DOWN;
-        
-        // mod keys
+
         key_name_map["SHIFT"] = VK_SHIFT;
         key_name_map["LSHIFT"] = VK_LSHIFT;
         key_name_map["RSHIFT"] = VK_RSHIFT;
@@ -752,8 +680,7 @@ namespace scripting {
         key_name_map["ALT"] = VK_MENU;
         key_name_map["LALT"] = VK_LMENU;
         key_name_map["RALT"] = VK_RMENU;
-        
-        // nump
+
         key_name_map["NUM0"] = VK_NUMPAD0;
         key_name_map["NUM1"] = VK_NUMPAD1;
         key_name_map["NUM2"] = VK_NUMPAD2;
@@ -765,8 +692,7 @@ namespace scripting {
         key_name_map["NUM8"] = VK_NUMPAD8;
         key_name_map["NUM9"] = VK_NUMPAD9;
         key_name_map["NUMLOCK"] = VK_NUMLOCK;
-        
-        // symbol
+
         key_name_map["MINUS"] = VK_OEM_MINUS;
         key_name_map["PLUS"] = VK_OEM_PLUS;
         key_name_map["COMMA"] = VK_OEM_COMMA;
@@ -778,8 +704,7 @@ namespace scripting {
         key_name_map["BACKSLASH"] = VK_OEM_5;
         key_name_map["RBRACKET"] = VK_OEM_6;
         key_name_map["QUOTE"] = VK_OEM_7;
-        
-        // mouse
+
         key_name_map["MOUSE1"] = VK_LBUTTON;
         key_name_map["MOUSE2"] = VK_RBUTTON;
         key_name_map["MOUSE3"] = VK_MBUTTON;
@@ -788,52 +713,24 @@ namespace scripting {
     }
 
     int Scripting::ParseKeyCode(const std::string& key_str) {
-        // parse numeric key code first
         try {
-            int key_code = std::stoi(key_str);
-            if (key_code > 0 && key_code < 256) {
-                return key_code;
+            const int code = std::stoi(key_str);
+            if (code > 0 && code < 256) {
+                return code;
             }
-        } catch (...) {
-            // Not a number
         }
-        
-        // Convert to uppercase
-        std::string upper_key = key_str;
-        std::transform(upper_key.begin(), upper_key.end(), upper_key.begin(), ::toupper);
-        
-        // Look up key
-        auto it = key_name_map.find(upper_key);
+        catch (...) {
+        }
+
+        std::string key = key_str;
+        std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+        const auto it = key_name_map.find(key);
         if (it != key_name_map.end()) {
             return it->second;
         }
-        
-        return 0; // Unknown
-    }
 
-    void Scripting::RegisterHoldKey(const std::string& macro_name, std::string key_text) {
-        size_t end = key_text.find_first_of(" \t;");
-        if (end != std::string::npos) {
-            key_text = key_text.substr(0, end);
-        }
-
-        int hold_key = ParseKeyCode(key_text);
-        if (hold_key == 0) {
-            LOGF(WARNING, "Unknown hold key name: {}", key_text);
-            return;
-        }
-        auto macro = macros.find(macro_name);
-        if (macro == macros.end()) {
-            LOGF(WARNING, "Cannot register hold key for missing macro '{}'", macro_name);
-            return;
-        }
-
-        macro->second.hold_key = hold_key;
-        LOGF(INFO, "Bound hold key '{}' ({}) to action '{}'", key_text, hold_key, macro_name);
-    }
-
-    bool Scripting::IsDangerousCommand(const std::string& cmd) {
-        return (cmd == "send" || cmd == "!read" || cmd == "!write");
+        return 0;
     }
 
 #ifdef _DEBUG
@@ -843,8 +740,6 @@ namespace scripting {
             return;
         }
 
-        LOGF(INFO, "Sending input: key={}, duration={}ms, repeat={}", vk_code, duration_ms, repeat_count);
-
         for (int i = 0; i < repeat_count; i++) {
             if (shutdown_thread || !Renderer::IsFocused()) {
                 break;
@@ -852,35 +747,17 @@ namespace scripting {
 
             const int hold_key = active_hold_key.load();
             if (hold_key != 0 && !input::IsPhysicalInputDown(hold_key)) {
-                LOGF(INFO, "Hold key released - stopping repeated input");
                 break;
             }
 
             input::SendVirtualInput(vk_code, true);
             Sleep(duration_ms);
             input::SendVirtualInput(vk_code, false);
-            
+
             if (i < repeat_count - 1) {
-                Sleep(10); // Small delay between repeats
+                Sleep(10);
             }
         }
     }
-
-    void Scripting::ReadMemory(const std::string& var_name, uintptr_t address) {
-        LOGF(WARNING, "!read command: Reading from address 0x{:X} into variable ${}", address, var_name);
-        variables[var_name] = Engine::GetProcess()->read<int>(address);
-
-    }
-
-    void Scripting::WriteMemory(const std::string& var_name, uintptr_t address) {
-        if (variables.find(var_name) == variables.end()) {
-            LOGF(WARNING, "Variable ${} not found for !write", var_name);
-            return;
-        }
-        int value = std::stoi(variables[var_name]);
-        Engine::GetProcess()->write<int>(address, value);
-        LOGF(WARNING, "!write command: Writing ${} to address 0x{:X}", var_name, address);
-    }
 #endif
-
 }
