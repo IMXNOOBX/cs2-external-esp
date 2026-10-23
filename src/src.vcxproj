@@ -190,6 +190,7 @@
     <ClCompile Include="core\engine\classes\Globals.cpp" />
     <ClCompile Include="core\engine\classes\Player.cpp" />
     <ClCompile Include="core\scripting\Scripting.cpp" />
+    <ClCompile Include="core\scripting\SolisScript.cpp" />
     <ClCompile Include="core\scripting\hooks\PhysicalInput.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
@@ -217,6 +218,83 @@
     <ClCompile Include="updater\http\HttpHelper.cpp" />
     <ClCompile Include="updater\Updater.cpp" />
     <ClCompile Include="core\engine\classes\Weapon.cpp" />
+    <ClCompile Include="external\Solis\runtime\solis.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\runtime\solis_std.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\common.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\type.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\std_src.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>SOLIS_NO_EMBED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\lex.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\parse.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\module.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\check.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\gen.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\emit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\fonts\Icons.h" />
@@ -243,6 +321,7 @@
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
     <ClInclude Include="core\scripting\Scripting.hpp" />
+    <ClInclude Include="core\scripting\SolisScript.hpp" />
     <ClInclude Include="core\scripting\hooks\PhysicalInput.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
     <ClInclude Include="external\AsyncLogger\src\common.hpp" />

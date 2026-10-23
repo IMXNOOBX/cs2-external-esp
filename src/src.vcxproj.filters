@@ -123,6 +123,42 @@
     <ClCompile Include="core\scripting\Scripting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\scripting\SolisScript.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\runtime\solis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\runtime\solis_std.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\common.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\type.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\std_src.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\lex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\parse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\module.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\check.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\gen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\emit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="core\scripting\hooks\PhysicalInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="core\scripting\hooks\PhysicalInput.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scripting\SolisScript.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp">

@@ -1,4 +1,5 @@
 #include "Scripting.hpp"
+#include "SolisScript.hpp"
 #include "core/scripting/hooks/PhysicalInput.hpp"
 #include "core/logger/LogHelper.hpp"
 #include "core\engine\types\Types.hpp"
@@ -22,6 +23,7 @@ namespace scripting {
             RegisterCommands();
             UpdateGlobalVariables();
             LoadScripts();
+            RunSolisScript("scripts.sl");
 
             if (!input::InstallPhysicalInputHooks()) {
                 LOGF(WARNING, "Could not install physical input hooks; hold macros are unavailable");
