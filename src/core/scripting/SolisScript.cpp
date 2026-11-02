@@ -61,9 +61,9 @@ bool SolisScript::Compile(const std::string& path, CompiledScript& script) {
     return GetInstance().CompileImpl(path, script.image, &script.functions);
 }
 
-bool SolisScript::CompileMacro(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
+bool SolisScript::CompileFunction(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
     image.clear();
-    return GetInstance().CompileMacroImpl(path, function, image);
+    return GetInstance().CompileFunctionImpl(path, function, image);
 }
 
 bool SolisScript::CompileImpl(const std::string& path, std::vector<uint8_t>& image, std::vector<std::string>* functions) {
@@ -106,7 +106,7 @@ bool SolisScript::CompileImpl(const std::string& path, std::vector<uint8_t>& ima
     return !image.empty();
 }
 
-bool SolisScript::CompileMacroImpl(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
+bool SolisScript::CompileFunctionImpl(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
     const std::filesystem::path script(path);
     const std::string module = script.stem().string();
     const std::filesystem::path wrapper = script.parent_path() / ("solis_tmp_" + function + ".sl");

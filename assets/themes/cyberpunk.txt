@@ -1,58 +1,63 @@
-macro @ui_cyberpunk {
-    resettheme
-    setcolor text 0.0 1.0 1.0 1.0
-    setcolor textdisabled 0.3 0.5 0.5 1.0
-    setcolor textselectedbg 1.0 0.0 1.0 0.35
-    setcolor windowbg 0.05 0.05 0.15 1.0
-    setcolor childbg 0.05 0.05 0.15 1.0
-    setcolor popupbg 0.08 0.08 0.2 1.0
-    setcolor border 1.0 0.0 1.0 0.5
-    setcolor bordershadow 0.0 0.0 0.0 0.0
-    setcolor framebg 0.2 0.0 0.4 1.0
-    setcolor framebghovered 0.3 0.0 0.5 1.0
-    setcolor framebgactive 0.4 0.0 0.6 0.8
-    setcolor titlebg 0.1 0.0 0.2 1.0
-    setcolor titlebgactive 0.15 0.0 0.3 1.0
-    setcolor titlebgcollapsed 0.0 0.0 0.0 0.51
-    setcolor menubarbg 0.1 0.0 0.2 1.0
-    setcolor scrollbarbg 0.05 0.05 0.15 0.53
-    setcolor scrollbargrab 1.0 0.0 1.0 1.0
-    setcolor scrollbargrabhovered 1.0 0.2 1.0 1.0
-    setcolor scrollbargrabactive 1.0 0.4 1.0 1.0
-    setcolor checkmark 0.0 1.0 1.0 1.0
-    setcolor slidergrab 0.0 1.0 1.0 1.0
-    setcolor slidergrabactive 0.0 0.8 0.8 1.0
-    setcolor button 0.8 0.0 0.8 1.0
-    setcolor buttonhovered 1.0 0.0 1.0 1.0
-    setcolor buttonactive 1.0 0.3 1.0 0.8
-    setcolor header 0.3 0.0 0.5 1.0
-    setcolor headerhovered 0.4 0.0 0.6 1.0
-    setcolor headeractive 0.5 0.0 0.7 1.0
-    setcolor separator 1.0 0.0 1.0 0.5
-    setcolor separatorhovered 1.0 0.2 1.0 0.8
-    setcolor separatoractive 0.0 1.0 1.0 0.95
-    setcolor resizegrip 1.0 0.0 1.0 0.2
-    setcolor resizegriphovered 1.0 0.0 1.0 0.6
-    setcolor resizegripactive 1.0 0.0 1.0 0.95
-    setcolor tab 0.2 0.0 0.4 0.83
-    setcolor tabhovered 0.4 0.0 0.6 0.83
-    setcolor tabactive 0.3 0.0 0.5 1.0
-    setcolor tabunfocused 0.1 0.0 0.2 1.0
-    setcolor tabunfocusedactive 0.15 0.0 0.3 1.0
-    setcolor dockingpreview 0.0 1.0 1.0 0.7
-    setcolor dockingemptybg 0.05 0.05 0.15 1.0
-    setcolor plotlines 0.0 1.0 1.0 1.0
-    setcolor plotlineshovered 1.0 0.0 1.0 1.0
-    setcolor plothistogram 1.0 0.0 1.0 1.0
-    setcolor plothistogramhovered 1.0 0.4 1.0 1.0
-    setcolor tableheaderbg 0.2 0.0 0.4 1.0
-    setcolor tablebordersstrong 1.0 0.0 1.0 0.5
-    setcolor tableborderslight 0.5 0.0 0.7 0.3
-    setcolor tablerowbg 0.0 0.0 0.0 0.0
-    setcolor tablerowbgalt 1.0 0.0 1.0 0.06
-    setcolor dragdroptarget 0.0 1.0 1.0 1.0
-    setcolor navhighlight 0.0 1.0 1.0 1.0
-    setcolor navwindowinghighlight 1.0 0.0 1.0 0.7
-    setcolor navwindowingdimbg 0.8 0.0 0.8 0.2
-    setcolor modalwindowdimbg 0.3 0.0 0.5 0.35
+func main() {
+    // Runs when the script loads. Bind this theme to a key here if you like:
+    // bind("F1", "btn_ui_cyberpunk");
+}
+
+func btn_ui_cyberpunk() {
+    reset_theme();
+    set_color("text", 0.0, 1.0, 1.0, 1.0);
+    set_color("textdisabled", 0.3, 0.5, 0.5, 1.0);
+    set_color("textselectedbg", 1.0, 0.0, 1.0, 0.35);
+    set_color("windowbg", 0.05, 0.05, 0.15, 1.0);
+    set_color("childbg", 0.05, 0.05, 0.15, 1.0);
+    set_color("popupbg", 0.08, 0.08, 0.2, 1.0);
+    set_color("border", 1.0, 0.0, 1.0, 0.5);
+    set_color("bordershadow", 0.0, 0.0, 0.0, 0.0);
+    set_color("framebg", 0.2, 0.0, 0.4, 1.0);
+    set_color("framebghovered", 0.3, 0.0, 0.5, 1.0);
+    set_color("framebgactive", 0.4, 0.0, 0.6, 0.8);
+    set_color("titlebg", 0.1, 0.0, 0.2, 1.0);
+    set_color("titlebgactive", 0.15, 0.0, 0.3, 1.0);
+    set_color("titlebgcollapsed", 0.0, 0.0, 0.0, 0.51);
+    set_color("menubarbg", 0.1, 0.0, 0.2, 1.0);
+    set_color("scrollbarbg", 0.05, 0.05, 0.15, 0.53);
+    set_color("scrollbargrab", 1.0, 0.0, 1.0, 1.0);
+    set_color("scrollbargrabhovered", 1.0, 0.2, 1.0, 1.0);
+    set_color("scrollbargrabactive", 1.0, 0.4, 1.0, 1.0);
+    set_color("checkmark", 0.0, 1.0, 1.0, 1.0);
+    set_color("slidergrab", 0.0, 1.0, 1.0, 1.0);
+    set_color("slidergrabactive", 0.0, 0.8, 0.8, 1.0);
+    set_color("button", 0.8, 0.0, 0.8, 1.0);
+    set_color("buttonhovered", 1.0, 0.0, 1.0, 1.0);
+    set_color("buttonactive", 1.0, 0.3, 1.0, 0.8);
+    set_color("header", 0.3, 0.0, 0.5, 1.0);
+    set_color("headerhovered", 0.4, 0.0, 0.6, 1.0);
+    set_color("headeractive", 0.5, 0.0, 0.7, 1.0);
+    set_color("separator", 1.0, 0.0, 1.0, 0.5);
+    set_color("separatorhovered", 1.0, 0.2, 1.0, 0.8);
+    set_color("separatoractive", 0.0, 1.0, 1.0, 0.95);
+    set_color("resizegrip", 1.0, 0.0, 1.0, 0.2);
+    set_color("resizegriphovered", 1.0, 0.0, 1.0, 0.6);
+    set_color("resizegripactive", 1.0, 0.0, 1.0, 0.95);
+    set_color("tab", 0.2, 0.0, 0.4, 0.83);
+    set_color("tabhovered", 0.4, 0.0, 0.6, 0.83);
+    set_color("tabactive", 0.3, 0.0, 0.5, 1.0);
+    set_color("tabunfocused", 0.1, 0.0, 0.2, 1.0);
+    set_color("tabunfocusedactive", 0.15, 0.0, 0.3, 1.0);
+    set_color("dockingpreview", 0.0, 1.0, 1.0, 0.7);
+    set_color("dockingemptybg", 0.05, 0.05, 0.15, 1.0);
+    set_color("plotlines", 0.0, 1.0, 1.0, 1.0);
+    set_color("plotlineshovered", 1.0, 0.0, 1.0, 1.0);
+    set_color("plothistogram", 1.0, 0.0, 1.0, 1.0);
+    set_color("plothistogramhovered", 1.0, 0.4, 1.0, 1.0);
+    set_color("tableheaderbg", 0.2, 0.0, 0.4, 1.0);
+    set_color("tablebordersstrong", 1.0, 0.0, 1.0, 0.5);
+    set_color("tableborderslight", 0.5, 0.0, 0.7, 0.3);
+    set_color("tablerowbg", 0.0, 0.0, 0.0, 0.0);
+    set_color("tablerowbgalt", 1.0, 0.0, 1.0, 0.06);
+    set_color("dragdroptarget", 0.0, 1.0, 1.0, 1.0);
+    set_color("navhighlight", 0.0, 1.0, 1.0, 1.0);
+    set_color("navwindowinghighlight", 1.0, 0.0, 1.0, 0.7);
+    set_color("navwindowingdimbg", 0.8, 0.0, 0.8, 0.2);
+    set_color("modalwindowdimbg", 0.3, 0.0, 0.5, 0.35);
 }

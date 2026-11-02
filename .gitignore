@@ -10,6 +10,7 @@ config.json
 crashlog.txt
 scripts.esp
 prelude.sl
+solis_tmp_*.sl
 *.sl
 
 # Ignore all the offsets.json files but the one in the folder offsets for the auto updater

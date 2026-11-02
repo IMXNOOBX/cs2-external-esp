@@ -1,119 +1,104 @@
 # Scripting
 
-<small>Script documentation generated with AI assistance and reviewed for accuracy.</small>
+Scripts run on [Solis](https://github.com/IMXNOOBX/cs2-external-esp/tree/main/src/external/Solis).
 
-Scripts are loaded from `scripts.esp` in the application directory. The file is reloaded automatically when it changes; it can also be reloaded from the **Macros** tab.
+The application loads every `.sl` file from the working directory and from a `scripts` folder next to it. The `scripts` folder is not created automatically. Each file is compiled separately, so scripts can be added or removed independently, but every file needs its own `main()`.
 
 ## Quick start
 
-```text
-# Setups basic esp features on click or when pressing F1
-macro @setup { 
-    set esp.box true
-    set esp.health true
-    setcolor esp.color.box_enemy 1.0 0.0 0.0 1.0
+`movement.sl`:
+
+```solis
+func main() {
+    bind("F1", "btn_toggle_box");
 }
 
-bind F1 setup
-```
-
-Macros beginning with `@` are shown in the GUI. The prefix is only part of the declaration: the stored macro name is `setup`, so use `setup` (without `@`) when running it or binding it to a key. Other macros are hidden helpers that can still be called by another macro or keybind.
-
-## Syntax
-
-### Macros
-
-```text
-macro @name {
-    command
-    command
+func btn_toggle_box() {
+    set_bool("esp.box", !get_bool("esp.box"));
 }
 ```
 
-Use `hold KEY macro_name` to make a macro run while a key is physically held. The macro starts when the key is pressed and releasing it stops repeated `send` input. Define the macro before its `hold` declaration.
+`main()` runs when the script loads, so that's where bindings belong. `btn_toggle_box` appears as a `toggle_box` button in the **Scripts** tab.
 
-```text
-# Pressing and holding SPACE runs this invisible macro.
-macro hold_jump {
-    send SPACE 50 999999
+## Buttons
+
+Any function without parameters whose name starts with `btn_` is shown in the GUI:
+
+```solis
+func btn_reset() {
+    reset_theme();
+}
+```
+
+The `btn_` prefix is removed from the button label. Functions without the prefix are not shown, but they can still be used with `bind` and `hold`.
+
+## Multiple scripts
+
+Each file is independent. A script can look like this:
+
+```solis
+func main() {
+    bind("F1", "toggle");
+    hold("SPACE", "jump");
 }
 
-hold SPACE hold_jump
-```
-Use `#` for comments. The older unbracketed macro format is still supported.
+func toggle() {
+    set_bool("esp.skeleton", !get_bool("esp.skeleton"));
+}
 
-### Variables and expressions
-
-```text
-var radius 1000
-var doubled $radius*2
-set world.radar.range $doubled
+func jump() {
+    send("SPACE", 50, 10);
+}
 ```
 
-Supported arithmetic operators are `+`, `-`, `*`, and `/`. Use `$name` to substitute a variable.
+`bind` and `hold` refer to functions in the same script. In the **Scripts** tab, every script is listed with its relative name (`movement` or `scripts/movement`) and its `btn_` functions.
 
-## Commands
+Click a script name to open the file in the default editor. Use **Load** / **Unload** to enable a script, and **Refresh** to rescan the folders for new or removed files.
 
-| Command | Description | Example |
-| --- | --- | --- |
-| `set` | Set a configuration value. | `set esp.box true` |
-| `setcolor` | Set an RGBA color from `0.0` to `1.0`. | `setcolor esp.color.box_enemy 1 0 0 1` |
-| `resettheme` | Restore the default UI colors. | `resettheme` |
-| `var` | Create or update a variable. | `var range 1500` |
-| `get` | Read a configuration value into a variable. | `get esp.box current` |
-| `echo` | Print a message to the console. | `echo Range: $range` |
-| `run` | Run another macro. | `run setup` |
-| `bind` | Bind a macro to a key; omit `@` from the macro name. | `bind F1 setup` |
-| `hold` | Run a macro while a physical key is held; define the macro first. | `hold SPACE hold_jump` |
+## Host API
 
-For UI themes and the full list of UI color names, see [`THEMES.md`](THEMES.md).
+| Function | Description |
+| --- | --- |
+| `set_bool(name, value)` | Set a boolean config value. |
+| `set_int(name, value)` | Set an integer config value. |
+| `set_float(name, value)` | Set a float config value. |
+| `set_color(name, r, g, b, a)` | Set an RGBA color from `0.0` to `1.0`. |
+| `get_bool(name)` / `get_int(name)` / `get_float(name)` | Read a config value. |
+| `get_color(name)` | Read a color as `"r,g,b,a"`. |
+| `reset_theme()` | Restore the default UI colors. |
+| `echo(message)` | Print a message to the console. |
+| `print(message)` | Alias of `echo`. |
+| `bind(key, function)` | Bind a key to a function in the same script. |
+| `hold(key, function)` | Run a function while a key is held. |
+| `client_base()` / `engine_base()` | Module base addresses. |
+| `menu_open()`, `menu_x()`, `menu_y()` | Menu state and position. |
 
-### Global variables
+`bind` and `hold` are only accepted from `main()`.
 
-The following read-only values are updated automatically and can be used with `$name`:
+The `math` and `strings` modules are available with `import math;` and `import strings;`.
 
-```text
-$client.base    # client.dll base address, in hexadecimal
-$engine2.base   # engine2.dll base address, in hexadecimal
-$menu.open          # true while the menu is open
-$menu.pos.x         # menu X position
-$menu.pos.y         # menu Y position
+### Keyboard input (debug builds)
+
+```solis
+send(key, duration_ms, repeat_count);
+send("SPACE", 50, 10);
+send("MOUSE1", 50, 10);
 ```
 
-For example:
+### Memory access (debug builds)
 
-```text
-echo Menu position: $menu.pos.x $menu.pos.y
+```solis
+let value = read_int(0xABCD1234);
+write_int(0xABCD1234, value + 1);
 ```
 
-Global variables cannot be changed with `var`; their values are refreshed by the application.
+This directly accesses game memory and can crash the game or trigger anti-cheat detection.
 
-### Keyboard input
+## Generated prelude
 
-`send` is available in debug builds only and sends keyboard or mouse-button input:
-
-```text
-send KEY [duration_ms] [repeat_count]
-send SPACE 50 10
-send MOUSE1 50 10
-```
-
-### Memory commands  (debug builds only)
-
-`!read` and `!write` are experimental commands under testing and are available in debug builds only. They directly access game memory and can crash the game or trigger anti-cheat detection.
-
-```text
-!read variable_name 0xABCD1234
-
-var value 100
-!write value 0xABCD1234
-```
-
-Use these commands only for development/testing when you understand the risks. Scripts containing dangerous commands produce a warning when loaded.
+Solis requires host functions to be declared with `extern func`. A `prelude.sl` containing those declarations is generated in every folder that has scripts, and is overwritten whenever a script loads. Don't edit it.
 
 ## Configuration values
-
-Common values include:
 
 ```text
 # ESP
@@ -128,33 +113,25 @@ esp.flags.defusing  esp.flags.flashed  esp.flags.has_c4
 # World
 world.spectators.enabled  world.spectators.detailed  world.spectators.self_only
 world.bomb.location  world.bomb.timer  world.crosshair.enabled
-world.radar.enabled  world.radar.no_rotate  world.radar.range
+world.radar.enabled  world.radar.no_rotate
 
 # Other
 settings.watermark  settings.streamproof  settings.vsync  settings.free_cpu
 ```
 
-ESP colors use names such as `esp.color.box_team`, `esp.color.box_enemy`, `esp.color.skeleton_team`, `esp.color.skeleton_enemy`, `esp.color.tracer_team`, and `esp.bomb_color`. Flag colors follow the pattern `esp.color.flags.<flag>_<team|enemy>`.
+ESP colors use names such as `esp.color.box_team`, `esp.color.box_enemy`, `esp.color.skeleton_team`, `esp.color.skeleton_enemy`, `esp.color.tracer_team`, and `esp.bomb_color`. Flag colors follow the pattern `esp.color.flags.<flag>_<team|enemy>`. UI colors can also be passed to `set_color`.
 
-## GUI
-
-Open the **Macros** tab to:
-
-- run GUI-visible (`@`) macros;
-- hover a macro to preview its commands;
-- enter an `@macro_name` manually and click **Execute**;
-- reload the script or open it in the default text editor.
+For theme colors, see [`THEMES.md`](THEMES.md).
 
 ## Key names
 
 Use `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUM0-NUM9`, or `MOUSE1-MOUSE5`.
 
-Numeric virtual-key codes are also accepted, for example `bind 112 setup` for F1.
+Numeric virtual-key codes are also accepted, for example `bind("112", "btn_setup")`.
 
 ## Troubleshooting
 
-- **Macro is missing from the GUI:** add `@` to its name, then reload the script.
-- **Keybind does not work:** use the macro name without the `@` GUI marker (for example, `bind F1 setup` for `macro @setup`), then check the key name. Numeric key codes can be used as a fallback.
+- **Compile errors:** the console prints `file:line:column` diagnostics after a failed load. Other scripts are not affected.
+- **Button is missing:** make sure the function takes no parameters and starts with `btn_`.
+- **Keybind does not work:** use a function from the same script, and check the key name.
 - **Color does not change:** use RGBA values between `0.0` and `1.0` and verify the color variable name.
-
-For theme packs and color customization, see [`THEMES.md`](THEMES.md).

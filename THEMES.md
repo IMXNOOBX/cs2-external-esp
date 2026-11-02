@@ -16,40 +16,46 @@ Ready to copy and paste them
 
 ## Creating a Theme
 
-Themes are simply `@`-prefixed macros using `setcolor`:
+Themes are scripts built on `set_color`. Put each theme in its own `.sl` file in the working directory or in the `scripts` folder:
 
-```text
-macro @my_theme {
-    resettheme
+```solis
+func main() {
+    // Runs when the script loads.
+}
 
-    setcolor windowbg 0.05 0.05 0.05 1.0
-    setcolor text 1.0 1.0 1.0 1.0
-    setcolor button 0.2 0.2 0.2 1.0
-    setcolor buttonhovered 0.3 0.3 0.3 1.0
-    setcolor checkmark 0.0 1.0 0.0 1.0
+func btn_my_theme() {
+    reset_theme();
+
+    set_color("windowbg", 0.05, 0.05, 0.05, 1.0);
+    set_color("text", 1.0, 1.0, 1.0, 1.0);
+    set_color("button", 0.2, 0.2, 0.2, 1.0);
+    set_color("buttonhovered", 0.3, 0.3, 0.3, 1.0);
+    set_color("checkmark", 0.0, 1.0, 0.0, 1.0);
 }
 ```
 
-Run the theme from the GUI or you can even bind it to a key:
+The `btn_` prefix makes it appear as a button in the **Scripts** tab. You can also bind it to a key in `main`:
 
-```text
-bind F1 my_theme
+```solis
+func main() {
+    bind("F1", "btn_my_theme");
+}
 ```
 
-Using `resettheme` at the start is recommended so the theme always starts from the default UI, and you don inherit the colors from a previous theme
+Using `reset_theme()` at the start is recommended so the theme always starts from the default UI and does not inherit colors from a previous theme.
 
 ## Color Format
 
 ```text
-setcolor COLOR R G B A
+set_color("COLOR", R, G, B, A)
 ```
 
 Colors use RGBA values from `0.0` to `1.0`.
 
 For example:
 
-```text
-setcolor button 1.0 0.0 0.0 1.0
+```solis
+set_color("button", 1.0, 0.0, 0.0, 1.0);
 ```
 
 # Available Colors
@@ -167,8 +173,8 @@ You don't need to define every color. Any color not changed by your theme keeps 
 
 ## Testing & Sharing
 
-Themes live inside `scripts.esp`. Changes are applied through the scripting system's normal reload process.
+Themes live in their own `.sl` file, in the working directory or the `scripts` folder. Unload and load the theme script to apply changes.
 
-To share a theme, simply share its macro and have the user add it to their `scripts.esp`.
+To share a theme, share the `.sl` file and have the user drop it into either location.
 
-For variables, arithmetic, macros, keybinds, and the full `setcolor` API, see the [`./SCRIPTING.md`](./SCRIPTING.md).
+For the host API, scripts, and keybinds, see the [`./SCRIPTING.md`](./SCRIPTING.md).

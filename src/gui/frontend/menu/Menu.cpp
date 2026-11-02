@@ -304,68 +304,96 @@ void Menu::RenderImpl() {
 					ImGui::TextLinkOpenURL("Documentation", "https://github.com/IMXNOOBX/cs2-external-esp/blob/main/SCRIPTING.md");
 					ImGui::Separator();
 
-					ImGui::TextWrapped("Run scripts defined in scripts.sl. Every function without parameters is listed here.");
+					ImGui::TextWrapped("Scripts load from the current directory and the scripts folder. btn_* functions become buttons. Use Load/Unload per script, or Refresh to rescan the folders.");
 					ImGui::Spacing();
 
-					if (ImGui::Button("Reload Scripts"))
+					if (ImGui::Button("Refresh"))
 					{
-						scripting::Scripting::Get().LoadScripts();
+						scripting::Scripting::Get().RefreshScripts();
 					}
-					ImGui::SetItemTooltip("Manually reload scripts.sl\n(Auto-reloads when file is modified)");
+					ImGui::SetItemTooltip("Rescan the current directory and scripts folder");
+
+					const auto& scripts = scripting::Scripting::Get().GetScripts();
+
+					int loaded_count = 0;
+					for (const auto& script : scripts)
+					{
+						if (script.loaded)
+							loaded_count++;
+					}
 
 					ImGui::SameLine();
-					if (ImGui::Button("Open Script"))
-					{
-						const auto script_path = std::filesystem::absolute(scripting::Scripting::kScriptPath);
-						bool can_open_script = true;
-						if (!std::filesystem::exists(script_path))
-						{
-							std::ofstream script_file(script_path);
-							if (!script_file.is_open())
-							{
-								LOGF(WARNING, "Failed to create script file: {}", script_path.string());
-								can_open_script = false;
-							}
-						}
+					ImGui::TextDisabled("%d/%d loaded", loaded_count, (int)scripts.size());
 
-						if (can_open_script)
+					ImGui::Spacing();
+					ImGui::Separator();
+
+					if (scripts.empty())
+					{
+						ImGui::TextWrapped("No scripts found. Add .sl files to the current directory or a scripts folder.");
+					}
+
+					for (const auto& script : scripts)
+					{
+						ImGui::PushID(script.path.c_str());
+
+						if (ImGui::TextLink(script.name.c_str()))
 						{
 							const auto result = reinterpret_cast<intptr_t>(ShellExecuteA(
 								nullptr,
 								"open",
-								script_path.string().c_str(),
+								script.path.c_str(),
 								nullptr,
 								nullptr,
 								SW_SHOWNORMAL));
 
 							if (result <= 32)
-								LOGF(WARNING, "Failed to open script file: {}", script_path.string());
+								LOGF(WARNING, "Failed to open {}", script.path);
 						}
-					}
-					ImGui::SetItemTooltip("Open scripts.sl with the default text editor");
+						ImGui::SetItemTooltip("Open %s", script.path.c_str());
 
-					ImGui::Spacing();
-					ImGui::Separator();
-					ImGui::Text("Available Scripts:");
-					ImGui::Separator();
+						ImGui::SameLine();
 
-					const auto& scripts = scripting::Scripting::Get().GetMacros();
-					
-					int gui_script_count = 0;
-					for (const auto& [name, script] : scripts) {
-						if (script.gui_accessible) gui_script_count++;
-					}
-					
-					if (gui_script_count == 0)
-					{
-						ImGui::TextWrapped("No scripts found. Functions without parameters in scripts.sl are listed here.");
-						ImGui::Spacing();
-						ImGui::TextWrapped("Example:\nfunc setup() {\n    set_bool(\"esp.box\", true);\n    set_bool(\"esp.skeleton\", true);\n}");
-					}
-					else
-					{
-						ImGui::Text("Click a script button to execute it:");
-						ImGui::Spacing();
+						bool toggled = false;
+						if (script.loaded)
+						{
+							if (ImGui::SmallButton("Unload"))
+							{
+								scripting::Scripting::Get().UnloadScript(script.path);
+								toggled = true;
+							}
+						}
+						else
+						{
+							if (ImGui::SmallButton("Load"))
+							{
+								scripting::Scripting::Get().LoadScript(script.path);
+								toggled = true;
+							}
+						}
+
+						if (toggled)
+						{
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
+
+						if (!script.loaded)
+						{
+							ImGui::TextDisabled("Unloaded");
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
+
+						if (script.buttons.empty())
+						{
+							ImGui::TextDisabled("No btn_ functions");
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
 
 						float available_width = ImGui::GetContentRegionAvail().x;
 						float button_width = 150.0f;
@@ -374,68 +402,23 @@ void Menu::RenderImpl() {
 						if (buttons_per_row < 1) buttons_per_row = 1;
 
 						int col = 0;
-						for (const auto& [name, script] : scripts)
+						for (const auto& button : script.buttons)
 						{
-							if (!script.gui_accessible) continue;
-							
 							if (col > 0 && col < buttons_per_row)
 								ImGui::SameLine();
 
-							std::string button_label = "@" + name;
-							if (ImGui::Button(button_label.c_str(), ImVec2(button_width, 30)))
+							if (ImGui::Button(button.label.c_str(), ImVec2(button_width, 30)))
 							{
-								scripting::Scripting::Get().ExecuteMacro(name);
-								LOGF(VERBOSE, "Executed script: @{}", name);
+								scripting::Scripting::Get().ExecuteFunction(script.path, button.function);
+								LOGF(VERBOSE, "Executed {}.{}", script.name, button.function);
 							}
 
 							col++;
 							if (col >= buttons_per_row) col = 0;
 						}
-					}
 
-					ImGui::Spacing();
-					ImGui::Separator();
-					ImGui::Text("Manual Execution:");
-					ImGui::Separator();
-
-					static char script_input[256] = "@";
-					float input_width = ImGui::GetContentRegionAvail().x - 100.0f; // Leave space for button
-					ImGui::SetNextItemWidth(input_width);
-					ImGui::InputText("##script_input", script_input, IM_ARRAYSIZE(script_input));
-					if (ImGui::IsItemHovered())
-						ImGui::SetTooltip("Enter script name with @ prefix (e.g., @my_script)");
-
-					ImGui::SameLine();
-					if (ImGui::Button("Execute", ImVec2(90, 0)))
-					{
-						if (script_input[0] == '@' && strlen(script_input) > 1)
-						{
-							std::string script_name = std::string(script_input + 1); // Skip @ prefix
-							
-							// Check if this script exists and is GUI accessible
-							const auto& all_scripts = scripting::Scripting::Get().GetMacros();
-							auto it = all_scripts.find(script_name);
-							if (it != all_scripts.end())
-							{
-								if (it->second.gui_accessible)
-								{
-									scripting::Scripting::Get().ExecuteMacro(script_name);
-									LOGF(VERBOSE, "Executed script: @{}", script_name);
-								}
-								else
-								{
-									LOGF(WARNING, "Script '{}' is hidden (names starting with _ are not listed)", script_name);
-								}
-							}
-							else
-							{
-								LOGF(WARNING, "Script '{}' not found", script_name);
-							}
-						}
-						else
-						{
-							LOGF(WARNING, "Invalid script name. Must start with @");
-						}
+						ImGui::Separator();
+						ImGui::PopID();
 					}
 				}
 				else if (active_tab == Tab::SETTINGS)

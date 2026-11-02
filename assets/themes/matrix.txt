@@ -1,58 +1,63 @@
-macro @ui_matrix {
-    resettheme
-    setcolor text 0.0 1.0 0.0 1.0
-    setcolor textdisabled 0.0 0.4 0.0 1.0
-    setcolor textselectedbg 0.0 1.0 0.0 0.35
-    setcolor windowbg 0.0 0.0 0.0 1.0
-    setcolor childbg 0.0 0.0 0.0 1.0
-    setcolor popupbg 0.0 0.05 0.0 1.0
-    setcolor border 0.0 0.5 0.0 1.0
-    setcolor bordershadow 0.0 0.0 0.0 0.0
-    setcolor framebg 0.0 0.15 0.0 1.0
-    setcolor framebghovered 0.0 0.25 0.0 1.0
-    setcolor framebgactive 0.0 0.35 0.0 0.8
-    setcolor titlebg 0.0 0.1 0.0 1.0
-    setcolor titlebgactive 0.0 0.2 0.0 1.0
-    setcolor titlebgcollapsed 0.0 0.0 0.0 0.51
-    setcolor menubarbg 0.0 0.1 0.0 1.0
-    setcolor scrollbarbg 0.0 0.05 0.0 0.53
-    setcolor scrollbargrab 0.0 0.5 0.0 1.0
-    setcolor scrollbargrabhovered 0.0 0.7 0.0 1.0
-    setcolor scrollbargrabactive 0.0 0.9 0.0 1.0
-    setcolor checkmark 0.0 1.0 0.0 1.0
-    setcolor slidergrab 0.0 1.0 0.0 1.0
-    setcolor slidergrabactive 0.0 0.8 0.0 1.0
-    setcolor button 0.0 0.3 0.0 1.0
-    setcolor buttonhovered 0.0 0.5 0.0 1.0
-    setcolor buttonactive 0.0 0.7 0.0 0.8
-    setcolor header 0.0 0.2 0.0 1.0
-    setcolor headerhovered 0.0 0.3 0.0 1.0
-    setcolor headeractive 0.0 0.4 0.0 1.0
-    setcolor separator 0.0 0.5 0.0 1.0
-    setcolor separatorhovered 0.0 0.7 0.0 1.0
-    setcolor separatoractive 0.0 1.0 0.0 0.95
-    setcolor resizegrip 0.0 0.5 0.0 0.2
-    setcolor resizegriphovered 0.0 0.7 0.0 0.67
-    setcolor resizegripactive 0.0 1.0 0.0 0.95
-    setcolor tab 0.0 0.1 0.0 0.83
-    setcolor tabhovered 0.0 0.4 0.0 0.83
-    setcolor tabactive 0.0 0.3 0.0 1.0
-    setcolor tabunfocused 0.0 0.1 0.0 1.0
-    setcolor tabunfocusedactive 0.0 0.15 0.0 1.0
-    setcolor dockingpreview 0.0 1.0 0.0 0.7
-    setcolor dockingemptybg 0.0 0.05 0.0 1.0
-    setcolor plotlines 0.0 0.8 0.0 1.0
-    setcolor plotlineshovered 0.0 1.0 0.0 1.0
-    setcolor plothistogram 0.0 0.7 0.0 1.0
-    setcolor plothistogramhovered 0.0 0.9 0.0 1.0
-    setcolor tableheaderbg 0.0 0.2 0.0 1.0
-    setcolor tablebordersstrong 0.0 0.5 0.0 1.0
-    setcolor tableborderslight 0.0 0.3 0.0 0.5
-    setcolor tablerowbg 0.0 0.0 0.0 0.0
-    setcolor tablerowbgalt 0.0 1.0 0.0 0.06
-    setcolor dragdroptarget 0.0 1.0 0.0 1.0
-    setcolor navhighlight 0.0 1.0 0.0 1.0
-    setcolor navwindowinghighlight 0.0 1.0 0.0 0.7
-    setcolor navwindowingdimbg 0.0 0.3 0.0 0.2
-    setcolor modalwindowdimbg 0.0 0.2 0.0 0.35
+func main() {
+    // Runs when the script loads. Bind this theme to a key here if you like:
+    // bind("F1", "btn_ui_matrix");
+}
+
+func btn_ui_matrix() {
+    reset_theme();
+    set_color("text", 0.0, 1.0, 0.0, 1.0);
+    set_color("textdisabled", 0.0, 0.4, 0.0, 1.0);
+    set_color("textselectedbg", 0.0, 1.0, 0.0, 0.35);
+    set_color("windowbg", 0.0, 0.0, 0.0, 1.0);
+    set_color("childbg", 0.0, 0.0, 0.0, 1.0);
+    set_color("popupbg", 0.0, 0.05, 0.0, 1.0);
+    set_color("border", 0.0, 0.5, 0.0, 1.0);
+    set_color("bordershadow", 0.0, 0.0, 0.0, 0.0);
+    set_color("framebg", 0.0, 0.15, 0.0, 1.0);
+    set_color("framebghovered", 0.0, 0.25, 0.0, 1.0);
+    set_color("framebgactive", 0.0, 0.35, 0.0, 0.8);
+    set_color("titlebg", 0.0, 0.1, 0.0, 1.0);
+    set_color("titlebgactive", 0.0, 0.2, 0.0, 1.0);
+    set_color("titlebgcollapsed", 0.0, 0.0, 0.0, 0.51);
+    set_color("menubarbg", 0.0, 0.1, 0.0, 1.0);
+    set_color("scrollbarbg", 0.0, 0.05, 0.0, 0.53);
+    set_color("scrollbargrab", 0.0, 0.5, 0.0, 1.0);
+    set_color("scrollbargrabhovered", 0.0, 0.7, 0.0, 1.0);
+    set_color("scrollbargrabactive", 0.0, 0.9, 0.0, 1.0);
+    set_color("checkmark", 0.0, 1.0, 0.0, 1.0);
+    set_color("slidergrab", 0.0, 1.0, 0.0, 1.0);
+    set_color("slidergrabactive", 0.0, 0.8, 0.0, 1.0);
+    set_color("button", 0.0, 0.3, 0.0, 1.0);
+    set_color("buttonhovered", 0.0, 0.5, 0.0, 1.0);
+    set_color("buttonactive", 0.0, 0.7, 0.0, 0.8);
+    set_color("header", 0.0, 0.2, 0.0, 1.0);
+    set_color("headerhovered", 0.0, 0.3, 0.0, 1.0);
+    set_color("headeractive", 0.0, 0.4, 0.0, 1.0);
+    set_color("separator", 0.0, 0.5, 0.0, 1.0);
+    set_color("separatorhovered", 0.0, 0.7, 0.0, 1.0);
+    set_color("separatoractive", 0.0, 1.0, 0.0, 0.95);
+    set_color("resizegrip", 0.0, 0.5, 0.0, 0.2);
+    set_color("resizegriphovered", 0.0, 0.7, 0.0, 0.67);
+    set_color("resizegripactive", 0.0, 1.0, 0.0, 0.95);
+    set_color("tab", 0.0, 0.1, 0.0, 0.83);
+    set_color("tabhovered", 0.0, 0.4, 0.0, 0.83);
+    set_color("tabactive", 0.0, 0.3, 0.0, 1.0);
+    set_color("tabunfocused", 0.0, 0.1, 0.0, 1.0);
+    set_color("tabunfocusedactive", 0.0, 0.15, 0.0, 1.0);
+    set_color("dockingpreview", 0.0, 1.0, 0.0, 0.7);
+    set_color("dockingemptybg", 0.0, 0.05, 0.0, 1.0);
+    set_color("plotlines", 0.0, 0.8, 0.0, 1.0);
+    set_color("plotlineshovered", 0.0, 1.0, 0.0, 1.0);
+    set_color("plothistogram", 0.0, 0.7, 0.0, 1.0);
+    set_color("plothistogramhovered", 0.0, 0.9, 0.0, 1.0);
+    set_color("tableheaderbg", 0.0, 0.2, 0.0, 1.0);
+    set_color("tablebordersstrong", 0.0, 0.5, 0.0, 1.0);
+    set_color("tableborderslight", 0.0, 0.3, 0.0, 0.5);
+    set_color("tablerowbg", 0.0, 0.0, 0.0, 0.0);
+    set_color("tablerowbgalt", 0.0, 1.0, 0.0, 0.06);
+    set_color("dragdroptarget", 0.0, 1.0, 0.0, 1.0);
+    set_color("navhighlight", 0.0, 1.0, 0.0, 1.0);
+    set_color("navwindowinghighlight", 0.0, 1.0, 0.0, 0.7);
+    set_color("navwindowingdimbg", 0.0, 0.3, 0.0, 0.2);
+    set_color("modalwindowdimbg", 0.0, 0.2, 0.0, 0.35);
 }

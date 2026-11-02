@@ -23,6 +23,7 @@
 #include <cctype>
 #include <chrono>
 #include <fstream>
+#include <unordered_set>
 #include <utility>
 
 namespace scripting {
@@ -36,6 +37,30 @@ namespace scripting {
                 throw solis::Error(std::string(name) + " expects " + std::to_string(count) + " argument(s)");
             }
         }
+
+        void FindInDirectory(std::vector<std::filesystem::path>& files, const std::filesystem::path& dir) {
+            std::error_code ec;
+            if (!std::filesystem::is_directory(dir, ec)) {
+                return;
+            }
+
+            for (const auto& entry : std::filesystem::directory_iterator(dir, ec)) {
+                if (ec) {
+                    return;
+                }
+
+                if (!entry.is_regular_file() || entry.path().extension() != ".sl") {
+                    continue;
+                }
+
+                const std::string name = entry.path().filename().string();
+                if (name == "prelude.sl" || name.rfind("solis_tmp_", 0) == 0) {
+                    continue;
+                }
+
+                files.push_back(entry.path());
+            }
+        }
     }
 
     void Scripting::Init() {
@@ -45,7 +70,7 @@ namespace scripting {
             LoadScripts();
 
             if (!input::InstallPhysicalInputHooks()) {
-                LOGF(WARNING, "Could not install physical input hooks; hold macros are unavailable");
+                LOGF(WARNING, "Could not install physical input hooks; hold bindings are unavailable");
             }
         }
         catch (std::exception& e) {
@@ -129,7 +154,7 @@ namespace scripting {
         config_map["esp.bomb_color"] = &cfg::esp::bomb_color;
     }
 
-    void Scripting::RegisterNatives(solis::Vm& vm) {
+    void Scripting::RegisterNatives(solis::Vm& vm, const std::string& script_path, bool allow_bind) {
         vm.define("set_bool", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "set_bool");
             SetBoolValue(ArgString(args, 0), args[1].asBool());
@@ -195,23 +220,23 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("bind", [this](solis::Vm&, solis::Args args) {
+        vm.define("bind", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "bind");
-            if (!initializing) {
+            if (!allow_bind) {
                 LOGF(WARNING, "bind() can only be called from main()");
                 return solis::Value();
             }
-            RegisterBind(ArgString(args, 0), ArgString(args, 1));
+            RegisterBind(script_path, ArgString(args, 0), ArgString(args, 1));
             return solis::Value();
         });
 
-        vm.define("hold", [this](solis::Vm&, solis::Args args) {
+        vm.define("hold", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "hold");
-            if (!initializing) {
+            if (!allow_bind) {
                 LOGF(WARNING, "hold() can only be called from main()");
                 return solis::Value();
             }
-            RegisterHoldKey(ArgString(args, 0), ArgString(args, 1));
+            RegisterHoldKey(script_path, ArgString(args, 0), ArgString(args, 1));
             return solis::Value();
         });
 
@@ -260,9 +285,7 @@ namespace scripting {
 #endif
     }
 
-
-    // Prelude, this exports the methods that can be used by the scripts from the esp
-    void Scripting::WritePrelude() {
+    void Scripting::WritePrelude(const std::filesystem::path& dir) {
         std::string text = R"(extern func set_bool(name: str, value: bool);
 extern func set_int(name: str, value: int);
 extern func set_float(name: str, value: float);
@@ -276,8 +299,8 @@ extern func reset_theme();
 extern func echo(message: str);
 extern func print(message: str);
 
-extern func bind(key: str, macro: str);
-extern func hold(key: str, macro: str);
+extern func bind(key: str, function: str);
+extern func hold(key: str, function: str);
 
 extern func client_base(): int;
 extern func engine_base(): int;
@@ -294,7 +317,7 @@ extern func write_int(address: int, value: int);
 )";
 #endif
 
-        const std::filesystem::path prelude = std::filesystem::path(kScriptPath).parent_path() / "prelude.sl";
+        const std::filesystem::path prelude = dir / "prelude.sl";
 
         std::ofstream out(prelude, std::ios::trunc);
         if (!out.is_open()) {
@@ -305,87 +328,229 @@ extern func write_int(address: int, value: int);
         out << text;
     }
 
-    void Scripting::LoadScripts() {
+    std::vector<std::filesystem::path> Scripting::FindScripts() const {
+        std::vector<std::filesystem::path> files;
+        const std::filesystem::path cwd = std::filesystem::current_path();
+
+        FindInDirectory(files, cwd);
+        FindInDirectory(files, cwd / "scripts");
+
+        std::sort(files.begin(), files.end());
+        return files;
+    }
+
+    std::string Scripting::DisplayName(const std::filesystem::path& file) const {
         std::error_code ec;
-        if (!std::filesystem::exists(kScriptPath, ec)) {
-            LOGF(WARNING, "No {} found", kScriptPath);
-            return;
+        auto path = std::filesystem::relative(file, std::filesystem::current_path(), ec);
+        if (ec) {
+            path = file;
         }
 
-        last_load_time = std::filesystem::last_write_time(kScriptPath, ec);
+        path.replace_extension();
+        return path.generic_string();
+    }
 
-        macros.clear();
-        keybinds.clear();
-        key_states.clear();
-
-        WritePrelude();
-
-        SolisScript::CompiledScript script;
-        if (!SolisScript::Compile(kScriptPath, script)) {
-            LOGF(WARNING, "Failed to compile {}", kScriptPath);
-            std::lock_guard<std::mutex> lock(image_mutex);
-            init_image.clear();
-            macro_images.clear();
-            return;
+    bool Scripting::CompileScript(const std::string& path, ScriptInfo& info, ScriptRuntime& runtime) {
+        SolisScript::CompiledScript compiled;
+        if (!SolisScript::Compile(path, compiled)) {
+            LOGF(WARNING, "Failed to compile {}", path);
+            return false;
         }
 
-        std::unordered_map<std::string, std::vector<uint8_t>> images;
-        for (const auto& function : script.functions) {
+        info.path = path;
+        info.name = DisplayName(path);
+        runtime.init = std::move(compiled.image);
+
+        for (const auto& function : compiled.functions) {
             std::vector<uint8_t> image;
-            if (!SolisScript::CompileMacro(kScriptPath, function, image)) {
-                LOGF(WARNING, "Failed to compile macro '{}'", function);
+            if (!SolisScript::CompileFunction(path, function, image)) {
+                LOGF(WARNING, "Failed to compile {}", function);
                 continue;
             }
-            images.emplace(function, std::move(image));
+
+            runtime.functions.emplace(function, std::move(image));
+
+            if (function.rfind("btn_", 0) == 0 && function.size() > 4) {
+                info.buttons.push_back({ function.substr(4), function });
+            }
         }
 
-        {
-            std::lock_guard<std::mutex> lock(image_mutex);
-            init_image = std::move(script.image);
-            macro_images = std::move(images);
-        }
-
-        for (const auto& [name, image] : macro_images) {
-            (void)image;
-            macros[name].gui_accessible = name.front() != '_';
-        }
-
-        initializing = true;
-        RunInit();
-        initializing = false;
-
-        LOGF(INFO, "Loaded {} macro(s) from {}", macros.size(), kScriptPath);
+        return true;
     }
 
-    void Scripting::RunInit() {
-        std::vector<uint8_t> image;
+    void Scripting::UnloadRuntime(const std::string& path) {
         {
-            std::lock_guard<std::mutex> lock(image_mutex);
-            image = init_image;
+            std::lock_guard<std::mutex> lock(runtime_mutex);
+            runtimes.erase(path);
         }
 
-        RunImage(image, "main");
+        keybinds.erase(std::remove_if(keybinds.begin(), keybinds.end(), [&](const Keybind& bind) {
+            return bind.path == path;
+        }), keybinds.end());
+
+        holds.erase(std::remove_if(holds.begin(), holds.end(), [&](const HoldKey& hold) {
+            return hold.path == path;
+        }), holds.end());
     }
 
-    void Scripting::RunMacro(const std::string& name) {
+    void Scripting::UnloadScript(const std::string& path) {
+        const auto it = std::find_if(scripts.begin(), scripts.end(), [&](const ScriptInfo& script) {
+            return script.path == path;
+        });
+
+        if (it == scripts.end() || !it->loaded) {
+            return;
+        }
+
+        UnloadRuntime(path);
+        it->loaded = false;
+        it->buttons.clear();
+        LOGF(INFO, "Unloaded {}", it->name);
+    }
+
+    void Scripting::LoadScript(const std::string& path) {
+        const auto it = std::find_if(scripts.begin(), scripts.end(), [&](const ScriptInfo& script) {
+            return script.path == path;
+        });
+
+        if (it == scripts.end()) {
+            return;
+        }
+
+        if (it->loaded) {
+            UnloadScript(path);
+        }
+
+        WritePrelude(std::filesystem::path(path).parent_path());
+
+        ScriptInfo info;
+        ScriptRuntime runtime;
+        if (!CompileScript(path, info, runtime)) {
+            it->loaded = false;
+            it->buttons.clear();
+            return;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(runtime_mutex);
+            runtimes[path] = std::move(runtime);
+        }
+
+        info.loaded = true;
+        *it = std::move(info);
+
+        RunInit(path);
+        LOGF(INFO, "Loaded {}", it->name);
+    }
+
+    void Scripting::RefreshScripts() {
+        const auto files = FindScripts();
+
+        std::unordered_set<std::string> present;
+        for (const auto& file : files) {
+            present.insert(file.string());
+        }
+
+        for (const auto& script : scripts) {
+            if (present.find(script.path) == present.end()) {
+                UnloadRuntime(script.path);
+            }
+        }
+
+        std::vector<ScriptInfo> updated;
+        updated.reserve(files.size());
+
+        for (const auto& file : files) {
+            const std::string path = file.string();
+            const auto existing = std::find_if(scripts.begin(), scripts.end(), [&](const ScriptInfo& script) {
+                return script.path == path;
+            });
+
+            if (existing != scripts.end()) {
+                updated.push_back(std::move(*existing));
+            } else {
+                ScriptInfo info;
+                info.path = path;
+                info.name = DisplayName(file);
+                updated.push_back(std::move(info));
+            }
+        }
+
+        scripts = std::move(updated);
+        LOGF(INFO, "Refreshed script list: {} script(s)", scripts.size());
+    }
+
+    void Scripting::LoadScripts() {
+        const auto files = FindScripts();
+
+        scripts.clear();
+        keybinds.clear();
+        holds.clear();
+        key_states.clear();
+        {
+            std::lock_guard<std::mutex> lock(runtime_mutex);
+            runtimes.clear();
+        }
+
+        for (const auto& file : files) {
+            ScriptInfo info;
+            info.path = file.string();
+            info.name = DisplayName(file);
+            scripts.push_back(std::move(info));
+        }
+
+        for (const auto& script : scripts) {
+            LoadScript(script.path);
+        }
+
+        const auto loaded = std::count_if(scripts.begin(), scripts.end(), [](const ScriptInfo& script) {
+            return script.loaded;
+        });
+
+        if (scripts.empty()) {
+            LOGF(INFO, "No scripts found in {} or {}", std::filesystem::current_path().string(), (std::filesystem::current_path() / "scripts").string());
+        } else {
+            LOGF(INFO, "Loaded {}/{} script(s)", loaded, scripts.size());
+        }
+    }
+
+    void Scripting::RunInit(const std::string& path) {
         std::vector<uint8_t> image;
         {
-            std::lock_guard<std::mutex> lock(image_mutex);
-            const auto it = macro_images.find(name);
-            if (it != macro_images.end()) {
-                image = it->second;
+            std::lock_guard<std::mutex> lock(runtime_mutex);
+            const auto it = runtimes.find(path);
+            if (it != runtimes.end()) {
+                image = it->second.init;
+            }
+        }
+
+        if (!image.empty()) {
+            RunImage(image, DisplayName(path) + ".main", path, true);
+        }
+    }
+
+    void Scripting::RunFunction(const std::string& path, const std::string& function) {
+        std::vector<uint8_t> image;
+        {
+            std::lock_guard<std::mutex> lock(runtime_mutex);
+            const auto script = runtimes.find(path);
+            if (script != runtimes.end()) {
+                const auto it = script->second.functions.find(function);
+                if (it != script->second.functions.end()) {
+                    image = it->second;
+                }
             }
         }
 
         if (image.empty()) {
-            LOGF(WARNING, "Unknown macro: {}", name);
+            LOGF(WARNING, "Unknown function: {}.{}", DisplayName(path), function);
             return;
         }
 
-        RunImage(image, name);
+        RunImage(image, DisplayName(path) + "." + function, path, false);
     }
 
-    void Scripting::RunImage(const std::vector<uint8_t>& image, const std::string& label) {
+    void Scripting::RunImage(const std::vector<uint8_t>& image, const std::string& label, const std::string& script_path, bool allow_bind) {
         if (image.empty()) {
             return;
         }
@@ -393,7 +558,7 @@ extern func write_int(address: int, value: int);
         try {
             solis::Vm vm;
             vm.openStd();
-            RegisterNatives(vm);
+            RegisterNatives(vm, script_path, allow_bind);
             vm.load(image);
             vm.run();
         }
@@ -406,70 +571,63 @@ extern func write_int(address: int, value: int);
     }
 
     void Scripting::Update() {
-        std::error_code ec;
-        if (std::filesystem::exists(kScriptPath, ec)) {
-            const auto write_time = std::filesystem::last_write_time(kScriptPath, ec);
-            if (!ec && write_time != last_load_time) {
-                LOGF(INFO, "{} changed, reloading", kScriptPath);
-                LoadScripts();
-            }
-        }
-
         for (const auto& bind : keybinds) {
             const bool pressed = (GetAsyncKeyState(bind.key) & 0x8000) != 0;
-            if (pressed && !key_states[bind.key] && active_macro_count == 0) {
-                QueueMacro(bind.macro);
+            if (pressed && !key_states[bind.key] && active_script_count == 0) {
+                QueueFunction(bind.path, bind.function);
             }
             key_states[bind.key] = pressed;
         }
 
-        for (const auto& [name, macro] : macros) {
-            if (macro.hold_key == 0) {
-                continue;
+        for (const auto& hold : holds) {
+            const bool pressed = input::IsPhysicalInputDown(hold.key);
+            if (pressed && !key_states[hold.key] && active_script_count == 0) {
+                QueueFunction(hold.path, hold.function, hold.key);
             }
-
-            const bool pressed = input::IsPhysicalInputDown(macro.hold_key);
-            if (pressed && !key_states[macro.hold_key] && active_macro_count == 0) {
-                QueueMacro(name, macro.hold_key);
-            }
-            key_states[macro.hold_key] = pressed;
+            key_states[hold.key] = pressed;
         }
     }
 
-    void Scripting::ExecuteMacro(const std::string& name) {
-        QueueMacro(name);
+    void Scripting::ExecuteFunction(const std::string& path, const std::string& function) {
+        QueueFunction(path, function);
     }
 
-    void Scripting::QueueMacro(const std::string& name, int hold_key) {
+    void Scripting::QueueFunction(const std::string& path, const std::string& function, int hold_key) {
         std::lock_guard<std::mutex> lock(queue_mutex);
-        macro_queue.push(PendingMacro{ name, hold_key });
+        function_queue.push(PendingFunction{ path, function, hold_key });
     }
 
     void Scripting::WorkerThread() {
         while (!shutdown_thread) {
-            PendingMacro pending;
-            bool has_macro = false;
+            PendingFunction pending;
+            bool has_function = false;
 
             {
                 std::lock_guard<std::mutex> lock(queue_mutex);
-                if (!macro_queue.empty()) {
-                    pending = std::move(macro_queue.front());
-                    macro_queue.pop();
-                    has_macro = true;
+                if (!function_queue.empty()) {
+                    pending = std::move(function_queue.front());
+                    function_queue.pop();
+                    has_function = true;
                 }
             }
 
-            if (!has_macro) {
+            if (!has_function) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
 
-            active_macro_count.fetch_add(1);
+            active_script_count.fetch_add(1);
             active_hold_key = pending.hold_key;
-            RunMacro(pending.name);
+            RunFunction(pending.path, pending.function);
             active_hold_key = 0;
-            active_macro_count.fetch_sub(1);
+            active_script_count.fetch_sub(1);
         }
+    }
+
+    bool Scripting::FunctionExists(const std::string& path, const std::string& function) const {
+        const auto script = runtimes.find(path);
+        return script != runtimes.end() &&
+               script->second.functions.find(function) != script->second.functions.end();
     }
 
     void Scripting::SetBoolValue(const std::string& name, bool value) {
@@ -603,26 +761,36 @@ extern func write_int(address: int, value: int);
         return "0,0,0,0";
     }
 
-    void Scripting::RegisterBind(const std::string& key, const std::string& macro) {
+    void Scripting::RegisterBind(const std::string& path, const std::string& key, const std::string& function) {
+        if (!FunctionExists(path, function)) {
+            LOGF(WARNING, "No function '{}' in {}", function, DisplayName(path));
+            return;
+        }
+
         const int code = ParseKeyCode(key);
         if (code == 0) {
             LOGF(WARNING, "Unknown key name: {}", key);
             return;
         }
 
-        keybinds.push_back({ code, macro });
-        LOGF(INFO, "Bound {} to {}", key, macro);
+        keybinds.push_back({ code, path, function });
+        LOGF(INFO, "Bound {} to {}.{}", key, DisplayName(path), function);
     }
 
-    void Scripting::RegisterHoldKey(const std::string& key, const std::string& macro) {
+    void Scripting::RegisterHoldKey(const std::string& path, const std::string& key, const std::string& function) {
+        if (!FunctionExists(path, function)) {
+            LOGF(WARNING, "No function '{}' in {}", function, DisplayName(path));
+            return;
+        }
+
         const int code = ParseKeyCode(key);
         if (code == 0) {
             LOGF(WARNING, "Unknown hold key name: {}", key);
             return;
         }
 
-        macros[macro].hold_key = code;
-        LOGF(INFO, "Holding {} runs {}", key, macro);
+        holds.push_back({ code, path, function });
+        LOGF(INFO, "Holding {} runs {}.{}", key, DisplayName(path), function);
     }
 
     void Scripting::InitKeyNameMap() {
