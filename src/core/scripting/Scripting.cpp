@@ -69,9 +69,12 @@ namespace scripting {
             RegisterConfigVars();
             LoadScripts();
 
+            // Might cause random issues with the key input, it has to be handled properly
+        #if 0
             if (!input::InstallPhysicalInputHooks()) {
                 LOGF(WARNING, "Could not install physical input hooks; hold bindings are unavailable");
             }
+        #endif
         }
         catch (std::exception& e) {
             LOGF(FATAL, "Caught exception while initializing: {}", e.what());

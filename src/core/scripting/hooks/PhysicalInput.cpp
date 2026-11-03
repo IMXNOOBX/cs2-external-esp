@@ -158,7 +158,6 @@ namespace scripting::input {
         if (g_physical_input_thread.joinable())
             return g_hooks_installed.load(std::memory_order_relaxed);
 
-
         {
             std::lock_guard lock(g_init_mutex);
             g_init_finished = false;
@@ -200,5 +199,4 @@ namespace scripting::input {
 
          SendKeyInput(virtual_key, pressed);
     }
-
 }
