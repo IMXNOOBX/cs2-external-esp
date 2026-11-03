@@ -3,6 +3,8 @@
 #include "core/engine/Engine.hpp" // Circular dep
 #include "core/offsets/Dumper.hpp"
 
+#define MAX_CLIENTS 64
+
 bool Cache::Refresh() {
     return Get().RefreshImpl();
 }
@@ -47,8 +49,8 @@ bool Cache::RefreshImpl() {
     bomb.Update();
 
     std::vector<Player> scan;
-    scan.reserve(globals.max_clients);
-    for (int i = 0; i < globals.max_clients; i++) {
+    scan.reserve(MAX_CLIENTS);
+    for (int i = 0; i < MAX_CLIENTS; i++) {
         auto player = Player(i, game.entity_list, game.list_entry);
 
         if (!player.Update())
@@ -59,12 +61,6 @@ bool Cache::RefreshImpl() {
 
         player.has_c4 = (bomb.carrier != 0 && (uintptr_t)player.pawn_controller_addr == bomb.carrier);
 
-        // TODO: Handle or at least alert, in case of multiple lp
-        //if (player.localplayer && (this->local.index == -1 || this->local.index == player.index))
-        //    this->local = player;
-        //else if (player.localplayer)
-        //    LOGF(FATAL, "Offset missmatch, initial({}) current({}) there are more than one local players, update needed", this->local.index, player.index);
-    
         scan.push_back(player);
     }
 
