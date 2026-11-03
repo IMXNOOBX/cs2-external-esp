@@ -25,14 +25,14 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x14A4; // Vector
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3E7; // uint8
-		constexpr std::ptrdiff_t m_bIsScoped = 0x1E98; // bool
-		constexpr std::ptrdiff_t m_ArmorValue = 0x1EC8; // int32
-		constexpr std::ptrdiff_t m_bIsDefusing = 0x1E9A; // bool
+		constexpr std::ptrdiff_t m_bIsScoped = 0x1EA0; // bool
+		constexpr std::ptrdiff_t m_ArmorValue = 0x1ED0; // int32
+		constexpr std::ptrdiff_t m_bIsDefusing = 0x1EA2; // bool
 		constexpr std::ptrdiff_t m_vecAbsVelocity = 0x3F8; // Vector
 
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 
-		constexpr std::ptrdiff_t m_entitySpottedState = 0x1E80; // EntitySpottedState_t
+		constexpr std::ptrdiff_t m_entitySpottedState = 0x1E88; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
 
 		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x1504; // float32 - C_CSPlayerPawnBase 
@@ -73,7 +73,7 @@ namespace offsets
 	namespace signatures
 	{
 		const std::string viewMatrix = "48 8D 0D ?? ?? ?? ?? 48 C1 E0 06";
-		const std::string globalVars = "48 89 15 ?? ?? ?? ?? 48 89 42";
+		const std::string globalVars = "48 89 15 ?? ?? ?? ?? 48 89 42"; // 48 89 15$ {'} 48 89 42
 		const std::string entityList = "48 8B 0D ?? ?? ?? ?? 48 89 7C 24 ?? 8B FA C1 EB";
 		const std::string localPlayerController = "48 8B 05 ?? ?? ?? ?? 41 89 BE";
 		const std::string plantedC4 = "48 8B 1D ?? ?? ?? ?? 45 32 F6";
