@@ -1,12 +1,26 @@
+import argparse
 import json
+import os
 import re
 import sys
 import urllib.request
 
 CLIENT_DLL_URL = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.json"
 INFO_URL = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/info.json"
+OFFSETS_JSON_URL = "https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json"
 OFFSETS_PATH = "src/core/offsets/Offsets.hpp"
 DUMPER_PATH = "src/core/offsets/Dumper.cpp"
+
+# Top-level runtime offsets in Offsets.hpp -> (dll, dumper key)
+RUNTIME_OFFSET_MAP = {
+    "entityList": ("client.dll", "dwEntityList"),
+    "viewMatrix": ("client.dll", "dwViewMatrix"),
+    "localPlayerController": ("client.dll", "dwLocalPlayerController"),
+    "globalVars": ("client.dll", "dwGlobalVars"),
+    "plantedC4": ("client.dll", "dwPlantedC4"),
+    "weaponC4": ("client.dll", "dwWeaponC4"),
+    "buildNumber": ("engine2.dll", "dwBuildNumber"),
+}
 
 FIELD_MAP = {
     ("controller", "m_iPing"): "CCSPlayerController",
@@ -50,15 +64,19 @@ FIELD_MAP = {
     ("observerServices", "m_hObserverTarget"): "CPlayer_ObserverServices",
 }
 
-def fetch_classes():
-    with urllib.request.urlopen(CLIENT_DLL_URL, timeout=15) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    return data["client.dll"]["classes"]
+def load_json(source):
+    """Load JSON from a local path or an HTTP(S) URL."""
+    if os.path.exists(source):
+        with open(source, "r", encoding="utf-8") as f:
+            return json.load(f)
+    with urllib.request.urlopen(source, timeout=15) as resp:
+        return json.loads(resp.read().decode("utf-8"))
 
-def fetch_build_number():
-    with urllib.request.urlopen(INFO_URL, timeout=15) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
-    return data["build_number"]
+def fetch_classes(source=CLIENT_DLL_URL):
+    return load_json(source)["client.dll"]["classes"]
+
+def fetch_build_number(source=INFO_URL):
+    return load_json(source)["build_number"]
 
 def resolve_offset(classes, class_name, field_name):
     seen = set()
@@ -73,7 +91,37 @@ def resolve_offset(classes, class_name, field_name):
         current = entry.get("parent")
     return None
 
-def update_offsets_file(classes, build_number):
+def fetch_offsets(source=OFFSETS_JSON_URL):
+    return load_json(source)
+
+def update_runtime_offsets(lines, offset_dump):
+    pattern = re.compile(r'^(\s*inline\s+DWORD\s+)(\w+)(\s*=\s*)0x([0-9A-Fa-f]+)(\s*;.*)$')
+    changed = []
+    unresolved = []
+
+    for i, line in enumerate(lines):
+        m = pattern.match(line)
+        if not m:
+            continue
+
+        name = m.group(2)
+        if name not in RUNTIME_OFFSET_MAP:
+            continue
+
+        dll, key = RUNTIME_OFFSET_MAP[name]
+        new_value = offset_dump.get(dll, {}).get(key)
+        if new_value is None:
+            unresolved.append(name)
+            continue
+
+        old_value = int(m.group(4), 16)
+        if new_value != old_value:
+            changed.append((name, old_value, new_value))
+            lines[i] = f"{m.group(1)}{name}{m.group(3)}0x{new_value:X}{m.group(5)}\n"
+
+    return changed, unresolved
+
+def update_offsets_file(classes, build_number, offset_dump=None):
     with open(OFFSETS_PATH, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
@@ -85,12 +133,20 @@ def update_offsets_file(classes, build_number):
     build_pattern = re.compile(
         r'^(\s*constexpr\s+int\s+dumpedBuildNumber\s*=\s*)(\d+)(\s*;.*)$'
     )
+    comment_pattern = re.compile(
+        r'^(// client\.dll -- generated from a2x/cs2-dumper output for build )(\d+)(.*)$'
+    )
 
     changed = []
     unresolved = []
     build_changed = None
 
     for i, line in enumerate(lines):
+        c = comment_pattern.match(line)
+        if c:
+            lines[i] = f"{c.group(1)}{build_number}{c.group(3)}"
+            continue
+
         b = build_pattern.match(line)
         if b:
             old_build = int(b.group(2))
@@ -131,15 +187,49 @@ def update_offsets_file(classes, build_number):
             changed.append((namespace, field_name, old_value, new_value))
             lines[i] = f"{m.group(1)}{field_name}{m.group(3)}0x{new_value:X}{m.group(5)}\n"
 
+    if offset_dump is not None:
+        runtime_changed, runtime_unresolved = update_runtime_offsets(lines, offset_dump)
+        changed.extend((("runtime", name, old_value, new_value) for name, old_value, new_value in runtime_changed))
+        unresolved.extend((("runtime", name, "offsets.json") for name in runtime_unresolved))
+
     with open(OFFSETS_PATH, "w", encoding="utf-8") as f:
         f.writelines(lines)
 
     return changed, unresolved, build_changed
 
 def main():
-    classes = fetch_classes()
-    build_number = fetch_build_number()
-    changed, unresolved, build_changed = update_offsets_file(classes, build_number)
+    parser = argparse.ArgumentParser(description="Update CS2 offsets from a cs2-dumper output.")
+    parser.add_argument(
+        "--client-dll",
+        default=CLIENT_DLL_URL,
+        help="Path or URL to client_dll.json (default: a2x/cs2-dumper main branch)",
+    )
+    parser.add_argument(
+        "--info",
+        default=INFO_URL,
+        help="Path or URL to info.json (default: a2x/cs2-dumper main branch)",
+    )
+    parser.add_argument(
+        "--offsets",
+        default=OFFSETS_JSON_URL,
+        help="Path or URL to offsets.json (default: a2x/cs2-dumper main branch)",
+    )
+    parser.add_argument(
+        "--dump-dir",
+        default=None,
+        help="Directory created by cs2-dumper; overrides --client-dll/--info/--offsets",
+    )
+    args = parser.parse_args()
+
+    if args.dump_dir:
+        args.client_dll = os.path.join(args.dump_dir, "client_dll.json")
+        args.info = os.path.join(args.dump_dir, "info.json")
+        args.offsets = os.path.join(args.dump_dir, "offsets.json")
+
+    classes = fetch_classes(args.client_dll)
+    build_number = fetch_build_number(args.info)
+    offset_dump = fetch_offsets(args.offsets)
+    changed, unresolved, build_changed = update_offsets_file(classes, build_number, offset_dump)
 
     if build_changed:
         print(f"Build number {build_changed[0]} -> {build_changed[1]}")

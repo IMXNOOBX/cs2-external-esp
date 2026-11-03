@@ -32,10 +32,10 @@ bool Engine::InitImpl() {
         return false;
     }
 
-    if (!Dumper::Init()) {
-        LOGF(FATAL, "Failed to dump game offsets");
-        return false;
-    }
+    // Offsets are pinned to the a2x/cs2-dumper output for the current build (see core/offsets/Offsets.hpp).
+    // The bundled runtime scanner mis-resolves dwGlobalVars, so it is intentionally bypassed.
+    LOGF(INFO, "Using build 14195 offsets (entityList=0x{:X}, viewMatrix=0x{:X}, localPlayerController=0x{:X}, globalVars=0x{:X})",
+        offsets::entityList, offsets::viewMatrix, offsets::localPlayerController, offsets::globalVars);
 
     if (!Config::Read())
         LOGF(WARNING, "Failed to parse config, using default values");

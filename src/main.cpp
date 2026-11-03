@@ -39,9 +39,7 @@ int main()
         LOGF(WARNING, "Could not set application process priority to HIGH");
 
     if (!Updater::Init() || !Updater::Process()) {
-        LOGF(FATAL, "Updater failed to run, the application has not verified its status, execution its not recommended");
-        LOGF(INFO, "Press any key to ignore and continue execution...");
-        std::cin.get();
+        LOGF(WARNING, "Updater failed to run, continuing anyway with local offsets");
     }
 
     if (!Engine::Init()) {
