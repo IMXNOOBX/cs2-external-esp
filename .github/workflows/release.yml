@@ -45,7 +45,14 @@ jobs:
 
       - name: Generate tag
         id: tag
-        run: echo "tag=release-${{ github.run_number }}" >> $env:GITHUB_OUTPUT
+        run: |
+          if ("${{ inputs.release_type }}" -eq "pre-release") {
+            echo "tag=pre-release-${{ github.run_number }}" >> $env:GITHUB_OUTPUT
+            echo "name=Pre-Release" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "tag=release-${{ github.run_number }}" >> $env:GITHUB_OUTPUT
+            echo "name=Release" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Create and push tag
         run: |
@@ -98,7 +105,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          name: Release (v${{ github.run_number }})
+          name: ${{ steps.tag.outputs.name }} (v${{ github.run_number }})
           body_path: CHANGELOG.md
           files: release.zip
           prerelease: ${{ inputs.release_type == 'pre-release' }}
