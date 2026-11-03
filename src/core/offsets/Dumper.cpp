@@ -27,7 +27,7 @@ bool Dumper::InitImpl() {
     // Global Variables
     if (!(temp = Scan(offsets::signatures::globalVars, client))) {
         LOGF(FATAL, "Could not find offset for 'globalVars'");
-        return false;
+        // return false; // Not critical
     }
 
     offsets::globalVars = temp - client.base;
