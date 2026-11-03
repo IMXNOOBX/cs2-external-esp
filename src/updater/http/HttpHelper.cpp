@@ -1,5 +1,11 @@
 #include "HttpHelper.hpp"
 
+namespace {
+    // Requests must never block startup indefinitely when the network is flaky.
+    constexpr long CONNECT_TIMEOUT_MS = 5000L;
+    constexpr long TRANSFER_TIMEOUT_MS = 15000L;
+}
+
 int HttpHelper::Get(std::string url, json& response) {
 	return GetInstance().GetImpl(url, response);
 }
@@ -18,6 +24,8 @@ int HttpHelper::GetImpl(std::string url, json& response) {
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, CONNECT_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, TRANSFER_TIMEOUT_MS);
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -55,6 +63,8 @@ int HttpHelper::PostImpl(std::string url, json body, json& response) {
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, CONNECT_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, TRANSFER_TIMEOUT_MS);
 
     // Set JSON header
     struct curl_slist* headers = nullptr;
