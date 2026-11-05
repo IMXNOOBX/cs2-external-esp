@@ -90,6 +90,7 @@ namespace cfg {
 
 		namespace radar {
 			inline bool enabled = true;
+			inline bool external = false;
 			inline bool no_rotate = false;
 			inline float range = 2000.f;
 			inline Vec2_t pos{ 10.f, 10.f };
