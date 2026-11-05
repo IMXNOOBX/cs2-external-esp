@@ -381,6 +381,7 @@ void Menu::RenderImpl() {
 
 						if (!script.loaded)
 						{
+							ImGui::SameLine();
 							ImGui::TextDisabled("Unloaded");
 							ImGui::Separator();
 							ImGui::PopID();
@@ -389,6 +390,7 @@ void Menu::RenderImpl() {
 
 						if (script.buttons.empty())
 						{
+							ImGui::SameLine();
 							ImGui::TextDisabled("No btn_ functions");
 							ImGui::Separator();
 							ImGui::PopID();

@@ -2,13 +2,13 @@
 
 #include "core/logger/LogHelper.hpp"
 
-// The Solis compiler is plain C.
+// The Solis compiler is plain C
 extern "C" {
-#include "Solis/compiler/check.h"
-#include "Solis/compiler/common.h"
-#include "Solis/compiler/emit.h"
-#include "Solis/compiler/gen.h"
-#include "Solis/compiler/module.h"
+    #include "Solis/compiler/check.h"
+    #include "Solis/compiler/common.h"
+    #include "Solis/compiler/emit.h"
+    #include "Solis/compiler/gen.h"
+    #include "Solis/compiler/module.h"
 }
 
 #include <cstdlib>
