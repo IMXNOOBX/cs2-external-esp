@@ -18,6 +18,7 @@ int HttpHelper::GetImpl(std::string url, json& response) {
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, REQUEST_TIMEOUT);
 
     CURLcode res = curl_easy_perform(curl);
 
@@ -55,6 +56,7 @@ int HttpHelper::PostImpl(std::string url, json body, json& response) {
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, REQUEST_TIMEOUT);
 
     // Set JSON header
     struct curl_slist* headers = nullptr;
