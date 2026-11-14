@@ -156,7 +156,9 @@ namespace scripting {
         config_map["esp.bomb_color"] = &cfg::esp::bomb_color;
     }
 
-    void Scripting::RegisterNatives(solis::Vm& vm, const std::string& script_path, bool allow_bind) {
+    Scripting::ScriptRuntime::~ScriptRuntime() = default;
+
+    void Scripting::RegisterNatives(solis::Vm& vm, const std::string& script_path, ScriptRuntime* runtime) {
         vm.define("set_bool", "(str,bool)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "set_bool");
             SetBoolValue(ArgString(args, 0), args[1].asBool());
@@ -222,9 +224,9 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("bind", "(str,str)->()", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
+        vm.define("bind", "(str,str)->()", [this, script_path, runtime](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "bind");
-            if (!allow_bind) {
+            if (!runtime || !runtime->binding_allowed) {
                 LOGF(WARNING, "bind() can only be called from main()");
                 return solis::Value();
             }
@@ -232,9 +234,9 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("hold", "(str,str)->()", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
+        vm.define("hold", "(str,str)->()", [this, script_path, runtime](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "hold");
-            if (!allow_bind) {
+            if (!runtime || !runtime->binding_allowed) {
                 LOGF(WARNING, "hold() can only be called from main()");
                 return solis::Value();
             }
@@ -290,7 +292,7 @@ namespace scripting {
     std::string Scripting::HostDeclarations() {
 
         solis::Vm vm;
-        RegisterNatives(vm, "", false);
+        RegisterNatives(vm, "", nullptr);
         return vm.declarations();
     }
 
@@ -316,7 +318,7 @@ namespace scripting {
         return path.generic_string();
     }
 
-    bool Scripting::CompileScript(const std::string& path, ScriptInfo& info, ScriptRuntime& runtime) {
+    bool Scripting::CompileScript(const std::string& path, ScriptInfo& info, std::shared_ptr<ScriptRuntime>& runtime) {
         const std::string host = HostDeclarations();
 
         SolisScript::CompiledScript compiled;
@@ -325,25 +327,42 @@ namespace scripting {
             return false;
         }
 
+        // One script, one image, one Vm. Functions are called by name on that Vm, so there is no
+        // per-function wrapper to compile and the script's globals keep their values between calls.
+        auto script = std::make_shared<ScriptRuntime>();
+        try {
+            script->vm = std::make_unique<solis::Vm>();
+            script->vm->openStd();
+            RegisterNatives(*script->vm, path, script.get());
+            script->vm->load(compiled.image);
+        }
+        catch (const std::exception& e) {
+            LOGF(WARNING, "Could not load {}: {}", path, e.what());
+            return false;
+        }
+
         info.path = path;
         info.name = DisplayName(path);
-        runtime.init = std::move(compiled.image);
 
+        const std::string module = std::filesystem::path(path).stem().string();
         for (const auto& function : compiled.functions) {
-            std::vector<uint8_t> image;
-            if (!SolisScript::CompileFunction(path, function, host, image)) {
-                LOGF(WARNING, "Failed to compile {}", function);
-                continue;
-            }
-
-            runtime.functions.emplace(function, std::move(image));
+            // Prefer module.function; fall back to the bare name, which Solis accepts when it is unambiguous.
+            const std::string qualified = module + "." + function;
+            script->functions.emplace(function, script->vm->hasFunction(qualified) ? qualified : function);
 
             if (function.rfind("btn_", 0) == 0 && function.size() > 4) {
                 info.buttons.push_back({ function.substr(4), function });
             }
         }
 
+        runtime = std::move(script);
         return true;
+    }
+
+    std::shared_ptr<Scripting::ScriptRuntime> Scripting::GetRuntime(const std::string& path) const {
+        std::lock_guard<std::mutex> lock(runtime_mutex);
+        const auto it = runtimes.find(path);
+        return it != runtimes.end() ? it->second : nullptr;
     }
 
     void Scripting::UnloadRuntime(const std::string& path) {
@@ -390,7 +409,7 @@ namespace scripting {
         }
 
         ScriptInfo info;
-        ScriptRuntime runtime;
+        std::shared_ptr<ScriptRuntime> runtime;
         if (!CompileScript(path, info, runtime)) {
             it->loaded = false;
             it->buttons.clear();
@@ -481,52 +500,49 @@ namespace scripting {
     }
 
     void Scripting::RunInit(const std::string& path) {
-        std::vector<uint8_t> image;
-        {
-            std::lock_guard<std::mutex> lock(runtime_mutex);
-            const auto it = runtimes.find(path);
-            if (it != runtimes.end()) {
-                image = it->second.init;
-            }
+        const auto runtime = GetRuntime(path);
+        if (!runtime) {
+            return;
         }
 
-        if (!image.empty()) {
-            RunImage(image, DisplayName(path) + ".main", path, true);
+        const std::string label = DisplayName(path) + ".main";
+
+        // Held for the whole run: a Vm is not thread safe, and an unload must wait for it to finish.
+        std::lock_guard<std::mutex> lock(runtime->vm_mutex);
+        runtime->binding_allowed = true;
+        try {
+            runtime->vm->run();
         }
+        catch (const solis::Error& e) {
+            LOGF(WARNING, "Solis error in '{}': {}", label, e.what());
+        }
+        catch (const std::exception& e) {
+            LOGF(WARNING, "Error in '{}': {}", label, e.what());
+        }
+        runtime->binding_allowed = false;
     }
 
     void Scripting::RunFunction(const std::string& path, const std::string& function) {
-        std::vector<uint8_t> image;
-        {
-            std::lock_guard<std::mutex> lock(runtime_mutex);
-            const auto script = runtimes.find(path);
-            if (script != runtimes.end()) {
-                const auto it = script->second.functions.find(function);
-                if (it != script->second.functions.end()) {
-                    image = it->second;
-                }
+        const auto runtime = GetRuntime(path);
+
+        std::string target;
+        if (runtime) {
+            const auto it = runtime->functions.find(function);
+            if (it != runtime->functions.end()) {
+                target = it->second;
             }
         }
 
-        if (image.empty()) {
+        if (target.empty()) {
             LOGF(WARNING, "Unknown function: {}.{}", DisplayName(path), function);
             return;
         }
 
-        RunImage(image, DisplayName(path) + "." + function, path, false);
-    }
+        const std::string label = DisplayName(path) + "." + function;
 
-    void Scripting::RunImage(const std::vector<uint8_t>& image, const std::string& label, const std::string& script_path, bool allow_bind) {
-        if (image.empty()) {
-            return;
-        }
-
+        std::lock_guard<std::mutex> lock(runtime->vm_mutex);
         try {
-            solis::Vm vm;
-            vm.openStd();
-            RegisterNatives(vm, script_path, allow_bind);
-            vm.load(image);
-            vm.run();
+            runtime->vm->call(target);
         }
         catch (const solis::Error& e) {
             LOGF(WARNING, "Solis error in '{}': {}", label, e.what());
@@ -591,9 +607,8 @@ namespace scripting {
     }
 
     bool Scripting::FunctionExists(const std::string& path, const std::string& function) const {
-        const auto script = runtimes.find(path);
-        return script != runtimes.end() &&
-               script->second.functions.find(function) != script->second.functions.end();
+        const auto runtime = GetRuntime(path);
+        return runtime && runtime->functions.find(function) != runtime->functions.end();
     }
 
     void Scripting::SetBoolValue(const std::string& name, bool value) {

@@ -3,6 +3,7 @@
 #include <atomic>
 #include <cstdint>
 #include <filesystem>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <string>
@@ -66,9 +67,14 @@ namespace scripting {
     private:
         Scripting() = default;
 
+        // One Vm per loaded script, kept alive so the script's globals survive between calls.
         struct ScriptRuntime {
-            std::vector<uint8_t> init;
-            std::unordered_map<std::string, std::vector<uint8_t>> functions;
+            ~ScriptRuntime();
+
+            std::unique_ptr<solis::Vm> vm;
+            std::mutex vm_mutex;                    // a Vm is not thread safe; held while main() or a function runs
+            bool binding_allowed = false;           // true only while main() runs (guarded by vm_mutex)
+            std::unordered_map<std::string, std::string> functions;   // name in the script -> name to call
         };
 
         struct PendingFunction {
@@ -78,17 +84,17 @@ namespace scripting {
         };
 
         void RegisterConfigVars();
-        void RegisterNatives(solis::Vm& vm, const std::string& script_path, bool allow_bind);
+        void RegisterNatives(solis::Vm& vm, const std::string& script_path, ScriptRuntime* runtime);
         std::string HostDeclarations();
 
         std::vector<std::filesystem::path> FindScripts() const;
-        bool CompileScript(const std::string& path, ScriptInfo& info, ScriptRuntime& runtime);
+        bool CompileScript(const std::string& path, ScriptInfo& info, std::shared_ptr<ScriptRuntime>& runtime);
+        std::shared_ptr<ScriptRuntime> GetRuntime(const std::string& path) const;
         void UnloadRuntime(const std::string& path);
         std::string DisplayName(const std::filesystem::path& file) const;
 
         void RunInit(const std::string& path);
         void RunFunction(const std::string& path, const std::string& function);
-        void RunImage(const std::vector<uint8_t>& image, const std::string& label, const std::string& script_path, bool allow_bind);
         void QueueFunction(const std::string& path, const std::string& function, int hold_key = 0);
         void WorkerThread();
 
@@ -111,14 +117,14 @@ namespace scripting {
 
         std::unordered_map<std::string, ConfigVar> config_map;
         std::vector<ScriptInfo> scripts;
-        std::unordered_map<std::string, ScriptRuntime> runtimes;
+        std::unordered_map<std::string, std::shared_ptr<ScriptRuntime>> runtimes;
 
         std::vector<Keybind> keybinds;
         std::vector<HoldKey> holds;
         std::unordered_map<int, bool> key_states;
         std::unordered_map<std::string, int> key_name_map;
 
-        std::mutex runtime_mutex;
+        mutable std::mutex runtime_mutex;
         std::thread worker_thread;
         std::queue<PendingFunction> function_queue;
         std::mutex queue_mutex;

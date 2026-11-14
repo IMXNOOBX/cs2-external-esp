@@ -13,8 +13,6 @@ extern "C" {
 
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
-#include <fstream>
 
 namespace {
     void LogDiagnostics(const loaded* modules, const diag_vec& diags) {
@@ -61,11 +59,6 @@ bool SolisScript::Compile(const std::string& path, const std::string& host, Comp
     return GetInstance().CompileImpl(path, host, script.image, &script.functions);
 }
 
-bool SolisScript::CompileFunction(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image) {
-    image.clear();
-    return GetInstance().CompileFunctionImpl(path, function, host, image);
-}
-
 bool SolisScript::CompileImpl(const std::string& path, const std::string& host, std::vector<uint8_t>& image, std::vector<std::string>* functions) {
     arena arena_state;
     arena_init(&arena_state);
@@ -105,30 +98,4 @@ bool SolisScript::CompileImpl(const std::string& path, const std::string& host, 
     arena_free(&arena_state);
 
     return !image.empty();
-}
-
-bool SolisScript::CompileFunctionImpl(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image) {
-    const std::filesystem::path script(path);
-    const std::string module = script.stem().string();
-    const std::filesystem::path wrapper = script.parent_path() / ("solis_tmp_" + function + ".sl");
-
-    {
-        std::ofstream out(wrapper, std::ios::trunc);
-        if (!out.is_open()) {
-            LOGF(WARNING, "Could not create {}", wrapper.string());
-            return false;
-        }
-
-        out << "import " << module << ";\n\n"
-            << "func main() {\n"
-            << "    " << module << "." << function << "();\n"
-            << "}\n";
-    }
-
-    const bool ok = CompileImpl(wrapper.string(), host, image, nullptr);
-
-    std::error_code ec;
-    std::filesystem::remove(wrapper, ec);
-
-    return ok;
 }
