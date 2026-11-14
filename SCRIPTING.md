@@ -9,12 +9,14 @@ The application loads every `.sl` file from the working directory and from a `sc
 `movement.sl`:
 
 ```solis
+import host;
+
 func main() {
-    bind("F1", "btn_toggle_box");
+    host.bind("F1", "btn_toggle_box");
 }
 
 func btn_toggle_box() {
-    set_bool("esp.box", !get_bool("esp.box"));
+    host.set_bool("esp.box", !host.get_bool("esp.box"));
 }
 ```
 
@@ -26,36 +28,40 @@ Any function without parameters whose name starts with `btn_` is shown in the GU
 
 ```solis
 func btn_reset() {
-    reset_theme();
+    host.reset_theme();
 }
 ```
 
-The `btn_` prefix is removed from the button label. Functions without the prefix are not shown, but they can still be used with `bind` and `hold`.
+The `btn_` prefix is removed from the button label. Functions without the prefix are not shown, but they can still be used with `host.bind` and `host.hold`.
 
 ## Multiple scripts
 
 Each file is independent. A script can look like this:
 
 ```solis
+import host;
+
 func main() {
-    bind("F1", "toggle");
-    hold("SPACE", "jump");
+    host.bind("F1", "toggle");
+    host.hold("SPACE", "jump");
 }
 
 func toggle() {
-    set_bool("esp.skeleton", !get_bool("esp.skeleton"));
+    host.set_bool("esp.skeleton", !host.get_bool("esp.skeleton"));
 }
 
 func jump() {
-    send("SPACE", 50, 10);
+    host.send("SPACE", 50, 10);
 }
 ```
 
-`bind` and `hold` refer to functions in the same script. In the **Scripts** tab, every script is listed with its relative name (`movement` or `scripts/movement`) and its `btn_` functions.
+The functions passed to `host.bind` and `host.hold` refer to functions in the same script. In the **Scripts** tab, every script is listed with its relative name (`movement` or `scripts/movement`) and its `btn_` functions.
 
 Click a script name to open the file in the default editor. Use **Load** / **Unload** to enable a script, and **Refresh** to rescan the folders for new or removed files.
 
 ## Host API
+
+Every function below is provided by the application through the `host` module. Add `import host;` at the top of the script and call it with the `host.` prefix, e.g. `host.set_bool("esp.box", true)`. The signatures are checked when the script compiles, so a wrong argument count or type is a compile error rather than a runtime surprise.
 
 | Function | Description |
 | --- | --- |
@@ -67,36 +73,38 @@ Click a script name to open the file in the default editor. Use **Load** / **Unl
 | `get_color(name)` | Read a color as `"r,g,b,a"`. |
 | `reset_theme()` | Restore the default UI colors. |
 | `echo(message)` | Print a message to the console. |
-| `print(message)` | Alias of `echo`. |
+| `print(message)` | Builtin alias of `echo`; available without the `host.` prefix. |
 | `bind(key, function)` | Bind a key to a function in the same script. |
 | `hold(key, function)` | Run a function while a key is held. |
 | `client_base()` / `engine_base()` | Module base addresses. |
 | `menu_open()`, `menu_x()`, `menu_y()` | Menu state and position. |
 
-`bind` and `hold` are only accepted from `main()`.
+`host.bind` and `host.hold` are only accepted from `main()`.
 
 The `math` and `strings` modules are available with `import math;` and `import strings;`.
 
 ### Keyboard input (debug builds)
 
 ```solis
-send(key, duration_ms, repeat_count);
-send("SPACE", 50, 10);
-send("MOUSE1", 50, 10);
+host.send(key, duration_ms, repeat_count);
+host.send("SPACE", 50, 10);
+host.send("MOUSE1", 50, 10);
 ```
 
 ### Memory access (debug builds)
 
 ```solis
-let value = read_int(0xABCD1234);
-write_int(0xABCD1234, value + 1);
+let value = host.read_int(0xABCD1234);
+host.write_int(0xABCD1234, value + 1);
 ```
 
 This directly accesses game memory and can crash the game or trigger anti-cheat detection.
 
-## Generated prelude
+## Host module
 
-Solis requires host functions to be declared with `extern func`. A `prelude.sl` containing those declarations is generated in every folder that has scripts, and is overwritten whenever a script loads. Don't edit it.
+Scripts see the application through the generated `host` module. The application builds it from the natives it registers (names and signatures), so there is no `prelude.sl` to write, generate, or keep in sync. A `prelude.sl` left over from an older version is ignored and can be deleted.
+
+Functions that only a script can define, such as its own structs, are not part of `host`; declare those in the script as usual.
 
 ## Configuration values
 

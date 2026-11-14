@@ -56,24 +56,25 @@ namespace {
     }
 }
 
-bool SolisScript::Compile(const std::string& path, CompiledScript& script) {
+bool SolisScript::Compile(const std::string& path, const std::string& host, CompiledScript& script) {
     script = {};
-    return GetInstance().CompileImpl(path, script.image, &script.functions);
+    return GetInstance().CompileImpl(path, host, script.image, &script.functions);
 }
 
-bool SolisScript::CompileFunction(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
+bool SolisScript::CompileFunction(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image) {
     image.clear();
-    return GetInstance().CompileFunctionImpl(path, function, image);
+    return GetInstance().CompileFunctionImpl(path, function, host, image);
 }
 
-bool SolisScript::CompileImpl(const std::string& path, std::vector<uint8_t>& image, std::vector<std::string>* functions) {
+bool SolisScript::CompileImpl(const std::string& path, const std::string& host, std::vector<uint8_t>& image, std::vector<std::string>* functions) {
     arena arena_state;
     arena_init(&arena_state);
 
     sl_interner* interner = intern_new(&arena_state);
 
     diag_vec diags{};
-    loaded* modules = module_load(&arena_state, interner, path.c_str(), nullptr, &diags);
+    // "" disables the prelude file; scripts get the host API from `import host;`
+    loaded* modules = module_load(&arena_state, interner, path.c_str(), "", host.empty() ? nullptr : host.c_str(), &diags);
 
     uint8_t* bytes = nullptr;
     size_t length = 0;
@@ -106,7 +107,7 @@ bool SolisScript::CompileImpl(const std::string& path, std::vector<uint8_t>& ima
     return !image.empty();
 }
 
-bool SolisScript::CompileFunctionImpl(const std::string& path, const std::string& function, std::vector<uint8_t>& image) {
+bool SolisScript::CompileFunctionImpl(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image) {
     const std::filesystem::path script(path);
     const std::string module = script.stem().string();
     const std::filesystem::path wrapper = script.parent_path() / ("solis_tmp_" + function + ".sl");
@@ -124,7 +125,7 @@ bool SolisScript::CompileFunctionImpl(const std::string& path, const std::string
             << "}\n";
     }
 
-    const bool ok = CompileImpl(wrapper.string(), image, nullptr);
+    const bool ok = CompileImpl(wrapper.string(), host, image, nullptr);
 
     std::error_code ec;
     std::filesystem::remove(wrapper, ec);

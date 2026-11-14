@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
-#include <fstream>
 #include <unordered_set>
 #include <utility>
 
@@ -158,25 +157,25 @@ namespace scripting {
     }
 
     void Scripting::RegisterNatives(solis::Vm& vm, const std::string& script_path, bool allow_bind) {
-        vm.define("set_bool", [this](solis::Vm&, solis::Args args) {
+        vm.define("set_bool", "(str,bool)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "set_bool");
             SetBoolValue(ArgString(args, 0), args[1].asBool());
             return solis::Value();
         });
 
-        vm.define("set_int", [this](solis::Vm&, solis::Args args) {
+        vm.define("set_int", "(str,int)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "set_int");
             SetIntValue(ArgString(args, 0), static_cast<int>(args[1].asInt()));
             return solis::Value();
         });
 
-        vm.define("set_float", [this](solis::Vm&, solis::Args args) {
+        vm.define("set_float", "(str,float)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "set_float");
             SetFloatValue(ArgString(args, 0), static_cast<float>(args[1].asFloat()));
             return solis::Value();
         });
 
-        vm.define("set_color", [this](solis::Vm&, solis::Args args) {
+        vm.define("set_color", "(str,float,float,float,float)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 5, "set_color");
             SetColorValue(ArgString(args, 0),
                 static_cast<float>(args[1].asFloat()),
@@ -186,44 +185,44 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("get_bool", [this](solis::Vm&, solis::Args args) {
+        vm.define("get_bool", "(str)->bool", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "get_bool");
             return solis::Value::boolean(GetBoolValue(ArgString(args, 0)));
         });
 
-        vm.define("get_int", [this](solis::Vm&, solis::Args args) {
+        vm.define("get_int", "(str)->int", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "get_int");
             return solis::Value::integer(GetIntValue(ArgString(args, 0)));
         });
 
-        vm.define("get_float", [this](solis::Vm&, solis::Args args) {
+        vm.define("get_float", "(str)->float", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "get_float");
             return solis::Value::number(GetFloatValue(ArgString(args, 0)));
         });
 
-        vm.define("get_color", [this](solis::Vm& vm, solis::Args args) {
+        vm.define("get_color", "(str)->str", [this](solis::Vm& vm, solis::Args args) {
             RequireArgs(args, 1, "get_color");
             return vm.string(GetColorValue(ArgString(args, 0)));
         });
 
-        vm.define("reset_theme", [](solis::Vm&, solis::Args) {
+        vm.define("reset_theme", "()->()", [](solis::Vm&, solis::Args) {
             theme::ThemeManager::Get().RequestReset();
             return solis::Value();
         });
 
-        vm.define("echo", [](solis::Vm&, solis::Args args) {
+        vm.define("echo", "(str)->()", [](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "echo");
             LOGF(INFO, "{}", args[0].toString());
             return solis::Value();
         });
 
-        vm.define("print", [](solis::Vm&, solis::Args args) {
+        vm.define("print", "(str)->()", [](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "print");
             LOGF(INFO, "{}", args[0].toString());
             return solis::Value();
         });
 
-        vm.define("bind", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
+        vm.define("bind", "(str,str)->()", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "bind");
             if (!allow_bind) {
                 LOGF(WARNING, "bind() can only be called from main()");
@@ -233,7 +232,7 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("hold", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
+        vm.define("hold", "(str,str)->()", [this, script_path, allow_bind](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "hold");
             if (!allow_bind) {
                 LOGF(WARNING, "hold() can only be called from main()");
@@ -243,28 +242,28 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("client_base", [](solis::Vm&, solis::Args) {
+        vm.define("client_base", "()->int", [](solis::Vm&, solis::Args) {
             return solis::Value::integer(static_cast<int64_t>(Engine::GetClient().base));
         });
 
-        vm.define("engine_base", [](solis::Vm&, solis::Args) {
+        vm.define("engine_base", "()->int", [](solis::Vm&, solis::Args) {
             return solis::Value::integer(static_cast<int64_t>(Engine::GetEngine().base));
         });
 
-        vm.define("menu_open", [](solis::Vm&, solis::Args) {
+        vm.define("menu_open", "()->bool", [](solis::Vm&, solis::Args) {
             return solis::Value::boolean(Renderer::IsOpen());
         });
 
-        vm.define("menu_x", [](solis::Vm&, solis::Args) {
+        vm.define("menu_x", "()->int", [](solis::Vm&, solis::Args) {
             return solis::Value::integer(static_cast<int64_t>(Menu::GetPos().x));
         });
 
-        vm.define("menu_y", [](solis::Vm&, solis::Args) {
+        vm.define("menu_y", "()->int", [](solis::Vm&, solis::Args) {
             return solis::Value::integer(static_cast<int64_t>(Menu::GetPos().y));
         });
 
 #ifdef _DEBUG
-        vm.define("send", [this](solis::Vm&, solis::Args args) {
+        vm.define("send", "(str,int,int)->()", [this](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "send");
             const int key = ParseKeyCode(ArgString(args, 0));
             const int duration = args.size() > 1 ? static_cast<int>(args[1].asInt()) : 50;
@@ -273,13 +272,13 @@ namespace scripting {
             return solis::Value();
         });
 
-        vm.define("read_int", [](solis::Vm&, solis::Args args) {
+        vm.define("read_int", "(int)->int", [](solis::Vm&, solis::Args args) {
             RequireArgs(args, 1, "read_int");
             const auto address = static_cast<uintptr_t>(args[0].asInt());
             return solis::Value::integer(Engine::GetProcess()->read<int>(address));
         });
 
-        vm.define("write_int", [](solis::Vm&, solis::Args args) {
+        vm.define("write_int", "(int,int)->()", [](solis::Vm&, solis::Args args) {
             RequireArgs(args, 2, "write_int");
             const auto address = static_cast<uintptr_t>(args[0].asInt());
             Engine::GetProcess()->write<int>(address, static_cast<int>(args[1].asInt()));
@@ -288,47 +287,11 @@ namespace scripting {
 #endif
     }
 
-    void Scripting::WritePrelude(const std::filesystem::path& dir) {
-        std::string text = R"(extern func set_bool(name: str, value: bool);
-extern func set_int(name: str, value: int);
-extern func set_float(name: str, value: float);
-extern func set_color(name: str, r: float, g: float, b: float, a: float);
-extern func get_bool(name: str): bool;
-extern func get_int(name: str): int;
-extern func get_float(name: str): float;
-extern func get_color(name: str): str;
+    std::string Scripting::HostDeclarations() {
 
-extern func reset_theme();
-extern func echo(message: str);
-extern func print(message: str);
-
-extern func bind(key: str, function: str);
-extern func hold(key: str, function: str);
-
-extern func client_base(): int;
-extern func engine_base(): int;
-extern func menu_open(): bool;
-extern func menu_x(): int;
-extern func menu_y(): int;
-)";
-
-#ifdef _DEBUG
-        text += R"(
-extern func send(key: str, duration_ms: int, repeat_count: int);
-extern func read_int(address: int): int;
-extern func write_int(address: int, value: int);
-)";
-#endif
-
-        const std::filesystem::path prelude = dir / "prelude.sl";
-
-        std::ofstream out(prelude, std::ios::trunc);
-        if (!out.is_open()) {
-            LOGF(WARNING, "Could not write {}", prelude.string());
-            return;
-        }
-
-        out << text;
+        solis::Vm vm;
+        RegisterNatives(vm, "", false);
+        return vm.declarations();
     }
 
     std::vector<std::filesystem::path> Scripting::FindScripts() const {
@@ -354,8 +317,10 @@ extern func write_int(address: int, value: int);
     }
 
     bool Scripting::CompileScript(const std::string& path, ScriptInfo& info, ScriptRuntime& runtime) {
+        const std::string host = HostDeclarations();
+
         SolisScript::CompiledScript compiled;
-        if (!SolisScript::Compile(path, compiled)) {
+        if (!SolisScript::Compile(path, host, compiled)) {
             LOGF(WARNING, "Failed to compile {}", path);
             return false;
         }
@@ -366,7 +331,7 @@ extern func write_int(address: int, value: int);
 
         for (const auto& function : compiled.functions) {
             std::vector<uint8_t> image;
-            if (!SolisScript::CompileFunction(path, function, image)) {
+            if (!SolisScript::CompileFunction(path, function, host, image)) {
                 LOGF(WARNING, "Failed to compile {}", function);
                 continue;
             }
@@ -423,8 +388,6 @@ extern func write_int(address: int, value: int);
         if (it->loaded) {
             UnloadScript(path);
         }
-
-        WritePrelude(std::filesystem::path(path).parent_path());
 
         ScriptInfo info;
         ScriptRuntime runtime;

@@ -79,7 +79,7 @@ namespace scripting {
 
         void RegisterConfigVars();
         void RegisterNatives(solis::Vm& vm, const std::string& script_path, bool allow_bind);
-        void WritePrelude(const std::filesystem::path& dir);
+        std::string HostDeclarations();
 
         std::vector<std::filesystem::path> FindScripts() const;
         bool CompileScript(const std::string& path, ScriptInfo& info, ScriptRuntime& runtime);
