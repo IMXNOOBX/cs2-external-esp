@@ -20,7 +20,7 @@ func btn_toggle_box() {
 }
 ```
 
-`main()` runs when the script loads, so that's where bindings belong. `btn_toggle_box` appears as a `toggle_box` button in the **Scripts** tab.
+`main()` runs when the script loads, so that's where bindings belong. Each script keeps one Solis VM for as long as it is loaded, so **global variables keep their values between calls**: a script can count presses or remember a toggle with a top-level `var`, no `host.set_*` round trip needed. Unloading or reloading a script starts it again from a fresh `main()`. `btn_toggle_box` appears as a `toggle_box` button in the **Scripts** tab.
 
 ## Buttons
 
