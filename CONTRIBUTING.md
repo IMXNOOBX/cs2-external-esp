@@ -37,13 +37,13 @@ We expect contributions to be:
 
 ## Branching and Pull Requests
 
-There is no separate development branch. All pull requests target `main`.
+There is no separate development branch. All pull requests target `develop`.
 
 ### PR workflow
 
-1. Create your branch and open a PR against `main`.
-2. Before opening the PR, update your branch with the latest changes from `main` so the PR includes current `main` state.
-3. Ensure the code compiles and works in the PR state after updating from `main`. 
+1. Create your branch and open a PR against `develop`.
+2. Before opening the PR, update your branch with the latest changes from `develop` so the PR includes current `develop` state.
+3. Ensure the code compiles and works in the PR state after updating from `develop`. 
 4. Make sure the PR improves the project (bug fixes, refactors with clear value, or new ESP features within the allowed scope).
 5. Address review feedback promptly.
 6. Maintainers will only merge when the PR is ready.
