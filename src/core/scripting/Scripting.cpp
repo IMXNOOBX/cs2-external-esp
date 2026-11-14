@@ -815,16 +815,9 @@ namespace scripting {
         key_name_map["LALT"] = VK_LMENU;
         key_name_map["RALT"] = VK_RMENU;
 
-        key_name_map["NUM0"] = VK_NUMPAD0;
-        key_name_map["NUM1"] = VK_NUMPAD1;
-        key_name_map["NUM2"] = VK_NUMPAD2;
-        key_name_map["NUM3"] = VK_NUMPAD3;
-        key_name_map["NUM4"] = VK_NUMPAD4;
-        key_name_map["NUM5"] = VK_NUMPAD5;
-        key_name_map["NUM6"] = VK_NUMPAD6;
-        key_name_map["NUM7"] = VK_NUMPAD7;
-        key_name_map["NUM8"] = VK_NUMPAD8;
-        key_name_map["NUM9"] = VK_NUMPAD9;
+        for (int i = 0; i <= 9; i++) {
+            key_name_map["NUMPAD" + std::to_string(i)] = VK_NUMPAD0 + i;
+        }
         key_name_map["NUMLOCK"] = VK_NUMLOCK;
 
         key_name_map["MINUS"] = VK_OEM_MINUS;

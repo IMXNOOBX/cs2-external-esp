@@ -133,7 +133,7 @@ For theme colors, see [`THEMES.md`](THEMES.md).
 
 ## Key names
 
-Use `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUM0-NUM9`, or `MOUSE1-MOUSE5`.
+Use `A-Z`, `0-9`, `F1-F12`, `SPACE`, `ENTER`, `ESC`, `INSERT`, `DELETE`, `HOME`, `END`, `PGUP`, `PGDN`, `LEFT`, `RIGHT`, `UP`, `DOWN`, `SHIFT`, `CTRL`, `ALT`, `TAB`, `BACKSPACE`, `NUMPAD0-NUMPAD9`, or `MOUSE1-MOUSE5`.
 
 Numeric virtual-key codes are also accepted, for example `bind("112", "btn_setup")`.
 

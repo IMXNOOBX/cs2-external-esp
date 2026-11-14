@@ -25,14 +25,14 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x14A4; // Vector
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3E7; // uint8
-		constexpr std::ptrdiff_t m_bIsScoped = 0x1E98; // bool
-		constexpr std::ptrdiff_t m_ArmorValue = 0x1EC8; // int32
-		constexpr std::ptrdiff_t m_bIsDefusing = 0x1E9A; // bool
+		constexpr std::ptrdiff_t m_bIsScoped = 0x1ED0; // bool
+		constexpr std::ptrdiff_t m_ArmorValue = 0x1F00; // int32
+		constexpr std::ptrdiff_t m_bIsDefusing = 0x1ED2; // bool
 		constexpr std::ptrdiff_t m_vecAbsVelocity = 0x3F8; // Vector
 
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 
-		constexpr std::ptrdiff_t m_entitySpottedState = 0x1E80; // EntitySpottedState_t
+		constexpr std::ptrdiff_t m_entitySpottedState = 0x1EB8; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
 
 		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x1504; // float32 - C_CSPlayerPawnBase 
@@ -43,7 +43,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_Item = 0x50; // C_EconItemView - C_AttributeContainer
 		constexpr std::ptrdiff_t m_iItemDefinitionIndex = 0x1BA; // uint16 - C_EconItemView
 		constexpr std::ptrdiff_t m_iClip1 = 0x1928; // int32 - C_BasePlayerWeapon
-		constexpr std::ptrdiff_t m_bInReload = 0x1A3C; // bool - C_CSWeaponBase
+		constexpr std::ptrdiff_t m_bInReload = 0x1A7C; // bool - C_CSWeaponBase
 		constexpr std::ptrdiff_t m_pObserverServices = 0x1308; // CPlayer_ObserverServices*
 	}
 
