@@ -1,9 +1,14 @@
 #include "Menu.hpp"
-
+#include <cstring>
+#include "core/scripting/Scripting.hpp"
+#include "core/scripting/Scripting.hpp"
 #include "core/engine/cache/Cache.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
 #include "assets/fonts/Icons.h";
+#include <shellapi.h>
+
+#pragma comment(lib, "Shell32.lib")
 
 
 bool Menu::Init() {
@@ -28,6 +33,7 @@ ImVec2 Menu::GetSize() {
 
 bool Menu::InitImpl() {
 	SetupStyles();
+	theme::ThemeManager::Get().Init();
 
 	LOGF(INFO, "Successfully initialized menu...");
 	return true;
@@ -70,9 +76,11 @@ void Menu::RenderImpl() {
 
 					if (is_active)
 					{
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+						const ImGuiStyle& style = ImGui::GetStyle();
+						const ImVec4& active_tab_color = style.Colors[ImGuiCol_TabActive];
+						ImGui::PushStyleColor(ImGuiCol_Button, active_tab_color);
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, active_tab_color);
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, active_tab_color);
 					}
 
 					if (ImGui::Button((tab.icon + " " + tab.label).c_str(), ImVec2(-1, 28)))
@@ -245,7 +253,7 @@ void Menu::RenderImpl() {
 					{
 						ImGui::Checkbox("Bomb ESP", &cfg::esp::bomb);
 						ImGui::SameLine();
-						ImGui::ColorEdit4("Bomb color", cfg::esp::colors::bomb.data(), color_flags);
+						ImGui::ColorEdit4("Bomb color", cfg::esp::bomb_color.data(), color_flags);
 					}
 					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
 					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);
@@ -289,8 +297,136 @@ void Menu::RenderImpl() {
 					}
 					ImGui::EndDisabled();
 				}
+				else if (active_tab == Tab::SCRIPTS)
+				{
+					ImGui::Text("Scripts");
+					ImGui::SameLine();
+					ImGui::TextLinkOpenURL("Documentation", "https://github.com/IMXNOOBX/cs2-external-esp/blob/main/SCRIPTING.md");
+					ImGui::Separator();
+
+					ImGui::TextWrapped("Scripts load from the current directory and the scripts folder. btn_* functions become buttons. Use Load/Unload per script, or Refresh to rescan the folders.");
+					ImGui::Spacing();
+
+					if (ImGui::Button("Refresh"))
+					{
+						scripting::Scripting::Get().RefreshScripts();
+					}
+					ImGui::SetItemTooltip("Rescan the current directory and scripts folder");
+
+					const auto& scripts = scripting::Scripting::Get().GetScripts();
+
+					int loaded_count = 0;
+					for (const auto& script : scripts)
+					{
+						if (script.loaded)
+							loaded_count++;
+					}
+
+					ImGui::SameLine();
+					ImGui::TextDisabled("%d/%d loaded", loaded_count, (int)scripts.size());
+
+					ImGui::Spacing();
+					ImGui::Separator();
+
+					if (scripts.empty())
+					{
+						ImGui::TextWrapped("No scripts found. Add .sl files to the current directory or a scripts folder.");
+					}
+
+					for (const auto& script : scripts)
+					{
+						ImGui::PushID(script.path.c_str());
+
+						if (ImGui::TextLink(script.name.c_str()))
+						{
+							const auto result = reinterpret_cast<intptr_t>(ShellExecuteA(
+								nullptr,
+								"open",
+								script.path.c_str(),
+								nullptr,
+								nullptr,
+								SW_SHOWNORMAL));
+
+							if (result <= 32)
+								LOGF(WARNING, "Failed to open {}", script.path);
+						}
+						ImGui::SetItemTooltip("Open %s", script.path.c_str());
+
+						ImGui::SameLine();
+
+						bool toggled = false;
+						if (script.loaded)
+						{
+							if (ImGui::SmallButton("Unload"))
+							{
+								scripting::Scripting::Get().UnloadScript(script.path);
+								toggled = true;
+							}
+						}
+						else
+						{
+							if (ImGui::SmallButton("Load"))
+							{
+								scripting::Scripting::Get().LoadScript(script.path);
+								toggled = true;
+							}
+						}
+
+						if (toggled)
+						{
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
+
+						if (!script.loaded)
+						{
+							ImGui::SameLine();
+							ImGui::TextDisabled("Unloaded");
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
+
+						if (script.buttons.empty())
+						{
+							ImGui::SameLine();
+							ImGui::TextDisabled("No btn_ functions");
+							ImGui::Separator();
+							ImGui::PopID();
+							continue;
+						}
+
+						float available_width = ImGui::GetContentRegionAvail().x;
+						float button_width = 150.0f;
+						float spacing = ImGui::GetStyle().ItemSpacing.x;
+						int buttons_per_row = (int)((available_width + spacing) / (button_width + spacing));
+						if (buttons_per_row < 1) buttons_per_row = 1;
+
+						int col = 0;
+						for (const auto& button : script.buttons)
+						{
+							if (col > 0 && col < buttons_per_row)
+								ImGui::SameLine();
+
+							if (ImGui::Button(button.label.c_str(), ImVec2(button_width, 30)))
+							{
+								scripting::Scripting::Get().ExecuteFunction(script.path, button.function);
+								LOGF(VERBOSE, "Executed {}.{}", script.name, button.function);
+							}
+
+							col++;
+							if (col >= buttons_per_row) col = 0;
+						}
+
+						ImGui::Separator();
+						ImGui::PopID();
+					}
+				}
 				else if (active_tab == Tab::SETTINGS)
 				{
+
+					ImGui::Spacing();
 					ImGui::Text("Misc");
 					ImGui::Separator();
 
@@ -398,7 +534,7 @@ void Menu::SetupStyles() {
 
 	style.Colors[ImGuiCol_Tab] = ImVec4(0.08f, 0.08f, 0.09f, 0.83f);
 	style.Colors[ImGuiCol_TabHovered] = ImVec4(0.33f, 0.34f, 0.36f, 0.83f);
-	style.Colors[ImGuiCol_TabActive] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
+	style.Colors[ImGuiCol_TabActive] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 	style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.08f, 0.08f, 0.09f, 1.00f);
 	style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
 	style.Colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);

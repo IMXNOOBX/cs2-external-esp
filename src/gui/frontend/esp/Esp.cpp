@@ -418,7 +418,7 @@ void Esp::RenderBombBox(Bomb bomb) {
 	if (visible_count == 0)
 		return;
 
-	auto color = cfg::esp::colors::bomb;
+	auto color = cfg::esp::bomb_color;
 
 	int edges[12][2] = {
 		{ 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, // Bottom

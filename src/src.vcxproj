@@ -43,13 +43,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -72,19 +72,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\Solis\runtime;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\Solis\runtime;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\Solis\runtime;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)src\;$(SolutionDir)src\external;$(SolutionDir)src\external\Solis\runtime;$(SolutionDir)src\external\imgui;$(SolutionDir)src\external\json\include;$(SolutionDir)src\external\curl\include;$(SolutionDir)src\external\AsyncLogger\src;$(SolutionDir)src\external\AsyncLogger\include\AsyncLogger;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)src\external\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
@@ -189,6 +189,9 @@
     <ClCompile Include="core\engine\classes\Game.cpp" />
     <ClCompile Include="core\engine\classes\Globals.cpp" />
     <ClCompile Include="core\engine\classes\Player.cpp" />
+    <ClCompile Include="core\scripting\Scripting.cpp" />
+    <ClCompile Include="core\scripting\SolisScript.cpp" />
+    <ClCompile Include="core\scripting\hooks\PhysicalInput.cpp" />
     <ClCompile Include="core\logger\LogHelper.cpp" />
     <ClCompile Include="core\memory\Memory.cpp" />
     <ClCompile Include="core\offsets\Dumper.cpp" />
@@ -208,12 +211,90 @@
     <ClCompile Include="gui\frontend\esp\Esp.cpp" />
     <ClCompile Include="gui\frontend\menu\Menu.cpp" />
     <ClCompile Include="gui\frontend\overlays\Overlays.cpp" />
+    <ClCompile Include="gui\frontend\theme\Theme.cpp" />
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="updater\http\HttpHelper.cpp" />
     <ClCompile Include="updater\Updater.cpp" />
     <ClCompile Include="core\engine\classes\Weapon.cpp" />
+    <ClCompile Include="external\Solis\runtime\solis.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\runtime\solis_std.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\common.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\type.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\std_src.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>SOLIS_NO_EMBED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\lex.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\parse.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\module.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\check.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\gen.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="external\Solis\compiler\emit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <CompileAs>CompileAsC</CompileAs>
+      <ObjectFileName>$(IntDir)solis_%(Filename).obj</ObjectFileName>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets\fonts\Icons.h" />
@@ -239,6 +320,9 @@
     <ClInclude Include="core\memory\Memory.hpp" />
     <ClInclude Include="core\offsets\Dumper.hpp" />
     <ClInclude Include="core\offsets\Offsets.hpp" />
+    <ClInclude Include="core\scripting\Scripting.hpp" />
+    <ClInclude Include="core\scripting\SolisScript.hpp" />
+    <ClInclude Include="core\scripting\hooks\PhysicalInput.hpp" />
     <ClInclude Include="external\AsyncLogger\include\AsyncLogger\Logger.hpp" />
     <ClInclude Include="external\AsyncLogger\src\common.hpp" />
     <ClInclude Include="external\AsyncLogger\src\concurrency\shared_queue.hpp" />
@@ -306,6 +390,7 @@
     <ClInclude Include="gui\frontend\esp\Esp.hpp" />
     <ClInclude Include="gui\frontend\menu\Menu.hpp" />
     <ClInclude Include="gui\frontend\overlays\Overlays.hpp" />
+    <ClInclude Include="gui\frontend\theme\Theme.hpp" />
     <ClInclude Include="gui\renderer\Renderer.hpp" />
     <ClInclude Include="gui\renderer\window\Window.hpp" />
     <ClInclude Include="updater\http\HttpHelper.hpp" />

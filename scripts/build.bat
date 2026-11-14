@@ -34,7 +34,7 @@ set DEFINES=-D_CONSOLE -DIMGUI_DEFINE_MATH_OPERATORS -DCURL_STATICLIB -D_WIN32_W
 :: change -ld3dcompiler_47 to a different version if needed
 set LIBS=src/external/lib/libcurl.lib ^
          src/external/lib/zlib.lib ^
-         -ld3d11 -ldxgi -ld3dcompiler_47 -ldwmapi -lgdi32 -luser32 -limm32 -lole32 ^
+         -ld3d11 -ldxgi -ld3dcompiler_47 -ldwmapi -lgdi32 -luser32 -limm32 -lole32 -lshell32 ^
          -lws2_32 -lwldap32 -lcrypt32 -lnormaliz -ladvapi32 -lbcrypt
 
 set SRCS=scripts\msvc\compatibility.cpp ^

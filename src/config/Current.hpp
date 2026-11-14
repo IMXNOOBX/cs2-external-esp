@@ -14,10 +14,10 @@ namespace cfg {
 		inline bool health_number = false;
 
 		inline bool spotted = false;
+		inline bool bomb = true;
+		inline color_t bomb_color{ 1.f, 0.84f, 0.f, 1.f };
 
 		inline bool tracers = false;
-		
-		inline bool bomb = true;
 
 		namespace flags {
 			inline bool name = true;
@@ -45,8 +45,6 @@ namespace cfg {
 			inline color_t tracer_team{ 0.f, 1.f, 0.f, 0.5f };
 			inline color_t tracer_enemy{ 1.f, 0.f, 0.f, 0.5f };
 
-			inline color_t bomb{ 1.f, 0.84f, 0.f, 1.f };
-			
 			namespace flags {
 				inline color_t flashed_team{ 1.f, 1.f, 1.f, 0.5f };
 				inline color_t flashed_enemy{ 1.f, 1.f, 1.f, 0.8f };
@@ -81,6 +79,7 @@ namespace cfg {
 		namespace bomb {
 			inline bool location = true;
 			inline bool timer = true;
+			inline bool hud = false;
 			inline Vec2_t pos{ 10.f, 300.f };
 		}
 

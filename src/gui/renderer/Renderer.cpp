@@ -4,7 +4,9 @@
 #include "core/engine/Engine.hpp"
 #include "gui/frontend/esp/Esp.hpp"
 #include "gui/frontend/menu/Menu.hpp"
-#include "gui/frontend/overlays/Overlays.hpp"
+#include "gui\frontend\overlays\Overlays.hpp"
+#include "core\scripting\Scripting.hpp"
+#include "gui/frontend/theme/Theme.hpp"
 
 bool Renderer::Init() {
     return GetInstance().InitImpl();
@@ -23,7 +25,7 @@ bool Renderer::IsOpen() {
 }
 
 bool Renderer::IsFocused() {
-    return GetInstance().isFocused;
+    return GetInstance().isFocused.load();
 }
 
 bool Renderer::InitImpl() {
@@ -45,6 +47,7 @@ bool Renderer::InitImpl() {
     Menu::Init();
     Esp::Init();
     Overlays::Init();
+    scripting::Scripting::Get().Init();
 
     // Focus the game
     SetForegroundWindow(Engine::GetProcess()->hwnd_);
@@ -87,6 +90,8 @@ void Renderer::ThreadImpl() {
 }
 
 void Renderer::Render() {
+    theme::ThemeManager::Get().FlushPending();
+
     Window::StartRender();
 
     Esp::Render();
@@ -100,6 +105,7 @@ void Renderer::Render() {
 
 bool Renderer::HandleState() {
     isRunning = Window::shouldRun; // From the window event handler
+    scripting::Scripting::Get().Update();
 
     static bool was_holding = false;
 

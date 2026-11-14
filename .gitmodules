@@ -10,3 +10,6 @@
 [submodule "src/external/curl"]
 	path = src/external/curl
 	url = https://github.com/curl/curl
+[submodule "src/external/Solis"]
+	path = src/external/Solis
+	url = https://github.com/hydrophobis/Solis
