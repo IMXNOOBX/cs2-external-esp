@@ -18,7 +18,6 @@ public:
     SolisScript& operator=(SolisScript&&) = delete;
 
     static bool Compile(const std::string& path, const std::string& host, CompiledScript& script);
-    static bool CompileFunction(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image);
 
 private:
     SolisScript() {};
@@ -30,5 +29,4 @@ private:
     }
 
     bool CompileImpl(const std::string& path, const std::string& host, std::vector<uint8_t>& image, std::vector<std::string>* functions);
-    bool CompileFunctionImpl(const std::string& path, const std::string& function, const std::string& host, std::vector<uint8_t>& image);
 };
