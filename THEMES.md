@@ -6,31 +6,31 @@ The project now supports custom UI themes through the **scripting API**. Themes 
 
 For scripting syntax and commands, see the [`./SCRIPTING.md`](./SCRIPTING.md).
 
-# Preset themes
+# Preset theme
 
-* Cyberpunk: [`assets\themes\cyberpunk.txt`](assets\themes\cyberpunk.txt)
-* Light: [`assets\themes\light.txt`](assets\themes\light.txt)
-* Matrix: [`assets\themes\matrix.txt`](assets\themes\matrix.txt)
+[`assets/themes/theme.sl`](assets/themes/theme.sl) contains the midnight, light and matrix presets plus a reset. Release builds also ship it as `scripts/theme.sl`, so it is available in the **Scripts** tab out of the box.
 
-Ready to copy and paste them
+Copy the file to the working directory or the `scripts` folder to use it in a source build.
 
 ## Creating a Theme
 
-Themes are scripts built on `set_color`. Put each theme in its own `.sl` file in the working directory or in the `scripts` folder:
+Themes are scripts built on `host.set_color`. Put each theme in its own `.sl` file in the working directory or in the `scripts` folder:
 
 ```solis
+import host;
+
 func main() {
     // Runs when the script loads.
 }
 
 func btn_my_theme() {
-    reset_theme();
+    host.reset_theme();
 
-    set_color("windowbg", 0.05, 0.05, 0.05, 1.0);
-    set_color("text", 1.0, 1.0, 1.0, 1.0);
-    set_color("button", 0.2, 0.2, 0.2, 1.0);
-    set_color("buttonhovered", 0.3, 0.3, 0.3, 1.0);
-    set_color("checkmark", 0.0, 1.0, 0.0, 1.0);
+    host.set_color("windowbg", 0.05, 0.05, 0.05, 1.0);
+    host.set_color("text", 1.0, 1.0, 1.0, 1.0);
+    host.set_color("button", 0.2, 0.2, 0.2, 1.0);
+    host.set_color("buttonhovered", 0.3, 0.3, 0.3, 1.0);
+    host.set_color("checkmark", 0.0, 1.0, 0.0, 1.0);
 }
 ```
 
@@ -38,16 +38,16 @@ The `btn_` prefix makes it appear as a button in the **Scripts** tab. You can al
 
 ```solis
 func main() {
-    bind("F1", "btn_my_theme");
+    host.bind("F1", "btn_my_theme");
 }
 ```
 
-Using `reset_theme()` at the start is recommended so the theme always starts from the default UI and does not inherit colors from a previous theme.
+Using `host.reset_theme()` at the start is recommended so the theme always starts from the default UI and does not inherit colors from a previous theme.
 
 ## Color Format
 
 ```text
-set_color("COLOR", R, G, B, A)
+host.set_color("COLOR", R, G, B, A)
 ```
 
 Colors use RGBA values from `0.0` to `1.0`.
@@ -55,7 +55,7 @@ Colors use RGBA values from `0.0` to `1.0`.
 For example:
 
 ```solis
-set_color("button", 1.0, 0.0, 0.0, 1.0);
+host.set_color("button", 1.0, 0.0, 0.0, 1.0);
 ```
 
 # Available Colors

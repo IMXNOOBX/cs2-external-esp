@@ -38,6 +38,8 @@ jobs:
           xcopy x64\Release\* release\ /E /I /Y
           copy README.md release\README.md
           copy LICENSE release\LICENSE
+          mkdir release\scripts
+          copy assets\themes\theme.sl release\scripts\theme.sl
 
       - name: Archive artifacts
         run: |
