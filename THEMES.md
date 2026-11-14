@@ -8,7 +8,7 @@ For scripting syntax and commands, see the [`./SCRIPTING.md`](./SCRIPTING.md).
 
 # Preset theme
 
-[`assets/themes/theme.sl`](assets/themes/theme.sl) contains the midnight, light and matrix presets plus a reset. Release builds also ship it as `scripts/theme.sl`, so it is available in the **Scripts** tab out of the box.
+[`assets/themes/themes.sl`](assets/themes/themes.sl) contains the midnight, light and matrix presets plus a reset. Release builds also ship it as `scripts/themes.sl`, so it is available in the **Scripts** tab out of the box.
 
 Copy the file to the working directory or the `scripts` folder to use it in a source build.
 

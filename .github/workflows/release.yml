@@ -39,7 +39,7 @@ jobs:
           copy README.md release\README.md
           copy LICENSE release\LICENSE
           mkdir release\scripts
-          copy assets\themes\theme.sl release\scripts\theme.sl
+          copy assets\themes\themes.sl release\scripts\themes.sl
 
       - name: Archive artifacts
         run: |
