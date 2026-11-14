@@ -1,11 +1,10 @@
 #include "Menu.hpp"
 #include <cstring>
 #include "core/scripting/Scripting.hpp"
-#include "core/scripting/Scripting.hpp"
 #include "core/engine/cache/Cache.hpp"
 #include "gui/renderer/Renderer.hpp" // Circular dependency
 #include "gui/renderer/window/Window.hpp" // Circular dependency
-#include "assets/fonts/Icons.h";
+#include "assets/fonts/Icons.h"
 #include <shellapi.h>
 
 #pragma comment(lib, "Shell32.lib")

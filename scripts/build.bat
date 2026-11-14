@@ -23,6 +23,7 @@ del msvc_compat.obj
 
 set INCLUDES=-Isrc ^
              -Isrc/external ^
+             -Isrc/external/Solis/runtime ^
              -Isrc/external/imgui ^
              -Isrc/external/json/include ^
              -Isrc/external/curl/include ^
@@ -51,6 +52,9 @@ set SRCS=scripts\msvc\compatibility.cpp ^
          src/core/logger/LogHelper.cpp ^
          src/core/memory/Memory.cpp ^
          src/core/offsets/Dumper.cpp ^
+         src/core/scripting/hooks/PhysicalInput.cpp ^
+         src/core/scripting/Scripting.cpp ^
+         src/core/scripting/SolisScript.cpp ^
          src/external/AsyncLogger/src/LogCapture.cpp ^
          src/external/AsyncLogger/src/Logger.cpp ^
          src/external/AsyncLogger/src/LogIntermediate.cpp ^
@@ -67,16 +71,44 @@ set SRCS=scripts\msvc\compatibility.cpp ^
          src/gui/frontend/esp/Esp.cpp ^
          src/gui/frontend/menu/Menu.cpp ^
          src/gui/frontend/overlays/Overlays.cpp ^
+         src/gui/frontend/theme/Theme.cpp ^
          src/gui/renderer/Renderer.cpp ^
          src/gui/renderer/window/Window.cpp ^
          src/main.cpp ^
          src/updater/http/HttpHelper.cpp ^
          src/updater/Updater.cpp
 
+set SOLIS_C=src/external/Solis/runtime/solis.c ^
+            src/external/Solis/runtime/solis_std.c ^
+            src/external/Solis/compiler/common.c ^
+            src/external/Solis/compiler/type.c ^
+            src/external/Solis/compiler/std_src.c ^
+            src/external/Solis/compiler/lex.c ^
+            src/external/Solis/compiler/parse.c ^
+            src/external/Solis/compiler/module.c ^
+            src/external/Solis/compiler/check.c ^
+            src/external/Solis/compiler/gen.c ^
+            src/external/Solis/compiler/emit.c
+
+set SOLIS_OBJ=%OUTDIR%\solis
+set SOLIS_OBJS=
+
 mkdir "%OUTDIR%" 2>nul
+mkdir "%SOLIS_OBJ%" 2>nul
+
+echo compiling solis
+for %%f in (%SOLIS_C%) do (
+    zig cc -target %TARGET% -std=c23 -O2 -DSOLIS_NO_EMBED -c "%%f" -o "%SOLIS_OBJ%\%%~nf.obj"
+    if errorlevel 1 (
+        echo build failed.
+        pause
+        exit /b 1
+    )
+    set SOLIS_OBJS=!SOLIS_OBJS! "%SOLIS_OBJ%\%%~nf.obj"
+)
 
 echo compiling project
-%CC% -target %TARGET% -std=c++20 -O3 -Wno-date-time -fno-autolink -include src/common.hpp %DEFINES% %INCLUDES% %SRCS% -o %OUT% %LIBS% -Lsrc/external/lib
+%CC% -target %TARGET% -std=c++20 -O3 -Wno-date-time -fno-autolink -include src/common.hpp %DEFINES% %INCLUDES% %SRCS% !SOLIS_OBJS! -o %OUT% %LIBS% -Lsrc/external/lib
 
 if %ERRORLEVEL% EQU 0 (
     echo build successful: %OUT%
