@@ -53,12 +53,12 @@ bool Dumper::InitImpl() {
 
     // C4
     if (!(temp = Scan(offsets::signatures::plantedC4, client))) {
-        LOGF(FATAL, "Could not find offset for 'weaponC4'");
-        return false;
+        LOGF(FATAL, "Could not find offset for 'plantedC4'");
+        //return false;
     }
 
     offsets::plantedC4 = temp - client.base;
-    LOGF(VERBOSE, "Found 'weaponC4' offset at 0x{:X}", offsets::plantedC4);
+    LOGF(VERBOSE, "Found 'plantedC4' offset at 0x{:X}", offsets::plantedC4);
 
     // C4 carrier pointer
     if (!(temp = Scan(offsets::signatures::weaponC4, client))) {
