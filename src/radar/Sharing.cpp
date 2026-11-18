@@ -1,31 +1,13 @@
-// Most of this file was written with AI assistance
-
 #include "Radar.hpp"
-#ifndef CURL_STATICLIB
-#define CURL_STATICLIB
-#endif
-#include <curl/curl.h>
-#include <sstream>
-#include <bcrypt.h>
+#include "Cloudflared.hpp"
 #include <stdexcept>
-
-#pragma comment(lib, "bcrypt.lib")
-#pragma comment(lib, "libcurl.lib")
-#pragma comment(lib, "zlib.lib")
-#pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "crypt32.lib")
 
 using json = nlohmann::json;
 
 namespace {
     namespace fs = std::filesystem;
 
-    constexpr wchar_t cacheFolder[] = L"cloudflare";
-    constexpr wchar_t executableName[] = L"cloudflared.exe";
-    constexpr char assetName[] = "cloudflared-windows-amd64.exe";
-    constexpr char releaseApi[] = "https://api.github.com/repos/cloudflare/cloudflared/releases/latest";
     constexpr auto pollInterval = 50ms;
-    constexpr long metadataTimeout = 20, downloadTimeout = 120;
 
     void CheckCancelled(const std::atomic<bool>& stopped) {
         if (stopped) throw std::runtime_error("Sharing cancelled.");
@@ -46,122 +28,12 @@ namespace {
         return fs::path(module.data()).parent_path();
     }
 
-    size_t WriteDownload(char* data, size_t size, size_t count, void* context) noexcept {
-        auto& output = *static_cast<std::ostream*>(context);
-        try {
-            output.write(data, size * count);
-            return output ? size * count : 0;
-        } catch (...) {
-            return 0;
-        }
-    }
 
-    int CancelDownload(void* context, curl_off_t, curl_off_t, curl_off_t, curl_off_t) {
-        return static_cast<const std::atomic<bool>*>(context)->load() ? 1 : 0;
-    }
-
-    void Download(const std::string& url, std::ostream& output, const std::atomic<bool>& stopped, long timeout) {
-        CheckCancelled(stopped);
-        static const auto initialized = curl_global_init(CURL_GLOBAL_DEFAULT);
-        std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> request(curl_easy_init(), curl_easy_cleanup);
-        if (initialized != CURLE_OK || !request) throw std::runtime_error("Could not prepare the download.");
-        auto* curl = request.get();
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "cs2-external-esp");
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-        curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, "https");
-        curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteDownload);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-        curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, CancelDownload);
-        curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &stopped);
-        auto result = curl_easy_perform(curl);
-        CheckCancelled(stopped);
-        long status = 0;
-        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status);
-        if (result != CURLE_OK || status != 200)
-            throw std::runtime_error(status == 403
-                ? "GitHub denied the download (HTTP 403). Try again later or install cloudflared manually; see docs/radar-sharing.md."
-                : "Could not download cloudflared. See docs/radar-sharing.md for manual installation.");
-    }
-
-    std::string Sha256(const fs::path& path, const std::atomic<bool>& stopped) {
-        BCRYPT_ALG_HANDLE rawAlgorithm = nullptr;
-        if (BCryptOpenAlgorithmProvider(&rawAlgorithm, BCRYPT_SHA256_ALGORITHM, nullptr, 0) != 0)
-            throw std::runtime_error("Could not prepare checksum verification.");
-        auto closeAlgorithm = [](void* handle) { BCryptCloseAlgorithmProvider(handle, 0); };
-        std::unique_ptr<void, decltype(closeAlgorithm)> algorithm(rawAlgorithm, closeAlgorithm);
-        BCRYPT_HASH_HANDLE rawHash = nullptr;
-        if (BCryptCreateHash(rawAlgorithm, &rawHash, nullptr, 0, nullptr, 0, 0) != 0)
-            throw std::runtime_error("Could not prepare checksum verification.");
-        std::unique_ptr<void, decltype(&BCryptDestroyHash)> hash(rawHash, BCryptDestroyHash);
-        std::ifstream input(path, std::ios::binary);
-        if (!input) throw std::runtime_error("Could not read the downloaded file.");
-        std::array<unsigned char, 64 * 1024> buffer{};
-        while (input) {
-            CheckCancelled(stopped);
-            input.read(reinterpret_cast<char*>(buffer.data()), buffer.size());
-            if (BCryptHashData(rawHash, buffer.data(), static_cast<ULONG>(input.gcount()), 0) != 0)
-                throw std::runtime_error("Could not verify the downloaded file.");
-        }
-        if (!input.eof()) throw std::runtime_error("Could not read the downloaded file.");
-        std::array<unsigned char, 32> digest{};
-        if (BCryptFinishHash(rawHash, digest.data(), static_cast<ULONG>(digest.size()), 0) != 0)
-            throw std::runtime_error("Could not verify the downloaded file.");
-        constexpr char hex[] = "0123456789abcdef";
-        std::string result;
-        for (auto byte : digest) {
-            result += hex[byte >> 4];
-            result += hex[byte & 15];
-        }
-        return result;
-    }
-
-    fs::path PrepareExecutable(const fs::path& directory, const std::atomic<bool>& stopped,
-        const std::function<void(const char*)>& status) {
-        auto executable = directory / cacheFolder / executableName;
-        if (fs::is_regular_file(executable)) return executable;
-        status("Downloading cloudflared...");
-        std::ostringstream metadata;
-        Download(releaseApi, metadata, stopped, metadataTimeout);
-        auto release = json::parse(metadata.str(), nullptr, false);
-        if (!release.is_object() || !release.contains("assets") || !release["assets"].is_array())
-            throw std::runtime_error("GitHub returned invalid release information.");
-        std::string url, digest;
-        for (const auto& asset : release["assets"]) {
-            if (asset.is_object() && asset.value("name", "") == assetName) {
-                url = asset.value("browser_download_url", "");
-                digest = asset.value("digest", "");
-                break;
-            }
-        }
-        if (url.empty() || !digest.starts_with("sha256:") || digest.size() != 71 ||
-            digest.find_first_not_of("0123456789abcdefABCDEF", 7) != std::string::npos)
-            throw std::runtime_error("The release has no verifiable Windows download.");
-        digest.erase(0, 7);
-        for (char& c : digest)
-            if (c >= 'A' && c <= 'F') c += 'a' - 'A';
-
-        fs::create_directories(executable.parent_path());
-        auto temporary = executable;
-        temporary += L".download";
-        try {
-            std::ofstream file(temporary, std::ios::binary);
-            if (!file) throw std::runtime_error("Could not save the download. See docs/radar-sharing.md for manual installation.");
-            Download(url, file, stopped, downloadTimeout);
-            file.close();
-            if (!file) throw std::runtime_error("Could not save the download.");
-            status("Verifying download...");
-            if (Sha256(temporary, stopped) != digest)
-                throw std::runtime_error("The downloaded file failed its SHA-256 check.");
-            CheckCancelled(stopped);
-            fs::rename(temporary, executable);
-        } catch (...) {
-            std::error_code ignored;
-            fs::remove(temporary, ignored);
-            throw;
-        }
+    fs::path FindExecutable(const fs::path& directory) {
+        auto executable = radar::FindCloudflared(directory);
+        if (executable.empty())
+            throw std::runtime_error("cloudflared.exe was not found, next to the program, in Program Files or on PATH. "
+                "See docs/radar-sharing.md.");
         return executable;
     }
 }
@@ -174,6 +46,12 @@ bool Radar::Share() {
         std::lock_guard lock(radar.sharingMutex);
         if (!radar.running) {
             radar.sharing.error = "Enable Browser radar before sharing.";
+            return false;
+        }
+        try {
+            FindExecutable(ApplicationDirectory());
+        } catch (const std::exception& exception) {
+            radar.sharing = { false, {}, {}, exception.what() };
             return false;
         }
         radar.sharing = { true, "Starting sharing...", {}, {} };
@@ -211,11 +89,12 @@ void Radar::RunSharing() {
     std::string error;
     try {
         auto directory = ApplicationDirectory();
-        auto executable = PrepareExecutable(directory, sharingStopped, [this](const char* status) {
-            std::lock_guard lock(sharingMutex);
-            sharing.status = status;
-        });
+        auto executable = FindExecutable(directory);
         CheckCancelled(sharingStopped);
+        {
+            std::lock_guard lock(sharingMutex);
+            sharing.status = "Starting cloudflared...";
+        }
         std::wstring command = L"\"" + executable.wstring() +
             L"\" tunnel --output json --loglevel info --url http://127.0.0.1:27080"
             L" --http-host-header 127.0.0.1:27080";
@@ -243,7 +122,7 @@ void Radar::RunSharing() {
         PROCESS_INFORMATION info{};
         if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, TRUE,
             CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, directory.c_str(), &startup, &info))
-            throw std::runtime_error("Could not start cloudflared. Install it manually; see docs/radar-sharing.md.");
+            throw std::runtime_error("Could not start cloudflared.exe. Check your antivirus and see docs/radar-sharing.md.");
         Handle process(info.hProcess), processThread(info.hThread);
         writeEnd.reset();
         input.reset();
@@ -263,7 +142,10 @@ void Radar::RunSharing() {
         WaitForSingleObject(process.get(), INFINITE);
     } catch (const std::exception& exception) {
         error = exception.what();
+    } catch (...) {
+        error = "Could not share the radar.";
     }
+    if (error.empty() && !sharingStopped) error = "Sharing stopped. Check your connection and try again.";
     std::lock_guard lock(sharingMutex);
     sharing = { false, {}, {}, sharingStopped ? "" : error };
 }

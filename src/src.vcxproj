@@ -215,6 +215,7 @@
     <ClCompile Include="gui\renderer\Renderer.cpp" />
     <ClCompile Include="gui\renderer\window\Window.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="radar\Cloudflared.cpp" />
     <ClCompile Include="radar\Radar.cpp" />
     <ClCompile Include="radar\Sharing.cpp" />
     <ClCompile Include="updater\http\HttpHelper.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="assets\fonts\Icons.h" />
     <ClInclude Include="assets\fonts\WeaponIcons.h" />
     <ClInclude Include="common.hpp" />
+    <ClInclude Include="radar\Cloudflared.hpp" />
     <ClInclude Include="radar\Radar.hpp" />
     <ClInclude Include="radar\Page.hpp" />
     <ClInclude Include="config\Config.hpp" />

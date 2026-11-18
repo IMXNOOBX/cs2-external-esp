@@ -418,6 +418,3 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Portable radar tunnel
-/scripts/cloudflared.exe
-/scripts/cloudflared-*.download

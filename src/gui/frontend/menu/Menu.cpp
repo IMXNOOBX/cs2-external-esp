@@ -319,7 +319,7 @@ void Menu::RenderImpl() {
 							Radar::Share();
 							sharing = Radar::GetSharingState();
 						}
-						ImGui::SetItemTooltip("Anyone with the share link can view the radar. Downloads cloudflared on first use.");
+						ImGui::SetItemTooltip("Anyone with the share link can view the radar.");
 						if (!sharing.url.empty()) {
 							ImGui::TextWrapped("%s", sharing.url.c_str());
 							if (ImGui::Button("Copy share link"))
