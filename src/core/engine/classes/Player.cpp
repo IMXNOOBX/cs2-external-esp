@@ -89,6 +89,7 @@ bool Player::UpdatePawn() {
 
 	this->health = p->read<int>(pawn + offsets::pawn::m_iHealth);
 	this->alive = health != 0;
+	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
 	UpdateObserverServices();
 

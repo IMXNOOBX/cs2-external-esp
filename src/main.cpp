@@ -23,6 +23,7 @@
 #include "updater/Updater.hpp"
 #include "core/engine/Engine.hpp"
 #include "gui/renderer/Renderer.hpp"
+#include "radar/Radar.hpp"
 
 #include <external/exception.hpp>
 
@@ -54,12 +55,16 @@ int main()
         goto exit;
     }
 
+    if (cfg::world::radar::external)
+        cfg::world::radar::external = Radar::Init();
+
     LOGF(INFO, "Everything setup and ready, just... make sure you are not in \"Full Screen\"!");
 
     // Locking
     Renderer::Thread();
 
 exit:
+    Radar::Destroy();
     LOGF(INFO, "Thats it, im done, hope you had a great time!");
     LogHelper::Destroy();
     std::cin.get();

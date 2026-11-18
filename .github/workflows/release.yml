@@ -39,6 +39,32 @@ jobs:
           copy README.md release\README.md
           copy LICENSE release\LICENSE
 
+      - name: Fetch latest cloudflared
+        id: cloudflared
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $headers = @{ 'User-Agent' = 'cs2-external-esp-release'; 'Accept' = 'application/vnd.github+json' }
+          if ($env:GH_TOKEN) { $headers['Authorization'] = "Bearer $env:GH_TOKEN" }
+          $release = Invoke-RestMethod -Uri 'https://api.github.com/repos/cloudflare/cloudflared/releases/latest' -Headers $headers
+          $asset = $release.assets | Where-Object { $_.name -eq 'cloudflared-windows-amd64.exe' } | Select-Object -First 1
+          if (-not $asset) { throw 'cloudflared release has no windows-amd64 asset.' }
+
+          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile release\cloudflared.exe -UseBasicParsing
+
+          $hash = (Get-FileHash release\cloudflared.exe -Algorithm SHA256).Hash.ToLower()
+          if ($asset.digest) {
+            $expected = ($asset.digest -replace '^sha256:', '').ToLower()
+            if ($hash -ne $expected) { throw "cloudflared checksum mismatch: got $hash, expected $expected" }
+          } else {
+            Write-Warning 'cloudflared release published no digest; skipping checksum verification.'
+          }
+
+          "version=$($release.tag_name)" >> $env:GITHUB_OUTPUT
+          "sha256=$hash" >> $env:GITHUB_OUTPUT
+          Write-Host "Bundled cloudflared $($release.tag_name) (sha256 $hash)"
+
       - name: Archive artifacts
         run: |
           powershell Compress-Archive -Path release\* -DestinationPath release.zip
@@ -82,6 +108,8 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "> ⚠️ **This is a preview build.** We encourage you to build it yourself from the source code to ensure integrity and transparency." >> CHANGELOG.md
           echo "" >> CHANGELOG.md
+          echo "> 🔒 **cloudflared ${{ steps.cloudflared.outputs.version }} is bundled** as \`cloudflared.exe\` for the optional radar sharing feature." >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
           echo "### 📦 Artifacts" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
           echo "**[Generated artifacts](https://github.com/$REPO_OWNER/$REPO_NAME/actions/runs/$RUN_ID)**" >> CHANGELOG.md
@@ -97,7 +125,8 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "- **Workflow:** [auto_build.yml](https://github.com/IMXNOOBX/cs2-external-esp/blob/main/.github/workflows/auto_build.yml)" >> CHANGELOG.md
           echo "- **Source:** [Repository](https://github.com/$REPO_OWNER/$REPO_NAME)" >> CHANGELOG.md
-          echo "- **Build ID:** `$RUN_ID`" >> CHANGELOG.md
+          echo "- **Build ID:** \`$RUN_ID\`" >> CHANGELOG.md
+          echo "- **cloudflared:** \`${{ steps.cloudflared.outputs.version }}\` (bundled, optional)" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
         shell: bash
 
